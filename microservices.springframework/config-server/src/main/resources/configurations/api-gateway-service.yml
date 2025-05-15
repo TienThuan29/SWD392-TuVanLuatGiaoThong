@@ -1,0 +1,46 @@
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: #allowedOrigins
+              - "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+            allowedHeaders: '*'
+            allowCredentials: true
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: identity-service
+          uri: ${IDENTITY_SERVICE_URL:http://localhost:8989}
+          predicates:
+            - Path=/api/v1/identity/**
+
+        - id: identity-service
+          uri: ${IDENTITY_SERVICE_URL:http://localhost:8989}
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - AddRequestHeader=Authorization, Bearer {accessToken}
+
+        - id: cloud-storage-service
+          uri: ${CLOUD_STORAGE_SERVICE_URL}
+          predicates:
+              - Path=/api/v1/aws/s3/**
+
+  application:
+    name: gateway-service
+
+server:
+  port: 8222
