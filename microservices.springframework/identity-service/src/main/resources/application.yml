@@ -1,6 +1,40 @@
+# spring:
+#   config:
+#     import: ${CONFIG_IMPORT_SERVER_URL:configserver:http://localhost:8888}
+#   application:
+#     name: identity-service
+
+server:
+  port: 8989
 spring:
   config:
     import: ${CONFIG_IMPORT_SERVER_URL:configserver:http://localhost:8888}
   application:
     name: identity-service
-
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GG_CLIENT_ID}
+            client-secret: ${GG_CLIENT_SECRET}
+            scope: profile, email
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+  datasource:
+    # url: ${POSTGRES_DB_URL}
+    url: jdbc:postgresql://swd392-db-test-swd392-test.l.aivencloud.com:25053/defaultdb?ssl=require&user=avnadmin&password=AVNS_MM7blPIzFR1yo76a-JG
+    # username: ${POSTGRES_USER}
+    # password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.PostgreSQLDialect

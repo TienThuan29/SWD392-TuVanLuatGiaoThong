@@ -4,7 +4,10 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "10240:10240"
+      - "8222:8222"
+      - "8989:8989"
+      - "8080:8080"
+      - "8888:8888"
     volumes:
       - ..:/workspace:cached 
     depends_on:
