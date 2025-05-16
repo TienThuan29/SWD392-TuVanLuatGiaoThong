@@ -137,6 +137,13 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>2.2.4</version>
+        </dependency>
+
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -205,7 +212,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>swd392.identityservice.IdentityServiceApplication</mainClass>
+                            <mainClass>swd392.identityservice.IdentityServiceApplicationKt</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

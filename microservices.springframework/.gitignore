@@ -3,10 +3,6 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-# Chua chay
-identity-service/src/main/resources/security.properties
-identity-service/src/main/resources/application.yml
-
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
