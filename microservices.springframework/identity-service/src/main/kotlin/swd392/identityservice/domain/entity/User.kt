@@ -15,16 +15,13 @@ data class User(
     @Id
     var id: UUID? = UUID.randomUUID(),
 
-    @Column(name = "role_number", length = 30, nullable = false, unique = true)
-    var roleNumber: String? = null,
-
     @Column(name = "username", length = 60, nullable = false, unique = true)
     var usernameAuth: String? = null,
 
     @Column(name = "email", length = 320, nullable = false)
     var email: String? = null,
 
-    @Column(name = "password", length = 60, nullable = false)
+    @Column(name = "password", length = 256, nullable = false)
     var passwordAuth: String? = null,
 
     @Column(name = "fullname", length = 100, nullable = false)
