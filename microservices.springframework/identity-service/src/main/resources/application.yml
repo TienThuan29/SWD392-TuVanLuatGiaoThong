@@ -16,8 +16,8 @@ spring:
       client:
         registration:
           google:
-            client-id: ${GG_CLIENT_ID:http://888856932853-a6eigercu6oguf13fojgp1d086t1fcfj.apps.googleusercontent.com}
-            client-secret: ${GG_CLIENT_SECRET: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}
+            client-id: ${GG_CLIENT_ID}
+            client-secret: ${GG_CLIENT_SECRET}
             scope: profile, email
         provider:
           google:
@@ -25,7 +25,7 @@ spring:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
   datasource:
-    url: ${POSTGRES_DB_URL:jdbc:postgresql://swd392-db-test-swd392-test.l.aivencloud.com:25053/defaultdb?ssl=require&user=avnadmin&password=AVNS_MM7blPIzFR1yo76a-JG}
+    url: ${POSTGRES_DB_URL}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver

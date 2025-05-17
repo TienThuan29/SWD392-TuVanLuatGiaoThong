@@ -18,7 +18,6 @@ class UserMapper(
             email = registerUserRequest.email,
             passwordAuth = registerUserRequest.password,
             fullname = registerUserRequest.fullname,
-            roleNumber = registerUserRequest.roleNumber,
             role = if(registerUserRequest.role.equals("STUDENT")) Role.STUDENT else Role.LECTURER
         )
     }
@@ -26,7 +25,6 @@ class UserMapper(
     fun toResponse(user: User) : UserDataResponse {
         return UserDataResponse(
             id = hashingUtil.hash(user.id.toString()),
-            roleNumber = user.roleNumber,
             username = user.usernameAuth,
             email = user.email,
             fullname = user.fullname,

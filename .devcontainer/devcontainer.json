@@ -1,25 +1,3 @@
-// {
-// 	"name": "springnextjs-template",
-// 	"dockerFile": "Dockerfile",
-// 	"build": {
-// 	  "args": { "NODE_MAJOR_VERSION": "20" }
-// 	},
-// 	"portsAttributes": {
-// 	  "10240": { "label": "SpringNextjs-Template" }
-// 	},
-// 	"customizations": {
-// 	  "vscode": {
-// 		"extensions": ["dbaeumer.vscode-eslint", "EditorConfig.EditorConfig", "esbenp.prettier-vscode"]
-// 	  }
-// 	},
-// 	"features": {
-// 		  "ghcr.io/devcontainers/features/java:1": {},
-// 		  "ghcr.io/mikaello/devcontainer-features/kotlinc:1": {},
-// 		  "ghcr.io/devcontainers-extra/features/kotlin-sdkman:2": {},
-// 		  "ghcr.io/devcontainers-extra/features/maven-sdkman:2": {}
-// 	  }
-//   }
-
 {
 	"name": "springnextjs-template",
 	"dockerComposeFile": "docker-compose.yml",

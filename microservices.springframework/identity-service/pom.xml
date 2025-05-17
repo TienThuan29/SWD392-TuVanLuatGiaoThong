@@ -237,7 +237,6 @@
                         <plugin>spring</plugin>
                     </compilerPlugins>
                     <sourceDirs>
-                        <source>${project.basedir}/src/main/java</source>
                         <source>${project.basedir}/src/main/kotlin/</source>
                         <source>${project.basedir}/src/main/resources</source>
                     </sourceDirs>
@@ -265,7 +264,6 @@
                         </goals>
                         <configuration>
                             <sourceDirs>
-                                <source>${project.basedir}/src/main/java</source>
                                 <source>${project.basedir}/src/main/kotlin/</source>
                                 <source>${project.basedir}/src/main/resources</source>
                             </sourceDirs>
