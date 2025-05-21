@@ -1,0 +1,40 @@
+{
+  "style": "default",
+  "path": "components/modern-ui",
+  "theme": "default",
+  "typescript": true,
+  "tailwind": true,
+  "framework": "next",
+  "components": [
+    {
+      "name": "sonner",
+      "version": "latest",
+      "installedAt": "2025-05-19T20:48:07.948Z"
+    },
+    {
+      "name": "form",
+      "version": "latest",
+      "installedAt": "2025-05-20T17:40:38.128Z"
+    },
+    {
+      "name": "button",
+      "version": "latest",
+      "installedAt": "2025-05-20T17:41:24.819Z"
+    },
+    {
+      "name": "input",
+      "version": "latest",
+      "installedAt": "2025-05-20T17:41:35.465Z"
+    },
+    {
+      "name": "label",
+      "version": "latest",
+      "installedAt": "2025-05-20T17:45:04.162Z"
+    }
+  ],
+  "aliases": {
+    "cn": "@/lib/utils",
+    "hook": "@/hooks"
+  },
+  "tailwindVersion": "v4"
+}
