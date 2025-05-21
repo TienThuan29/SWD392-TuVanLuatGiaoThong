@@ -1,6 +1,10 @@
-docker-compose -f docker-compose-final.yml -p aas-microservices up --build -d
+# Hướng dẫn sử dụng trước khi dùng
 
-## Comment tracking for file version
+## Docker build
+`docker-compose -f docker-compose-final.yml -p aas-microservices up --build -d`
+
+## Comment để theo dõi quá trình làm
+### - Sau khi code xong 1 hàm hoặc thay đổi file, bắt buộc phải ghi log
 ```java
 /*
  * File: <file_name>

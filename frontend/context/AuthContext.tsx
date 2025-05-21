@@ -48,7 +48,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
             password: password
         }
         try {
-            console.log(Api.BASE_API)
+            // console.log("Base api", Api.BASE_API)
             const response = await axios.post(Api.BASE_API + Api.Authenticaion.LOGIN, authenticationRequest);
             if (response.status === HttpStatus.OK) {
                 setAuthTokens(response.data.dataResponse);

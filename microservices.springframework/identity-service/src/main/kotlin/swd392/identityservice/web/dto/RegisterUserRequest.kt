@@ -5,6 +5,5 @@ class RegisterUserRequest(
     val email: String,
     val password: String,
     val fullname: String,
-    val roleNumber: String,
     val role: String
 )

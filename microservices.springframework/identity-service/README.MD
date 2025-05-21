@@ -1,2 +1,2 @@
 # Run project 
-`export $(grep -v '^#' .env | xargs) && mvn spring-boot:run`
+export $(grep -v '^#' .env | xargs) && mvn spring-boot:run

@@ -1,7 +1,8 @@
 import Env from "./Env";
 
 export const Api = {
-    BASE_API: Env.backendApiGateWayUrl,
+    // BASE_API: Env.backendApiGateWayUrl,
+    BASE_API: "http://localhost:8222",
 
     Authenticaion: {
         LOGIN: '/api/v1/identity/authenticate',

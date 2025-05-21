@@ -41,7 +41,8 @@ function LoginForm() {
   const { loginUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!form.getValues().username) {
       toast.error("Tên đăng nhập không được để trống!");
       return;
@@ -54,10 +55,11 @@ function LoginForm() {
     try {
       setIsLoading(true);
       await loginUser(form.getValues().username, form.getValues().password);
-    } 
-    catch {
+    }
+    catch (ex) {
+      console.log(ex)
       toast.error("Login failed");
-    } 
+    }
     finally {
       setIsLoading(false);
     }
@@ -134,7 +136,7 @@ function LoginForm() {
                 )}
               />
 
-              <Button type="submit" onClick={handleLogin} className="w-full">
+              <Button onClick={handleLogin} className="w-full">
                 Sign In
               </Button>
 

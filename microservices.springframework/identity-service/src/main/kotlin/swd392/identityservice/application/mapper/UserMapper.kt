@@ -18,7 +18,7 @@ class UserMapper(
             email = registerUserRequest.email,
             passwordAuth = registerUserRequest.password,
             fullname = registerUserRequest.fullname,
-            role = if(registerUserRequest.role.equals("STUDENT")) Role.STUDENT else Role.LECTURER
+            role = if(registerUserRequest.role.equals("USER")) Role.USER else Role.ADMIN,
         )
     }
 

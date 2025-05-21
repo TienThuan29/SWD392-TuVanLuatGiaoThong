@@ -5,20 +5,12 @@ import java.util.stream.Collectors
 
 enum class Role(private val permissions: Set<Permission>) {
 
-    STUDENT(
+    USER(
         setOf(
-            Permission.STUDENT_READ,
-            Permission.STUDENT_UPDATE,
-            Permission.STUDENT_CREATE,
-            Permission.STUDENT_DELETE
-        )
-    ),
-    LECTURER(
-        setOf(
-            Permission.LECTURER_READ,
-            Permission.LECTURER_UPDATE,
-            Permission.LECTURER_CREATE,
-            Permission.LECTURER_DELETE
+            Permission.USER_READ,
+            Permission.USER_UPDATE,
+            Permission.USER_CREATE,
+            Permission.USER_DELETE
         )
     ),
     ADMIN(
