@@ -35,9 +35,14 @@ spring:
             - AddRequestHeader=Authorization, Bearer {accessToken}
 
         - id: cloud-storage-service
-          uri: ${CLOUD_STORAGE_SERVICE_URL}
+          uri: ${CLOUD_STORAGE_SERVICE_URL:http://localhost:8091}
           predicates:
               - Path=/api/v1/aws/s3/**
+        
+        - id: law-service
+          uri: ${LAW_SERVICE_URL:http://localhost:8092}
+          predicates:
+            - Path=/api/v1/law/**
 
   application:
     name: gateway-service

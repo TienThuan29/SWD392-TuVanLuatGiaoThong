@@ -12,7 +12,7 @@ RUN mvn clean package -DskipTests
 
 FROM openjdk:21-jdk-slim
 WORKDIR /app
-COPY --from=build /app/target/aas-cloudstorageservice-v1-0-0.jar aas-cloudstorageservice-v1-0-0.jar
+COPY --from=build /app/target/swd392-cloudstorageservice-v1-0-0.jar swd392-cloudstorageservice-v1-0-0.jar
 
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-ENTRYPOINT ["java", "-jar", "aas-cloudstorageservice-v1-0-0.jar"]
+ENTRYPOINT ["java", "-jar", "swd392-cloudstorageservice-v1-0-0.jar"]

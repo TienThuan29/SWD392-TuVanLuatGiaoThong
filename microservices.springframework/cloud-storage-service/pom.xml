@@ -105,7 +105,7 @@
     </dependencyManagement>
 
     <build>
-        <finalName>aas-cloudstorageservice-v1-0-0</finalName>
+        <finalName>swd392-cloudstorageservice-v1-0-0</finalName>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>

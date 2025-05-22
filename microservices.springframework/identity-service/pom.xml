@@ -158,6 +158,7 @@
     </dependencyManagement>
 
     <build>
+        <finalName>swd392-identityservice-v1-0-0</finalName>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>

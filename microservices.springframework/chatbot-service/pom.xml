@@ -8,10 +8,10 @@
 		<version>3.4.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>swd392.userpackageservice</groupId>
-	<artifactId>user-package-service</artifactId>
+	<groupId>swd392</groupId>
+	<artifactId>chatbot-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>user-package-service</name>
+	<name>chatbot-service</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
@@ -31,7 +31,8 @@
 		<spring-cloud.version>2024.0.0</spring-cloud.version>
 	</properties>
 	<dependencies>
-		<!-- Open Feign Client -->
+
+        <!-- Open Feign Client -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
@@ -48,15 +49,21 @@
             <scope>test</scope>
         </dependency>
 		
-		<!-- Jpa -->
+		<!-- Spring data with dynamo db		-->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-commons</artifactId>
+			<version>3.2.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-dynamodb</artifactId>
+			<version>1.12.714</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.derjust</groupId>
+			<artifactId>spring-data-dynamodb</artifactId>
+			<version>5.1.0</version>
 		</dependency>
 
 		<!-- Spring Security -->
@@ -115,7 +122,8 @@
     </dependencyManagement>
 
 	<build>
-		<finalName>swd392-userpackageservice-v1-0-0</finalName>
+		<!-- Final name -->
+		<finalName>swd392-chatbotservice-v1-0-0</finalName>
 		<plugins>
 			<!-- Maven Jar Plugin -->
             <plugin>
@@ -125,7 +133,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>swd392.userpackageservice.UserPackageServiceApplication</mainClass> 
+                            <mainClass>swd392.chatbotservice.ChatbotServiceApplication</mainClass> 
                         </manifest>
                     </archive>
                 </configuration>

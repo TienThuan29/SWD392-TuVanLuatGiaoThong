@@ -1,0 +1,5 @@
+spring:
+  config:
+    import: ${CONFIG_IMPORT_SERVER_URL:configserver:http://localhost:8888}
+  application:
+    name: chatbot-service

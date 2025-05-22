@@ -1,4 +1,4 @@
-FROM openjdk:23-jdk-slim AS build
+FROM openjdk:21-jdk-slim AS build
 WORKDIR /app
 
 # Install Maven
@@ -10,7 +10,7 @@ COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-FROM openjdk:23-jdk-slim
+FROM openjdk:21-jdk-slim
 WORKDIR /app
 COPY --from=build /app/target/swd392-apigatewayservice-v1-0-0.jar swd392-apigatewayservice-v1-0-0
 
