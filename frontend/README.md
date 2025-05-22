@@ -8,7 +8,17 @@ Create .env file, copy value from sheet
 ## Chạy project cho nextjs trong devcontainer (when changed, rec-compile)
 `CHOKIDAR_USEPOLLING=true npm run dev`
 
-# Một số folder/file không được ĐỤNG (ĐỤNG LÀ KICK)
+## Tạo branch và đặt tên
+FE_<Tên>
+vd: FE_tienthuan
+
+## Đặt tên component tự custom: <tên component>_C.tsx
+
+## Khi muốn view component
+1. Tạo 1 folder <tên>-test
+2. thêm tên folder test vào .gitignore để ko push lên git
+
+## Một số folder/file không được ĐỤNG (ĐỤNG LÀ KICK)
 Folder
 - lib
 - components/library
@@ -17,7 +27,7 @@ Folder
 File
 - Các file config ở folder project chính (trừ .env)
 
-# Comment để theo dõi quá trình làm
+## Comment để theo dõi quá trình làm
 - Sau khi code xong 1 hàm hoặc thay đổi file, bắt buộc phải ghi log
 /*
  * File: <file_name>
