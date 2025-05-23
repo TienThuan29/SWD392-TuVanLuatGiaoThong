@@ -37,12 +37,27 @@ spring:
         - id: cloud-storage-service
           uri: ${CLOUD_STORAGE_SERVICE_URL:http://localhost:8091}
           predicates:
-              - Path=/api/v1/aws/s3/**
+            - Path=/api/v1/aws/s3/**
         
         - id: law-service
           uri: ${LAW_SERVICE_URL:http://localhost:8092}
           predicates:
             - Path=/api/v1/law/**
+        
+        - id: chatbot-service
+          uri: ${CHATBOT_SERVICE_URL:http://localhost:8093}
+          predicates:
+            - Path=/api/v1/chatbot/**
+
+        - id: law-service
+          uri: ${LAW_SERVICE_URL:http://localhost:8092}
+          predicates:
+            - Path=/api/v1/law/**
+
+        - id: user-package-service
+          uri: ${USER_PACKAGE_SERVICE_URL:http://localhost:8094}
+          predicates:
+            - Path=/api/v1/user-packages/**     
 
   application:
     name: gateway-service

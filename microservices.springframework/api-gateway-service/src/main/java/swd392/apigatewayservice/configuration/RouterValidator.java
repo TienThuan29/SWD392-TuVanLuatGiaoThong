@@ -27,7 +27,9 @@ public class RouterValidator {
             "/auth/**",
             "/api/v1/identity",
             "/api/v1/identity/**",
-            "/api/auth/**"
+            "/api/auth/**",
+            "/api/v1/chatbot/health",
+            "/api/v1/law/health/**"
     );
 
     /**

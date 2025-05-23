@@ -60,6 +60,7 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
+        System.out.println("Request Path: " + request.getPath().value());
         if(routerValidator.isSecured.test(request)) {
             if(authMissing(request))
                 return onError(exchange, HttpStatus.UNAUTHORIZED);
