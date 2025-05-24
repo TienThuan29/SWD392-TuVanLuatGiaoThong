@@ -8,6 +8,13 @@ services:
       - "8989:8989"
       - "8080:8080"
       - "8888:8888"
+      - "8090:8090"
+      - "8091:8091"
+      - "8092:8092"
+      - "8093:8093"
+      - "8094:8094"
+      - "8095:8095"
+      - "8096:8096"
     volumes:
       - ..:/workspace:cached 
     depends_on:
@@ -27,3 +34,19 @@ services:
     image: redis:6.2
     ports:
       - "6379:6379"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+      - xpack.monitoring.collection.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+
+volumes:
+  elasticsearch-data:

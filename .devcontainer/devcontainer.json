@@ -9,6 +9,9 @@
 		},
 		"15672": {
 			"label": "RabbitMQ UI"
+		},
+		"9200": {
+			"label": "Elasticsearch"
 		}
 	},
 	"customizations": {

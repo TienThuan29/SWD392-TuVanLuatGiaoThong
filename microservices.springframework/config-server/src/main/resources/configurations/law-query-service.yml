@@ -1,2 +1,8 @@
 server:
   port: 8094
+spring:
+  elasticsearch:
+    uris: http://localhost:9200
+    username: elastic
+    password: your_password
+    socket-timeout: 10000
