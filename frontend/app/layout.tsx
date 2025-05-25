@@ -12,7 +12,7 @@ const montserrat = Montserrat({
 
 
 export const metadata: Metadata = {
-  title: "Smart Traffic Vietnam Law ",
+  title: "Tư Vấn Luật Giao Thông Việt Nam ",
   description: "SWD392 - Tu Van Luat Giao Thong Viet Nam",
 };
 

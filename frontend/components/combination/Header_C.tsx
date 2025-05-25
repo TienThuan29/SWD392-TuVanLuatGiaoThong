@@ -3,6 +3,7 @@ import { useState } from "react";
 import { HiCheck, HiChevronDown } from "react-icons/hi";
 import { FiGlobe, FiUser } from "react-icons/fi";
 import { Color } from "@/configs/CssConstant";
+import Constant from "@/configs/Constant";
 
 export default function Header_C() {
   const [productsOpen, setProductsOpen] = useState(false);
@@ -14,7 +15,7 @@ export default function Header_C() {
 
   return (
     <header className="w-full border-b border-gray-200 bg-white" style={mainColorStyle}>
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-2">
         {/* Top bar */}
         <div className="flex justify-between items-center py-2 text-sm font-normal text-gray-800">
           {/* Left: Logo */}
@@ -45,7 +46,7 @@ export default function Header_C() {
             {/* Login with user icon */}
             <button className="flex items-center space-x-1 hover-maincolor transition">
               <FiUser size={20} />
-              <span>Đăng nhập/Đăng ký</span>
+              <a href={Constant.Page.LoginPage}>Đăng nhập/Đăng ký</a>
             </button>
           </nav>
         </div>

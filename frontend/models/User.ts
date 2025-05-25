@@ -1,7 +1,7 @@
 export const Role = {
-    ADMIN : 'ADMIN',
-    USER: 'USER'
-}
+    ADMIN: "ADMIN",
+    USER: "USER",
+};
 
 export type User = {
     id?: string;
@@ -14,9 +14,9 @@ export type User = {
     createdDate?: string;
     updatedDate?: string;
     role?: string;
-}
+};
 
 export type AuthTokens = {
     accessToken: string;
     refreshToken: string;
-}
+};
