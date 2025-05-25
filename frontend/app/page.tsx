@@ -1,7 +1,11 @@
+import ArticlePreview from "@/components/combination/ArticlePreview_C";
+import Header_C from "@/components/combination/Header_C";
+
 export default function Home() {
   return (
-    <div>
-      Home page
-    </div>
+    <>
+      <Header_C />
+      <ArticlePreview />
+    </>
   );
 }
