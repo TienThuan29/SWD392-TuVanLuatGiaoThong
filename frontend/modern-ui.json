@@ -30,6 +30,11 @@
       "name": "label",
       "version": "latest",
       "installedAt": "2025-05-20T17:45:04.162Z"
+    },
+    {
+      "name": "avatar",
+      "version": "latest",
+      "installedAt": "2025-05-25T15:26:59.440Z"
     }
   ],
   "aliases": {

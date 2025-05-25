@@ -4,6 +4,7 @@ import { HiCheck, HiChevronDown } from "react-icons/hi";
 import { FiGlobe, FiUser } from "react-icons/fi";
 import { Color } from "@/configs/CssConstant";
 import Constant from "@/configs/Constant";
+import Link from "next/link";
 
 export default function Header_C() {
   const [productsOpen, setProductsOpen] = useState(false);
@@ -122,12 +123,14 @@ export default function Header_C() {
           </nav>
 
           {/* Call to action button */}
-          <button
-            className="rounded-full px-6 py-2 text-lg font-semibold transition text-white hover:bg-[#005bb5] cursor-pointer"
-            style={{ backgroundColor: Color.MainColor }}
-          >
-            Trải nghiệm Chatbot miễn phí
-          </button>
+          <Link href="/chatbot">
+            <button
+              className="rounded-full px-6 py-2 text-lg font-semibold transition text-white hover:bg-[#005bb5] cursor-pointer"
+              style={{ backgroundColor: Color.MainColor }}
+            >
+              Trải nghiệm Chatbot miễn phí
+            </button>
+          </Link>
         </div>
       </div>
     </header>

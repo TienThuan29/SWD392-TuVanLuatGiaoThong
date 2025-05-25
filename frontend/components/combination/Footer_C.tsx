@@ -12,11 +12,11 @@ export default function Footer() {
         {/* Contact */}
         <div className="text-center mb-6">
           <p className="font-semibold text-lg">
-            Have questions? Call{' '}
+            Nếu bạn có câu hỏi? Gọi ngay{' '}
             <a style={{ color: Color.MainColor }} href="tel:1-888-858-2546">1-888-858-2546</a> or email{' '}
-            <a style={{ color: Color.MainColor }} href="mailto:sales@clio.com">sales@clio.com</a>.
+            <a style={{ color: Color.MainColor }} href="mailto:sales@clio.com">tuvanluat@gmail.com.vn</a>
           </p>
-          <p className="text-xs text-gray-500 mt-1">Our sales team is available Monday to Friday from 8 a.m. to 8 p.m. EST.</p>
+          <p className="text-xs text-gray-500 mt-1">Nhóm của chúng tôi làm việc từ Thứ Hai đến Thứ Sáu, từ 8 giờ sáng đến 8 giờ tối theo giờ EST.</p>
         </div>
 
         {/* Grid */}
@@ -50,7 +50,7 @@ export default function Footer() {
           </div>
           <div className="flex justify-center items-center gap-2 mt-4">
             <HiCheck className="w-8 h-8 border-2 rounded-full p-1" style={{ color: Color.MainColor, borderColor: Color.MainColor }} />
-            <span className="text-xl font-bold" style={{ color: Color.MainColor }}>Clio</span>
+            <span className="text-xl font-bold" style={{ color: Color.MainColor }}>Tư Vấn Luật Giao Thông Việt Nam</span>
           </div>
 
           {/* Social Icons */}
