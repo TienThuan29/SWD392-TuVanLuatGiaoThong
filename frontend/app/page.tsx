@@ -3,6 +3,7 @@ import Link from "next/link";
 import Banner_C from "@/components/combination/Banner_C";
 import Header_C from "@/components/combination/Header_C";
 import Footer_C from "@/components/combination/Footer_C";
+import { sampleUser } from "@/data/sample";
 
 const contents = [
   "1. YLaw",
@@ -21,7 +22,7 @@ const contents = [
 export default function Home() {
   return (
     <>
-      <Header_C />
+      <Header_C logedUser={sampleUser} />
       <Banner_C />
       <div className="flex flex-col lg:flex-row max-w-screen-xl mx-auto px-4 py-8 gap-8">
         {/* Sidebar */}

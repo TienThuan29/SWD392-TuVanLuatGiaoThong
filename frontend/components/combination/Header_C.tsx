@@ -1,57 +1,31 @@
 'use client';
 import { useState } from "react";
-import { HiCheck, HiChevronDown } from "react-icons/hi";
-import { FiGlobe, FiUser } from "react-icons/fi";
+import { HiChevronDown } from "react-icons/hi";
 import { Color } from "@/configs/CssConstant";
-import Constant from "@/configs/Constant";
-import Link from "next/link";
+import HeaderTop_C from "./HeaderTop_C";
+import { User } from "@/models/User";
 
-export default function Header_C() {
+type Header_CProps = {
+  logedUser?: User;
+}
+
+export default function Header_C({ logedUser } : Header_CProps) {
+
   const [productsOpen, setProductsOpen] = useState(false);
   const [practiceTypesOpen, setPracticeTypesOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
 
-  // Inline style to inject CSS variable --main-color dynamically
   const mainColorStyle = { "--main-color": Color.MainColor } as React.CSSProperties;
 
   return (
     <header className="w-full border-b border-gray-200 bg-white" style={mainColorStyle}>
+
+      <HeaderTop_C logedUser={logedUser} />
+
       <div className="max-w-7xl mx-auto px-2">
-        {/* Top bar */}
-        <div className="flex justify-between items-center py-2 text-sm font-normal text-gray-800">
-          {/* Left: Logo */}
-          <div className="flex items-center space-x-3">
-            {/* Icon */}
-            <div className="w-8 h-8 flex items-center justify-center rounded-full border-2 border-blue-600 text-blue-600">
-              <HiCheck size={20} />
-            </div>
-            <span
-              className="text-2xl font-semibold select-none cursor-default"
-              style={{ color: Color.MainColor }}
-            >
-              Tư Vấn Luật Giao Thông Việt Nam
-            </span>
-          </div>
-
-          {/* Right top menu */}
-          <nav className="flex items-center space-x-6 text-sm">
-            <a href="#" className="hover-maincolor transition">Giới thiệu</a>
-            <a href="#" className="hover-maincolor transition">Cộng đồng</a>
-
-            {/* Region with globe icon */}
-            <button className="flex items-center space-x-1 hover-maincolor transition">
-              <FiGlobe size={20} />
-              <span>Ngôn ngữ</span>
-            </button>
-
-            {/* Login with user icon */}
-            <button className="flex items-center space-x-1 hover-maincolor transition">
-              <FiUser size={20} />
-              <a href={Constant.Page.LoginPage}>Đăng nhập/Đăng ký</a>
-            </button>
-          </nav>
-        </div>
-
+        {/* <div className="border-b border-gray-200/50 shadow-sm">
+          <HeaderTop/>
+        </div> */}
         {/* Bottom nav bar */}
         <div className="flex items-center justify-between py-4">
           {/* Left nav links */}
@@ -99,7 +73,7 @@ export default function Header_C() {
             </div>
 
             {/* Pricing */}
-            <a href="#" className="hover-maincolor transition">Nâng cấp Chatbot</a>
+            <a href="/chatbot/pricing" className="hover-maincolor transition">Nâng cấp Chatbot</a>
 
             {/* Resources & Events dropdown */}
             <div
@@ -123,14 +97,14 @@ export default function Header_C() {
           </nav>
 
           {/* Call to action button */}
-          <Link href="/chatbot">
+          <a href="/chatbot">
             <button
               className="rounded-full px-6 py-2 text-lg font-semibold transition text-white hover:bg-[#005bb5] cursor-pointer"
               style={{ backgroundColor: Color.MainColor }}
             >
               Trải nghiệm Chatbot miễn phí
             </button>
-          </Link>
+          </a>
         </div>
       </div>
     </header>
