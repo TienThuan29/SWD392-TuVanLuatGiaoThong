@@ -1,0 +1,9 @@
+package swd392.identityservice.application.exception
+
+data class ErrorResponse(
+    val timestamp: String,
+    val status: Int,
+    val error: String,
+    val message: String,
+    val path: String
+)

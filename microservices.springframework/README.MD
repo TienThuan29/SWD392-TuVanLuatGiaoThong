@@ -22,5 +22,20 @@
  * Notes: <Any additional notes>
  */
 ```
+## DEVCONTAINER FOR IDE
 
+### Lấy Id của container
+docker ps
+
+### Chuyển terminal qua môi trường của devcontainer
+docker exec -it <container_name_or_id> /bin/bash
+Example:
+docker exec -it 18bdb4e7d22e /bin/bash
+
+### Chuyển qua fodler workspace
+cd ./workspace/microservices.springframework
+
+### Chạy service có đọc .env
+cd ./<service_name>
+export $(grep -v '^#' .env | xargs) && mvn spring-boot:run
 

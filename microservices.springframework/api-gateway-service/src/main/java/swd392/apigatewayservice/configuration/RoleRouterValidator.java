@@ -18,27 +18,19 @@ import java.util.List;
  */
 @Service
 public class RoleRouterValidator {
-    // private List<String> studentEndpoints = List.of(
-    //         "/api/v1/classroom/students"
-    // );
+     private List<String> userEndpoints = List.of(
+             "/api/v1"
+     );
 
-    // private List<String> lecturerEndpoints = List.of(
-    //         "/api/v1/classroom/lecturers"
-    // );
+     private List<String> adminEndpoints = List.of(
+             "/api/v1/admin"
+     );
 
-    // private List<String> adminEndpoints = List.of(
-    //         "/api/v1/admin"
-    // );
+     public boolean isUserEndpoint(String path) {
+         return userEndpoints.stream().anyMatch(path::contains);
+     }
 
-    // public boolean isStudentEndpoint(String path) {
-    //     return studentEndpoints.stream().anyMatch(path::contains);
-    // }
-
-    // public boolean isLecturerEndpoint(String path) {
-    //     return lecturerEndpoints.stream().anyMatch(path::contains);
-    // }
-
-    // public boolean isAdminEndpoint(String path) {
-    //     return adminEndpoints.stream().anyMatch(path::contains);
-    // }
+     public boolean isAdminEndpoint(String path) {
+         return adminEndpoints.stream().anyMatch(path::contains);
+     }
 }
