@@ -3,15 +3,17 @@ import { HiCheck, HiChevronDown } from "react-icons/hi";
 import { FiGlobe, FiUser, FiSettings, FiLogOut } from "react-icons/fi";
 import { Color } from "@/configs/CssConstant";
 import Constant from "@/configs/Constant";
-import { User } from "@/models/User";
+import { Role, User } from "@/models/User";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/modern-ui/avatar";
 import { useState, useRef, useEffect } from "react";
+import { FaUsers } from "react-icons/fa6";
+import { IoNewspaper } from "react-icons/io5";
 
 type HeaderTop_CProps = {
     logedUser?: User;
 }
 
-export default function HeaderTop_C({ logedUser } : HeaderTop_CProps) {
+export default function HeaderTop_C({ logedUser }: HeaderTop_CProps) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -62,7 +64,7 @@ export default function HeaderTop_C({ logedUser } : HeaderTop_CProps) {
                         {/* User section */}
                         {logedUser ? (
                             <div className="relative" ref={dropdownRef}>
-                                <button 
+                                <button
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                     className="flex items-center space-x-2 hover:bg-gray-50 p-2 rounded-lg transition-colors duration-200"
                                 >
@@ -77,15 +79,39 @@ export default function HeaderTop_C({ logedUser } : HeaderTop_CProps) {
                                 {/* Dropdown Menu */}
                                 {isDropdownOpen && (
                                     <div className="absolute right-0 mt-2 w-48 rounded-lg bg-white shadow-lg border border-gray-200/50 py-1 z-50">
-                                        <a 
-                                            href="/settings" 
+                                        <a
+                                            href="/settings"
                                             className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                                         >
                                             <FiSettings className="h-5 w-5" />
                                             <span>Cài đặt</span>
                                         </a>
+                                        {/* Admin options */}
+                                        {
+                                            logedUser?.role == Role.ADMIN ?
+                                        <>
+                                            <a
+                                                href="/"
+                                                className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                            >
+                                                <FaUsers className="h-5 w-5" />
+                                                <span>Quản lý người dùng</span>
+                                            </a>
+
+                                            <a
+                                                href="/"
+                                                className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                            >
+                                                <IoNewspaper className="h-5 w-5" />
+                                                <span>Quản lý dữ liệu</span>
+                                            </a>
+                                        </>
+                                        : null
+                                        }
+
+
                                         <hr className="my-1 border-t border-gray-100" />
-                                        <button 
+                                        <button
                                             onClick={() => {
                                                 // Add logout logic here
                                                 console.log('Logout clicked');
