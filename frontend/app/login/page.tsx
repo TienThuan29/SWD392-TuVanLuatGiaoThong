@@ -196,13 +196,13 @@ function LoginForm() {
                   className="inline-flex items-center text-indigo-600 hover:text-indigo-800 transition"
                 >
                   <FaArrowLeft className="w-4 h-4 mr-1" />
-                  Back to Home
+                  Trở về trang chủ
                 </a>
                 <a
                   href="#"
                   className="text-indigo-600 hover:text-indigo-800 transition"
                 >
-                  Forgot password?
+                  Quên mật khẩu?
                 </a>
               </div>
             </form>
