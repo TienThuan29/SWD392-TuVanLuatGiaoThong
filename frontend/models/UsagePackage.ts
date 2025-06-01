@@ -1,7 +1,7 @@
 export type UsagePackage = {
   id?: string;
   name?: string;
-  description?: string;
+  descriptions?: string[];
   price?: number;
   daily_limit?: number;
   days_limit?: number;

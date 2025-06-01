@@ -7,6 +7,7 @@ import { Input } from '@/components/modern-ui/input';
 import { Button } from '@/components/modern-ui/button';
 import { Color } from '@/configs/CssConstant';
 
+
 export default function Profile() {
     const [user, setUser] = useState<User>({
         username: '',
