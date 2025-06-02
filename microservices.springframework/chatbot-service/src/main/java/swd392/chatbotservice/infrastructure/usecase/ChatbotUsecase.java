@@ -3,21 +3,26 @@ package swd392.chatbotservice.infrastructure.usecase;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import swd392.chatbotservice.application.usecase.IChatbotUsecase;
 import swd392.chatbotservice.infrastructure.configuration.ChatbotConfiguration;
 
+@Service
 public class ChatbotUsecase implements IChatbotUsecase {
+
+    @Autowired
+    private ChatbotConfiguration config;
 
     @Override
     public String generateContent(String prompt) {
 
-        ChatbotConfiguration config = new ChatbotConfiguration();
         RestTemplate restTemplate = new RestTemplate();
 
         String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + config.getApiKey();

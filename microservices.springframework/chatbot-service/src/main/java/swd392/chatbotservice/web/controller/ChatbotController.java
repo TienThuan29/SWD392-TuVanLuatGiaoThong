@@ -1,6 +1,7 @@
 package swd392.chatbotservice.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,13 +24,14 @@ public class ChatbotController {
     }
 
     @PostMapping("/generate")
-    public ApiResponse<?> generate(@RequestBody String prompt) {
-        // return iChatbotUsecase.generateContent(prompt);
-        return ApiResponse.builder()
-                .status("success")
-                .message("Content generated successfully")
-                .dataResponse(iChatbotUsecase.generateContent(prompt))
-                .build();
+    public ResponseEntity<?> generate(@RequestBody String prompt) {
+//         return iChatbotUsecase.generateContent(prompt);
+         return ResponseEntity.ok(iChatbotUsecase.generateContent(prompt));
+//        return ApiResponse.builder()
+//                .status("success")
+//                .message("Content generated successfully")
+//                .dataResponse(iChatbotUsecase.generateContent(prompt))
+//                .build();
     }
 
 }
