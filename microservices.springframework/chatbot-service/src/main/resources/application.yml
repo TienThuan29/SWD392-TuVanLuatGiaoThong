@@ -3,3 +3,7 @@ spring:
     import: ${CONFIG_IMPORT_SERVER_URL:configserver:http://localhost:8888}
   application:
     name: chatbot-service
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:AIzaSyB3sX2w8CiBw2Yq6s-Lbgd1_iWmpJ24a14}
