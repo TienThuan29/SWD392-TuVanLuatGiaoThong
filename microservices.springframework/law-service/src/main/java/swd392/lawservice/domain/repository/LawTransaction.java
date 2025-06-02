@@ -15,6 +15,7 @@ public class LawTransaction implements ITransactionLaw{
     @Override
     public void commitTransaction() {
         // Logic to commit the transaction
+        
         System.out.println("Transaction committed.");
     }
 
@@ -26,18 +27,25 @@ public class LawTransaction implements ITransactionLaw{
 
     @Override
     public void save(Law law) {
-        lawRepository.save(law);
+        // TODO Auto-generated method stub
+        law = lawRepository.save(law);
+        throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
+
     @Override
     public void update(Law law) {
+        // TODO Auto-generated method stub
         lawRepository.save(law);
-        System.out.println("Law updated: " + law);
+        throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
+
     @Override
     public void delete(UUID lawId) {
-        // Logic to delete the law entity
+        // TODO Auto-generated method stub
         lawRepository.deleteById(lawId);
-        System.out.println("Law deleted: " + lawId);
+        throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
+
+    
 
 }

@@ -9,7 +9,7 @@ import java.util.UUID;
 @Data
 public class LawRequestDto {
     UUID id;
-    String title;
+    String tittle;
     String description;
     Instant issueDate;
     Instant effectiveDate;

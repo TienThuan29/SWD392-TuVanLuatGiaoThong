@@ -1,4 +1,4 @@
-package swd392.lawservice.web.dto;
+package swd392.lawservice.application.dto;
 
 import lombok.Builder;
 import lombok.Data;
