@@ -10,6 +10,7 @@ import swd392.lawservice.application.usecase.IUsecase;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/v1/law")
-public class LawConrtoller {
+public class LawController {
 
     @Autowired
     private IUsecase iUsecase;
@@ -47,6 +48,46 @@ public class LawConrtoller {
                 .status("success")
                 .message("Law updated successfully")
                 .dataResponse(iUsecase.update(id, lawRequestDto))
+                .build();
+    }
+
+    @GetMapping("/get/{id}")
+    public ApiResponse<?> getLawById(@PathVariable UUID id) {
+        // Logic to get a law by ID
+        return ApiResponse.builder()
+                .status("success")
+                .message("Law retrieved successfully")
+                .dataResponse(iUsecase.getLawById(id))
+                .build();
+    }
+
+    @GetMapping("/getAll")
+    public ApiResponse<?> getAllLaw() {
+        // Logic to get all laws
+        return ApiResponse.builder()
+                .status("success")
+                .message("All laws retrieved successfully")
+                .dataResponse(iUsecase.getAllLaw())
+                .build();
+    }
+
+    @PostMapping("/delete/{id}")
+    public ApiResponse<?> deleteLaw(@PathVariable UUID id) {
+        // Logic to delete a law
+        iUsecase.delete(id);
+        return ApiResponse.builder()
+                .status("success")
+                .message("Law deleted successfully")
+                .build();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ApiResponse<?> deleteLawById(@PathVariable UUID id) {
+        // Logic to delete a law by ID
+        iUsecase.delete(id);
+        return ApiResponse.builder()
+                .status("success")
+                .message("Law deleted successfully")
                 .build();
     }
 

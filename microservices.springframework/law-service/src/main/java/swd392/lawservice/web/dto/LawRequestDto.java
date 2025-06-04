@@ -16,6 +16,5 @@ public class LawRequestDto {
     String sourceUrl;
     String filePath;
     boolean isDeleted;
-    LawType lawType;
-
+    UUID lawTypeId;
 }

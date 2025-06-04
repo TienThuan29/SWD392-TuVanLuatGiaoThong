@@ -16,6 +16,7 @@ public class LawResponseDto {
     String sourceUrl;
     String filePath;
     boolean isDeleted;
-    LawType lawType;
-
+    LawTypeResponse lawType;
+    Instant createdDate;
+    Instant updatedDate;
 }
