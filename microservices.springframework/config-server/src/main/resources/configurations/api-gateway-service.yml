@@ -29,6 +29,11 @@ spring:
         - id: identity-service
           uri: ${IDENTITY_SERVICE_URL:http://localhost:8989}
           predicates:
+            - Path=/api/v1/admin/**
+
+        - id: identity-service
+          uri: ${IDENTITY_SERVICE_URL:http://localhost:8989}
+          predicates:
             - Path=/api/auth/**
           filters:
             - RemoveRequestHeader=Cookie

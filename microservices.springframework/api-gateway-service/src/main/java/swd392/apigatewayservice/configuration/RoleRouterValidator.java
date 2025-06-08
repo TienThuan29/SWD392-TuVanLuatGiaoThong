@@ -23,11 +23,12 @@ public class RoleRouterValidator {
      );
 
      private List<String> adminEndpoints = List.of(
+             "/api/v1",
              "/api/v1/admin"
      );
 
      public boolean isUserEndpoint(String path) {
-         return userEndpoints.stream().anyMatch(path::contains);
+         return userEndpoints.stream().anyMatch(path::contains) && !path.contains("/admin/");
      }
 
      public boolean isAdminEndpoint(String path) {
