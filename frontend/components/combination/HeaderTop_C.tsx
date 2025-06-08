@@ -43,8 +43,9 @@ export default function HeaderTop_C({ logedUser }: HeaderTop_CProps) {
                             <HiCheck size={20} />
                         </div>
                         <span
-                            className="text-2xl font-semibold select-none cursor-default"
+                            className="text-2xl font-semibold select-none cursor-pointer"
                             style={{ color: Color.MainColor }}
+                            onClick={() => window.location.href = '/'}
                         >
                             Tư Vấn Luật Giao Thông Việt Nam
                         </span>
@@ -91,7 +92,7 @@ export default function HeaderTop_C({ logedUser }: HeaderTop_CProps) {
                                             logedUser?.role == Role.ADMIN ?
                                         <>
                                             <a
-                                                href="/"
+                                                href="/admin/user-management"
                                                 className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                                             >
                                                 <FaUsers className="h-5 w-5" />
@@ -99,7 +100,7 @@ export default function HeaderTop_C({ logedUser }: HeaderTop_CProps) {
                                             </a>
 
                                             <a
-                                                href="/"
+                                                href="/admin/law-management"
                                                 className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                                             >
                                                 <IoNewspaper className="h-5 w-5" />

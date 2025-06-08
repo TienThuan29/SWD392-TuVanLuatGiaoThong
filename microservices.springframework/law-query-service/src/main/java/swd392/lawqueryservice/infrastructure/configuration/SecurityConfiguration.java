@@ -27,12 +27,12 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .authorizeHttpRequests(authz -> authz
-                .requestMatchers(OPEN_API).permitAll()
-                // .anyRequest().authenticated()
-            );
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(authz -> authz
+                                .requestMatchers(OPEN_API).permitAll()
+                        // .anyRequest().authenticated()
+                );
         return http.build();
     }
 
@@ -49,3 +49,4 @@ public class SecurityConfiguration {
         source.registerCorsConfiguration(CORS_PATTERN, corsConfiguration);
         return source;
     }
+}
