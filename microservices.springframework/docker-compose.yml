@@ -100,6 +100,24 @@ services:
       timeout: 3s
       retries: 5
 
+  chatbot-service:
+    build:
+      context: ./chatbot-service
+      dockerfile: Dockerfile
+    image: chatbot-service
+    container_name: chatbot-service
+    ports:
+      - "8093:8093"
+    environment:
+      - GEMINI_API_KEY={gemini.api.key}
+    depends_on:
+      rabbit-mq:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - aas-app-network
+
 networks:
   aas-app-network:
     driver: bridge
