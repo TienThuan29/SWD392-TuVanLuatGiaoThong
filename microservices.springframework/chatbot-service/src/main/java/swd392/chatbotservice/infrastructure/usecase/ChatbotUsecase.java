@@ -3,14 +3,21 @@ package swd392.chatbotservice.infrastructure.usecase;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.content.Media;
+import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MimeType;
 import org.springframework.web.client.RestTemplate;
 
+import swd392.chatbotservice.application.dto.ResponseAi;
 import swd392.chatbotservice.application.usecase.IChatbotUsecase;
 import swd392.chatbotservice.infrastructure.configuration.ChatbotConfiguration;
 
@@ -19,6 +26,9 @@ public class ChatbotUsecase implements IChatbotUsecase {
 
     @Autowired
     private ChatbotConfiguration config;
+
+    @Autowired
+    private VertexAiGeminiChatModel chatModel;
 
     @Override
     public String generateContent(String prompt) {
@@ -45,6 +55,30 @@ public class ChatbotUsecase implements IChatbotUsecase {
 
         return response.getBody();
         
+    }
+
+    @Override
+    public ResponseAi generateContentFromPDF(String pdfUrl, String prompt) {
+        
+//        System.out.println("Generating content from PDF: " + pdfUrl);
+//        System.out.println("Prompt: " + prompt);
+
+        var pdfData = new ClassPathResource(pdfUrl);
+
+//        System.out.println("PDF Data: " + pdfData);
+//        System.out.println("URI from pdfData: " + pdfData.getURI());
+//        System.out.println("URI from pdfUrl: " + URI.create(pdfUrl));
+
+        var userMessage = UserMessage.builder()
+                .text(prompt)
+                .media(List.of(new Media(new MimeType("application", "pdf"), pdfData)))
+                .build();
+
+        var aiResponse = this.chatModel.call(new Prompt(List.of(userMessage)));
+
+//        System.out.println("AI Response: " + aiResponse);
+
+        return new ResponseAi(prompt, aiResponse.getResult().getOutput().getText());
     }
 
 }

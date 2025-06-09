@@ -40,46 +40,46 @@ services:
     networks:
       - aas-app-network
 
-  classroom-service:
-    build:
-      context: ./classroom-service
-      dockerfile: Dockerfile
-    image: classroom-service
-    container_name: classroom-service
-    working_dir: /app
-    environment:
-      - CONFIG_IMPORT_SERVER_URL={YOUR_CONFIG_IMPORT_SERVER_URL}
-      - POSTGRES_DB_URL={YOUR_POSTGRES_DB_URL}
-      - POSTGRES_USER={YOUR_POSTGRES_USER}
-      - POSTGRES_PASSWORD={YOUR_POSTGRES_PASSWORD}
-    depends_on:
-      rabbit-mq:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
-    networks:
-      - aas-app-network
-
-  submission-service:
-    build:
-      context: ./submission-service
-      dockerfile: Dockerfile
-    image: submission-service
-    container_name: submission-service
-    working_dir: /app
-    environment:
-      - CONFIG_IMPORT_SERVER_URL={YOUR_CONFIG_IMPORT_SERVER_URL}
-      - AWS_REGION={AWS_REGION}
-      - AWS_DYNAMODB_ENDPOINT={AWS_DYNAMODB_ENDPOINT}
-      - AWS_ASSESS_KEY={CREDENTIALS_AWS_ACCESS_KEY}
-      - AWS_SECRET_KEY={CREDENTIALS_AWS_SECRET_KEY}
-    depends_on:
-      rabbit-mq:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
-    networks:
-      - aas-app-network
+#  classroom-service:
+#    build:
+#      context: ./classroom-service
+#      dockerfile: Dockerfile
+#    image: classroom-service
+#    container_name: classroom-service
+#    working_dir: /app
+#    environment:
+#      - CONFIG_IMPORT_SERVER_URL={YOUR_CONFIG_IMPORT_SERVER_URL}
+#      - POSTGRES_DB_URL={YOUR_POSTGRES_DB_URL}
+#      - POSTGRES_USER={YOUR_POSTGRES_USER}
+#      - POSTGRES_PASSWORD={YOUR_POSTGRES_PASSWORD}
+#    depends_on:
+#      rabbit-mq:
+#        condition: service_healthy
+#      config-server:
+#        condition: service_healthy
+#    networks:
+#      - aas-app-network
+#
+#  submission-service:
+#    build:
+#      context: ./submission-service
+#      dockerfile: Dockerfile
+#    image: submission-service
+#    container_name: submission-service
+#    working_dir: /app
+#    environment:
+#      - CONFIG_IMPORT_SERVER_URL={YOUR_CONFIG_IMPORT_SERVER_URL}
+#      - AWS_REGION={AWS_REGION}
+#      - AWS_DYNAMODB_ENDPOINT={AWS_DYNAMODB_ENDPOINT}
+#      - AWS_ASSESS_KEY={CREDENTIALS_AWS_ACCESS_KEY}
+#      - AWS_SECRET_KEY={CREDENTIALS_AWS_SECRET_KEY}
+#    depends_on:
+#      rabbit-mq:
+#        condition: service_healthy
+#      config-server:
+#        condition: service_healthy
+#    networks:
+#      - aas-app-network
 
   rabbit-mq:
     image: rabbitmq:3-management
