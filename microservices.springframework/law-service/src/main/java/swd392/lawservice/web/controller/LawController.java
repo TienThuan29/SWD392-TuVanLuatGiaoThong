@@ -5,11 +5,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import swd392.lawservice.web.dto.LawRequestDto;
 import swd392.lawservice.application.dto.ApiResponse;
-import swd392.lawservice.application.usecase.IUsecase;
+import swd392.lawservice.application.usecase.ILawService;
 
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,23 +25,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class LawController {
 
     @Autowired
-    private IUsecase iUsecase;
-    
-    @GetMapping("'/health")
+    private ILawService iUsecase;
+    @GetMapping("/health")
     public String healthCheck() {
         return "Law Service is running";
     }
+    
 
     @PostMapping("/create")
-    public ApiResponse<?> createLaw(@RequestBody LawRequestDto lawRequestDto) {
-        // Logic to create a law
-        return ApiResponse.builder()
-                .status("success")
-                .message("Law created successfully")
-                .dataResponse(iUsecase.createLaw(lawRequestDto))
-                .build();
-        
-    }
+public ResponseEntity<ApiResponse<?>> createLaw(@RequestBody LawRequestDto lawRequestDto) {
+    // Logic to create a law
+    return new ResponseEntity<>(
+        ApiResponse.builder()
+            .status("success")
+            .message("Law created successfully")
+            .dataResponse(iUsecase.createLaw(lawRequestDto))
+            .build(),
+        HttpStatus.OK
+    );
+}
+
     
     @PutMapping("/update/{id}")
     public ApiResponse<?> updateLaw(@PathVariable UUID id,@RequestBody LawRequestDto lawRequestDto) {
@@ -52,43 +57,44 @@ public class LawController {
     }
 
     @GetMapping("/get/{id}")
-    public ApiResponse<?> getLawById(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<?>> getLawById(@PathVariable UUID id) {
         // Logic to get a law by ID
-        return ApiResponse.builder()
+        return new ResponseEntity<>(
+            ApiResponse.builder()
                 .status("success")
                 .message("Law retrieved successfully")
                 .dataResponse(iUsecase.getLawById(id))
-                .build();
+                .build(),
+            HttpStatus.OK
+        );
     }
 
     @GetMapping("/getAll")
-    public ApiResponse<?> getAllLaw() {
+    public ResponseEntity<ApiResponse<?>> getAllLaw() {
         // Logic to get all laws
-        return ApiResponse.builder()
+        return new ResponseEntity<>(
+            ApiResponse.builder()
                 .status("success")
                 .message("All laws retrieved successfully")
                 .dataResponse(iUsecase.getAllLaw())
-                .build();
+                .build(),
+            HttpStatus.OK
+        );
     }
 
     @PostMapping("/delete/{id}")
-    public ApiResponse<?> deleteLaw(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<?>> deleteLaw(@PathVariable UUID id) {
         // Logic to delete a law
         iUsecase.delete(id);
-        return ApiResponse.builder()
+        return new ResponseEntity<>(
+            ApiResponse.builder()
                 .status("success")
                 .message("Law deleted successfully")
-                .build();
+                .build(),
+            HttpStatus.OK
+        );
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ApiResponse<?> deleteLawById(@PathVariable UUID id) {
-        // Logic to delete a law by ID
-        iUsecase.delete(id);
-        return ApiResponse.builder()
-                .status("success")
-                .message("Law deleted successfully")
-                .build();
-    }
+    
 
 }
