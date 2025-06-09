@@ -56,6 +56,8 @@ public class LawServiceImpl implements ILawService {
 
         law.setTitle(lawRequestDto.getTittle());
         law.setLawType(lawType);
+        law.setReferenceNumber(lawRequestDto.getReferenceNumber());
+        law.setDateline(lawRequestDto.getDateline());
         law.setIssueDate(lawRequestDto.getIssueDate());
         law.setEffectiveDate(lawRequestDto.getEffectiveDate());
         law.setSourceUrl(lawRequestDto.getSourceUrl());
@@ -95,6 +97,8 @@ public class LawServiceImpl implements ILawService {
         return Law.builder()
             .title(lawRequestDto.getTittle())
             .lawType(lawType)
+            .referenceNumber(lawRequestDto.getReferenceNumber())
+            .dateline(lawRequestDto.getDateline())
             .issueDate(lawRequestDto.getIssueDate())
             .effectiveDate(lawRequestDto.getEffectiveDate())
             .sourceUrl(lawRequestDto.getSourceUrl())
@@ -118,6 +122,8 @@ public class LawServiceImpl implements ILawService {
         lawResponseDto.setId(law.getId());
         lawResponseDto.setTittle(law.getTitle());
         lawResponseDto.setIssueDate(law.getIssueDate());
+        lawResponseDto.setReferenceNumber(law.getReferenceNumber());
+        lawResponseDto.setDateline(law.getDateline());
         lawResponseDto.setEffectiveDate(law.getEffectiveDate());
         lawResponseDto.setSourceUrl(law.getSourceUrl());
         lawResponseDto.setFilePath(law.getFilePath());

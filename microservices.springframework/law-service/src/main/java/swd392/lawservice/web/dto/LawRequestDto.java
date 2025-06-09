@@ -10,7 +10,8 @@ import java.util.UUID;
 public class LawRequestDto {
     UUID id;
     String tittle;
-    String description;
+    String referenceNumber;
+    String dateline;
     Instant issueDate;
     Instant effectiveDate;
     String sourceUrl;
