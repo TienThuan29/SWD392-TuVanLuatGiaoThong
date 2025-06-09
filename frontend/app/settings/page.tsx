@@ -10,8 +10,6 @@ import PlanningPackage from './PlanningPackage'
 import Helper from './Helper'
 import { Role, User } from '@/models/User';
 import { sampleUser } from '@/data/sample';
-import ManageUsers from './ManageUsers';
-import ManageLaws from './ManageLaws';
 
 const Tabs = {
   profile: {
@@ -31,18 +29,6 @@ const Tabs = {
     name: 'Trợ giúp',
     icon: <FaQuestionCircle className="h-4 w-4" style={{ color: Color.MainColor }} />,
     component: Helper
-  },
-  manageUsers: {
-    id: 4,
-    name: 'Người dùng',
-    icon: <FaUsers className="h-4 w-4" style={{ color: Color.MainColor }} />,
-    component: ManageUsers
-  },
-  manageLaws: {
-    id: 5,
-    name: 'Dữ liệu luật',
-    icon: <FaBook className="h-4 w-4" style={{ color: Color.MainColor }} />,
-    component: ManageLaws
   }
 }
 
@@ -51,7 +37,7 @@ export default function Page() {
   const [logedUser, setLogedUser] = useState<User>(sampleUser);
 
   const [activeTab, setActiveTab] = useState<keyof typeof Tabs>(() => {
-    return logedUser?.role === Role.ADMIN ? 'manageUsers' : 'profile';
+    return 'profile';
   });
 
   const renderContent = () => {
@@ -139,39 +125,6 @@ export default function Page() {
                   </div>
                 </>
                 : null
-            }
-
-            {
-              logedUser?.role === Role.ADMIN ?
-              <>
-                {/* Manage user account */}
-                <div className="px-4 py-2">
-                  <button
-                    onClick={() => setActiveTab('manageUsers')}
-                    className={`w-full group flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 transition-all duration-300 rounded-lg hover:shadow-md active:scale-95 border border-gray-200/50 hover:border-gray-300/50 ${activeTab === 'manageUsers' ? 'bg-gray-50 shadow-md border-gray-300/50' : ''}`}
-                  >
-                    <div className="flex items-center justify-center w-9 h-9 rounded-full bg-white/80 group-hover:bg-white transition-colors duration-300 shadow-sm group-hover:shadow-md border border-gray-200/50 group-hover:border-gray-300/50">
-                      <FaUsers className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" style={{ color: Color.MainColor }} />
-                    </div>
-                    <span className="font-medium group-hover:text-gray-900 transition-colors duration-300">Người dùng</span>
-                  </button>
-                </div>
-
-                {/* Manage law data */}
-                <div className="px-4 py-2">
-                  <button
-                    onClick={() => setActiveTab('manageLaws')}
-                    className={`w-full group flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 transition-all duration-300 rounded-lg hover:shadow-md active:scale-95 border border-gray-200/50 hover:border-gray-300/50 ${activeTab === 'manageLaws' ? 'bg-gray-50 shadow-md border-gray-300/50' : ''}`}
-                  >
-                    <div className="flex items-center justify-center w-9 h-9 rounded-full bg-white/80 group-hover:bg-white transition-colors duration-300 shadow-sm group-hover:shadow-md border border-gray-200/50 group-hover:border-gray-300/50">
-                      <FaBook className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" style={{ color: Color.MainColor }} />
-                    </div>
-                    <span className="font-medium group-hover:text-gray-900 transition-colors duration-300">Dữ liệu luật</span>
-                  </button>
-                </div>
-              </>
-              :
-              null
             }
 
             {/* User Profile Section at bottom */}

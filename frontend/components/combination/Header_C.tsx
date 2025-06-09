@@ -6,7 +6,7 @@ import HeaderTop_C from "./HeaderTop_C";
 import { User } from "@/models/User";
 
 type Header_CProps = {
-  logedUser?: User;
+  logedUser?: User | null;
 }
 
 export default function Header_C({ logedUser } : Header_CProps) {
@@ -52,7 +52,7 @@ export default function Header_C({ logedUser } : Header_CProps) {
             </div>
 
             {/* Practice Types dropdown */}
-            <div
+            {/* <div
               className="relative cursor-pointer"
               onMouseEnter={() => setPracticeTypesOpen(true)}
               onMouseLeave={() => setPracticeTypesOpen(false)}
@@ -70,7 +70,7 @@ export default function Header_C({ logedUser } : Header_CProps) {
                   </ul>
                 </div>
               )}
-            </div>
+            </div> */}
 
             {/* Pricing */}
             <a href="/chatbot/pricing" className="hover-maincolor transition">Nâng cấp Chatbot</a>

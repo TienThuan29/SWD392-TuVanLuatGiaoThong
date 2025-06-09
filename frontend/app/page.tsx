@@ -4,6 +4,9 @@ import Banner_C from "@/components/combination/Banner_C";
 import Header_C from "@/components/combination/Header_C";
 import Footer_C from "@/components/combination/Footer_C";
 import { sampleUser } from "@/data/sample";
+import { useGetUserData, useUserData } from "@/hooks/useUserData";
+import { useEffect, useState } from "react";
+import { User } from "@/models/User";
 
 const contents = [
   "1. YLaw",
@@ -20,9 +23,18 @@ const contents = [
 ];
 
 export default function Home() {
+  const [logedUser, setLogedUser] = useState<User | null>(null);
+  const { userData, loading, error } = useUserData();
+
+  useEffect(() => {
+    if (!loading && !error && userData) {
+      setLogedUser(userData);
+    }
+  }, [userData, loading, error]);
+
   return (
     <>
-      <Header_C logedUser={sampleUser} />
+      <Header_C logedUser={logedUser} />
       <Banner_C />
       <div className="flex flex-col lg:flex-row max-w-screen-xl mx-auto px-4 py-8 gap-8">
         {/* Sidebar */}

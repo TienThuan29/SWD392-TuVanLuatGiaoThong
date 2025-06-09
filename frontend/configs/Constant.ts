@@ -8,11 +8,7 @@ const Constant =  {
         ForgotPasswordPage: '/forgot-password',
         ResetPasswordPage: '/reset-password',
 
-        AdminDashboardPage: '/admin/blog-management',
-        AdminResourcePage: '/admin/resource-management',
-        AdminAccountManagementPage: '/admin/account-management',
-
-        MemberAccountManagementPage: '/user/profile',
+        AdminDashboardPage: '/admin/dashboard',
     }
 }
 
