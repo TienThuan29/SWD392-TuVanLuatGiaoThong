@@ -6,7 +6,7 @@ import swd392.lawservice.domain.entity.Law;
 import java.util.List;
 import java.util.UUID;
 
-public interface IUsecase {
+public interface ILawService {
     LawResponseDto createLaw(LawRequestDto lawRequestDto);
     LawResponseDto getLawById(UUID id);
     List<LawResponseDto> getAllLaw();
