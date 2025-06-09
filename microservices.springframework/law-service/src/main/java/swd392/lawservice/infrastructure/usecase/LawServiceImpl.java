@@ -42,6 +42,10 @@ public class LawServiceImpl implements ILawService {
     public LawResponseDto createLaw(LawRequestDto lawRequestDto) {
         // TODO Auto-generated method stub
          Law law = convertToLawEntity(lawRequestDto);
+        // Set the ID to a new UUID if not provided
+        if (law.getId() == null) {
+            law.setId(UUID.randomUUID());
+        }
         iTransactionLaw.save(law);
         return convertToLawResponseDto(law);
     }
