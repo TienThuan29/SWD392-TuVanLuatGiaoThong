@@ -70,21 +70,21 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
                 if (response.status.equals("invalid"))
                     return onError(exchange, HttpStatus.UNAUTHORIZED);
                     // Validate the role of the user to access the endpoint. HERE!!
-                // else {
-                //     if(response.dataResponse.contains("ROLE_LECTURER") &&
-                //        roleRouterValidator.isLecturerEndpoint(request.getPath().value())
-                //     ) {
-                //         System.out.println("ROLE_LECTURER is pass");
-                //     }
-                //     else if(response.dataResponse.contains("ROLE_STUDENT") &&
-                //        roleRouterValidator.isStudentEndpoint(request.getPath().value())
-                //     ){
-                //         System.out.println("ROLE_STUDENT is pass");
-                //     }
-                //     else {
-                //         return onError(exchange, HttpStatus.FORBIDDEN);
-                //     }
-                // }
+                else {
+                    if(response.dataResponse.contains("ROLE_USER") &&
+                       roleRouterValidator.isUserEndpoint(request.getPath().value())
+                    ){
+                        System.out.println("Role user is pass");
+                    }
+                    if (response.dataResponse.contains("ROLE_ADMIN") &&
+                        roleRouterValidator.isAdminEndpoint(request.getPath().value())
+                    ){
+                        System.out.println("Role admin is pass");
+                    }
+                    else {
+                        return onError(exchange, HttpStatus.FORBIDDEN);
+                    }
+                }
             }
         }
         return chain.filter(exchange);

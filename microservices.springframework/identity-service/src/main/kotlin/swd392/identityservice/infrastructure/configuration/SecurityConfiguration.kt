@@ -60,4 +60,6 @@ class SecurityConfiguration(
         source.registerCorsConfiguration(CORS_PATTERN, corsConfiguration);
         return source;
     }
+
+
 }

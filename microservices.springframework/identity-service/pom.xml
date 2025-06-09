@@ -32,6 +32,7 @@
         <spring-cloud.version>2024.0.0</spring-cloud.version>
     </properties>
     <dependencies>
+        <!-- Hashing lib -->
 
         <dependency>
             <groupId>org.hashids</groupId>

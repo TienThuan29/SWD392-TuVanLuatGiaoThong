@@ -8,9 +8,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/modern-ui/avat
 import { useState, useRef, useEffect } from "react";
 import { FaUsers } from "react-icons/fa6";
 import { IoNewspaper } from "react-icons/io5";
+import { useRoleValidator } from "@/hooks/useRoleValidator";
+import { useAuth } from "@/context/AuthContext";
 
 type HeaderTop_CProps = {
-    logedUser?: User;
+    logedUser?: User | null;
 }
 
 export default function HeaderTop_C({ logedUser }: HeaderTop_CProps) {
@@ -30,6 +32,9 @@ export default function HeaderTop_C({ logedUser }: HeaderTop_CProps) {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    const { logout } = useAuth();
+    const { isAdmin, isUser } = useRoleValidator(logedUser);
 
     return (
         <div className="sticky top-0 z-50 bg-white border-b border-gray-200/50 shadow-sm">
@@ -80,44 +85,49 @@ export default function HeaderTop_C({ logedUser }: HeaderTop_CProps) {
                                 {/* Dropdown Menu */}
                                 {isDropdownOpen && (
                                     <div className="absolute right-0 mt-2 w-48 rounded-lg bg-white shadow-lg border border-gray-200/50 py-1 z-50">
-                                        <a
-                                            href="/settings"
-                                            className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
-                                        >
-                                            <FiSettings className="h-5 w-5" />
-                                            <span>Cài đặt</span>
-                                        </a>
+                                        {
+                                            isUser?
+                                                <>
+                                                    <a
+                                                        href="/settings"
+                                                        className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                                    >
+                                                        <FiSettings className="h-5 w-5" />
+                                                        <span>Cài đặt</span>
+                                                    </a>
+                                                </>
+                                                : null
+                                        }
                                         {/* Admin options */}
                                         {
-                                            logedUser?.role == Role.ADMIN ?
-                                        <>
-                                            <a
-                                                href="/admin/user-management"
-                                                className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
-                                            >
-                                                <FaUsers className="h-5 w-5" />
-                                                <span>Quản lý người dùng</span>
-                                            </a>
+                                            isAdmin?
+                                                <>
+                                                    <a
+                                                        href="/admin/user-management"
+                                                        className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                                    >
+                                                        <FaUsers className="h-5 w-5" />
+                                                        <span>Quản lý người dùng</span>
+                                                    </a>
 
-                                            <a
-                                                href="/admin/law-management"
-                                                className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
-                                            >
-                                                <IoNewspaper className="h-5 w-5" />
-                                                <span>Quản lý dữ liệu</span>
-                                            </a>
-                                        </>
-                                        : null
+                                                    <a
+                                                        href="/admin/law-management"
+                                                        className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                                    >
+                                                        <IoNewspaper className="h-5 w-5" />
+                                                        <span>Quản lý dữ liệu</span>
+                                                    </a>
+                                                </>
+                                                : null
                                         }
 
 
                                         <hr className="my-1 border-t border-gray-100" />
                                         <button
                                             onClick={() => {
-                                                // Add logout logic here
-                                                console.log('Logout clicked');
+                                                logout()
                                             }}
-                                            className="w-full flex items-center space-x-2 px-4 py-2 text-red-700 hover:bg-gray-50 transition-colors duration-200"
+                                            className="w-full flex items-center space-x-2 px-4 py-2 text-red-700 hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
                                         >
                                             <FiLogOut className="h-5 w-5" />
                                             <span>Đăng xuất</span>

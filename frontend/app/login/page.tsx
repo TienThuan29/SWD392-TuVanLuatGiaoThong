@@ -24,7 +24,7 @@ const formSchema = z.object({
   username: z.string().min(3, {
     message: "Tên người dùng phải có ít nhất 3 ký tự.",
   }),
-  password: z.string().min(8, {
+  password: z.string().min(1, {
     message: "Mật khẩu phải có ít nhất 8 ký tự.",
   }),
 });
@@ -81,18 +81,8 @@ function LoginForm() {
           {submitted ? (
             <div className="text-center p-4">
               <p className="text-green-600 text-lg font-medium mb-4">
-                Form submitted successfully!
+                Đăng nhập thành công
               </p>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => {
-                  form.reset();
-                  setSubmitted(false);
-                }}
-              >
-                Reset Form
-              </Button>
             </div>
           ) : (
             <form className="space-y-6" onSubmit={handleLogin} noValidate>
