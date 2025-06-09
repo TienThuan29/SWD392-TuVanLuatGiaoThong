@@ -1,6 +1,8 @@
 spring:
   config:
-    import: ${CONFIG_IMPORT_SERVER_URL:configserver:http://localhost:8888}
+   import: ${CONFIG_IMPORT_SERVER_URL:configserver:http://localhost:8888}
   application:
     name: law-service
 
+server:
+  port: 8081
