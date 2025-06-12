@@ -1,5 +1,34 @@
+#spring:
+#  config:
+#    import: ${CONFIG_IMPORT_SERVER_URL:configserver:http://localhost:8888}
+#  application:
+#    name: user-package-service
+server:
+  port: 8083
 spring:
-  config:
-    import: ${CONFIG_IMPORT_SERVER_URL:configserver:http://localhost:8888}
   application:
     name: user-package-service
+  cloud:
+    config:
+      enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/user_package_service
+    username: postgres
+    password: 12345
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+momo:
+  partner-code: MOMO
+  access-key: F8BBA842ECF85
+  secret-key: K951B6PE1waDMi640xX08PD3vg6EkVlz
+  endpoint: https://test-payment.momo.vn/v2/gateway/api/create
+  redirect-url: http://localhost:3000/payment/success
+  ipn-url: https://strong-radios-fail.loca.lt/api/payment/ipn
+
