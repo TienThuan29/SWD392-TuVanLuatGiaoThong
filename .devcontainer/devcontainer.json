@@ -1,32 +1,31 @@
 {
-	"name": "springnextjs-template",
-	"dockerComposeFile": "docker-compose.yml",
-	"service": "dev",
-	"workspaceFolder": "/workspace",
-	"portsAttributes": {
-		"10240": {
-			"label": "SpringNextjs-Template"
-		},
-		"15672": {
-			"label": "RabbitMQ UI"
-		},
-		"9200": {
-			"label": "Elasticsearch"
-		}
-	},
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"dbaeumer.vscode-eslint",
-				"EditorConfig.EditorConfig",
-				"esbenp.prettier-vscode"
-			]
-		}
-	},
-	"features": {
-		"ghcr.io/devcontainers/features/java:1": {},
-		"ghcr.io/mikaello/devcontainer-features/kotlinc:1": {},
-		"ghcr.io/devcontainers-extra/features/kotlin-sdkman:2": {},
-		"ghcr.io/devcontainers-extra/features/maven-sdkman:2": {}
-	}
+  "name": "Kotlin Development Environment",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "forwardPorts": [8222, 8989, 8080, 8888, 8090, 8091, 8092, 8093, 8094, 8095, 8096],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "fwcd.kotlin",
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-maven",
+        "ms-vscode.vscode-json",
+        "redhat.vscode-yaml",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "java.home": "/usr/lib/jvm/java-21-openjdk-amd64",
+        "java.configuration.runtimes": [
+          {
+            "name": "JavaSE-21",
+            "path": "/usr/lib/jvm/java-21-openjdk-amd64"
+          }
+        ],
+        "maven.executable.path": "/usr/bin/mvn"
+      }
+    }
+  },
+  "postCreateCommand": "echo 'Development environment ready!' && java -version && kotlinc -version && mvn -version"
 }

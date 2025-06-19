@@ -1,8 +1,12 @@
+version: '3.8'
+
 services:
-  dev:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - ../..:/workspace:cached
     ports:
       - "8222:8222"
       - "8989:8989"
@@ -15,38 +19,59 @@ services:
       - "8094:8094"
       - "8095:8095"
       - "8096:8096"
-    volumes:
-      - ..:/workspace:cached 
+    command: sleep infinity
     depends_on:
       - rabbitmq
-    command: sleep infinity
+      - redis
+      - elasticsearch
+    networks:
+      - dev-network
 
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq
     ports:
-      - "5672:5672"   # RabbitMQ (AMQP)
-      - "15672:15672" # RabbitMQ Management UI
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: 29112004thuan
+      RABBITMQ_DEFAULT_PASS: admin123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - dev-network
 
   redis:
-    image: redis:6.2
+    image: redis:7.2-alpine
+    container_name: redis
     ports:
       - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - dev-network
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
       - xpack.security.enabled=false
-      - xpack.monitoring.collection.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
       - "9200:9200"
+      - "9300:9300"
     volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - dev-network
 
 volumes:
-  elasticsearch-data:
+  rabbitmq_data:
+  redis_data:
+  elasticsearch_data:
+
+networks:
+  dev-network:
+    driver: bridge

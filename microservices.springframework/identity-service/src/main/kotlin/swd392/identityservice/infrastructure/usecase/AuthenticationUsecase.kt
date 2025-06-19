@@ -8,15 +8,20 @@ import swd392.identityservice.domain.entity.User
 import swd392.identityservice.domain.repository.TokenTransaction
 import swd392.identityservice.domain.repository.UserRepository
 import swd392.identityservice.web.dto.AuthenticationUserRequest
-import swd392.identityservice.web.dto.RegisterUserRequest
+import swd392.identityservice.web.dto.RegisterRequest
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import lombok.RequiredArgsConstructor
+import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import swd392.identityservice.infrastructure.utils.OtpGeneratorUtil
+import swd392.identityservice.web.dto.RegisterUserRequest
+import java.time.Duration
+import java.util.concurrent.CompletableFuture
 
 
 @Service
@@ -27,22 +32,116 @@ class AuthenticationUsecase(
     private val passwordEncoder: PasswordEncoder,
     private val userMapper: UserMapper,
     private val authenticationManager: AuthenticationManager,
-    private val tokenTransaction: TokenTransaction
+    private val tokenTransaction: TokenTransaction,
+    private val optGeneratorUtil: OtpGeneratorUtil,
+    private val emailUsecase: EmailUsecase,
+    private val redisUsecase: RedisUsecase
 ) : IAuthenticationUsecase {
+
+    private val logger = LoggerFactory.getLogger(AuthenticationUsecase::class.java)
 
     val AUTHENTICATION_HEADER: String = "Authorization"
     val AUTHENTICATION_HEADER_BEARER: String = "Bearer "
+    val OTP_DURANTION_MIN: Long = 5;
 
-    override fun registerUser(registerUserRequest: RegisterUserRequest): ApiResponse<Any> {
-        if (this.isExistUsername(registerUserRequest.username)) {
-            throw RuntimeException("User does exist! Please choose another username.");
+
+    override fun registerUserWithVerifyingEmail(registerUserRequest: RegisterUserRequest): ApiResponse<Any> {
+        val emailHasUser: Boolean = userRepository.findByEmail(registerUserRequest.email).isPresent;
+        if (emailHasUser) { // If exist user
+            return ApiResponse(
+                status = "fail", "Email đã được đăng ký!", dataResponse = null
+            )
         }
+        else {
+            val sixDigitsOtp: String = optGeneratorUtil.generateOtp();
+            // Send email asynchronously using CompletableFuture
+            CompletableFuture.runAsync {
+                try {
+                    emailUsecase.sendOtpEmail(registerUserRequest.email, sixDigitsOtp)
+//                    logger.info("OTP email sent successfully to: ${registerUserRequest.email}")
+                } catch (e: Exception) {
+                    logger.error("Failed to send OTP email to: ${registerUserRequest.email}", e)
+                }
+            }
+            // Save to Redis
+            val cacheData = mapOf(
+                "registerData" to registerUserRequest,
+                "otp" to sixDigitsOtp,
+                "createdAt" to System.currentTimeMillis()
+            )
+            redisUsecase.setValue(
+                "registration:${registerUserRequest.email}",
+                cacheData,
+                Duration.ofMinutes(this.OTP_DURANTION_MIN)
+            )
+            return ApiResponse(
+                status = "success",
+                message = "OTP đã được gửi đến email của bạn. Vui lòng kiểm tra và xác thực trong vòng 5 phút.",
+                dataResponse = mapOf("email" to registerUserRequest.email)
+            )
+        }
+    }
+
+    override fun verifyOtp(email: String, sixDigitsOtp: String): ApiResponse<Any> {
+        // Get cached registration data from Redis
+        val cacheKey = "registration:$email"
+        val cachedData = redisUsecase.getValueByKey(cacheKey) as? Map<*, *>
+        if (cachedData == null) {
+            return ApiResponse(
+                status = "fail",
+                message = "OTP đã hết hạn hoặc không tồn tại. Vui lòng đăng ký lại.",
+                dataResponse = null
+            )
+        }
+        // Extract stored OTP and registration data
+        val storedOtp = cachedData["otp"] as? String
+        val registerUserRequest = cachedData["registerData"] as? RegisterUserRequest
+        val createdAt = cachedData["createdAt"] as? Long
+        // Validate required data
+        if (storedOtp == null || registerUserRequest == null) {
+            redisUsecase.deleteKey(cacheKey)
+            return ApiResponse(
+                status = "fail",
+                message = "Dữ liệu OTP không hợp lệ. Vui lòng đăng ký lại.",
+                dataResponse = null
+            )
+        }
+        // Check if OTP has expired (additional check - Redis TTL is primary)
+        val currentTime = System.currentTimeMillis()
+        val otpAge = createdAt?.let { (currentTime - it) / 1000 / 60 }
+        if (otpAge != null && otpAge > this.OTP_DURANTION_MIN) {
+            redisUsecase.deleteKey(cacheKey)
+            return ApiResponse(
+                status = "fail",
+                message = "OTP đã hết hạn. Vui lòng đăng ký lại.",
+                dataResponse = null
+            )
+        }
+
+        // OTP is valid - proceed with user registration
         val user: User = userMapper.toEntity(registerUserRequest);
         user.passwordAuth = passwordEncoder.encode(registerUserRequest.password);
         user.isEnable = true;
         userRepository.save(user);
         return ApiResponse(
-            status = "success", message = "User registered successfully!",
+            status = "success", message = "Đăng ký thành công!",
+            dataResponse = AuthenticationResponse(
+                accessToken = jwtUsecase.generateToken(user),
+                refreshToken = jwtUsecase.generateRefreshToken(user)
+            )
+        );
+    }
+
+    override fun registerUser(registerRequest: RegisterRequest): ApiResponse<Any> {
+        if (this.isExistUsername(registerRequest.username)) {
+            throw RuntimeException("User does exist! Please choose another username.");
+        }
+        val user: User = userMapper.toEntity(registerRequest);
+        user.passwordAuth = passwordEncoder.encode(registerRequest.password);
+        user.isEnable = true;
+        userRepository.save(user);
+        return ApiResponse(
+            status = "success", message = "Đăng ký thành công!",
             dataResponse = AuthenticationResponse(
                 accessToken = jwtUsecase.generateToken(user),
                 refreshToken = jwtUsecase.generateRefreshToken(user)
