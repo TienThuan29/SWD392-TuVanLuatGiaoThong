@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import swd392.chatbotservice.application.dto.ApiResponse;
+import swd392.chatbotservice.application.dto.ChatRequest;
 import swd392.chatbotservice.application.dto.RequestPDF;
 import swd392.chatbotservice.application.usecase.IChatbotUsecase;
 
@@ -30,7 +31,7 @@ public class ChatbotController {
             ApiResponse.builder()
                 .status("success")
                 .message("Content generated successfully")
-                .dataResponse(iChatbotUsecase.generateContent(prompt))
+                .dataResponse(iChatbotUsecase.generateContentFromText(prompt))
                 .build()
         );
     }
@@ -42,6 +43,17 @@ public class ChatbotController {
                 .status("success")
                 .message("Content generated from PDF successfully")
                 .dataResponse(iChatbotUsecase.generateContentFromPDF(request.getUrl(), request.getPrompt()))
+                .build()
+        );
+    }
+
+    @PostMapping("/generate-from-pdf-multiparth")
+    public ResponseEntity<ApiResponse<?>> generateContentFromPdf(@RequestBody ChatRequest request) throws Exception {
+        return ResponseEntity.ok(
+            ApiResponse.builder()
+                .status("success")
+                .message("Content generated from PDF successfully")
+                .dataResponse(iChatbotUsecase.generateContentFromPDF(request.getPdfFile(), request.getPrompt()))
                 .build()
         );
     }
