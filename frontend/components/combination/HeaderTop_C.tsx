@@ -103,20 +103,20 @@ export default function HeaderTop_C({ logedUser }: HeaderTop_CProps) {
                                             isAdmin?
                                                 <>
                                                     <a
-                                                        href="/admin/user-management"
+                                                        href="/admin/dashboard"
                                                         className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                                                     >
                                                         <FaUsers className="h-5 w-5" />
-                                                        <span>Quản lý người dùng</span>
+                                                        <span>Quản lý trang web</span>
                                                     </a>
 
-                                                    <a
+                                                    {/* <a
                                                         href="/admin/law-management"
                                                         className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
                                                     >
                                                         <IoNewspaper className="h-5 w-5" />
                                                         <span>Quản lý dữ liệu</span>
-                                                    </a>
+                                                    </a> */}
                                                 </>
                                                 : null
                                         }

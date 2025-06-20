@@ -2,13 +2,10 @@ package swd392.lawservice.web.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import swd392.lawservice.web.dto.LawRequestDto;
 import swd392.lawservice.application.dto.ApiResponse;
 import swd392.lawservice.application.usecase.ILawService;
-
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
