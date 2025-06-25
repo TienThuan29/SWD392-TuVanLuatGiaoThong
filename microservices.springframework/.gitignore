@@ -44,3 +44,5 @@ _other-resources/
 ### docker compose production ###
 docker-compose-production.yml
 docker-compose-final.yml
+
+swdDocker.ps1
