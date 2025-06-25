@@ -108,16 +108,45 @@ export default function Page() {
     setInputMessage('')
     setIsLoading(true)
 
-    setTimeout(() => {
+    try {
+      const response = await fetch('http://localhost:8093/api/v1/chatbot/generate-from-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          prompt: inputMessage,
+          // url: "SWD392/SWD392-TuVanLuatGiaoThong/microservices.springframework/chatbot-service/src/main/resources/trunguong.pdf" 
+          url: "/trunguong.pdf"
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get response from chatbot');
+      }
+
+      const data = await response.json();
+      
       const aiMessage: Message = {
         id: Date.now() + 1,
-        content: 'Đây là phản hồi mẫu từ hệ thống. Vui lòng tích hợp API thực tế để có phản hồi chính xác.',
+        content: data.dataResponse?.response || 'Không thể lấy được câu trả lời. Vui lòng thử lại sau.',
         isUser: false,
         dateTime: new Date().toISOString()
       }
       setMessages((prev) => [...prev, aiMessage])
+    } catch (error) {
+      console.error('Error calling chatbot API:', error);
+      
+      const errorMessage: Message = {
+        id: Date.now() + 1,
+        content: 'Đã xảy ra lỗi khi kết nối với hệ thống. Vui lòng thử lại sau.',
+        isUser: false,
+        dateTime: new Date().toISOString()
+      }
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   const handleChatSelect = (chatId: string) => {
