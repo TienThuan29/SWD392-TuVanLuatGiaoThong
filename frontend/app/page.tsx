@@ -7,6 +7,7 @@ import { sampleUser } from "@/data/sample";
 import { useGetUserData, useUserData } from "@/hooks/useUserData";
 import { useEffect, useState } from "react";
 import { User } from "@/models/User";
+import { useAuth } from "@/context/AuthContext";
 
 const contents = [
   "1. YLaw",
@@ -23,18 +24,12 @@ const contents = [
 ];
 
 export default function Home() {
-  const [logedUser, setLogedUser] = useState<User | null>(null);
-  const { userData, loading, error } = useUserData();
-
-  useEffect(() => {
-    if (!loading && !error && userData) {
-      setLogedUser(userData);
-    }
-  }, [userData, loading, error]);
+  
+  const { user } = useAuth();
 
   return (
     <>
-      <Header_C logedUser={logedUser} />
+      <Header_C logedUser={user} />
       <Banner_C />
       <div className="flex flex-col lg:flex-row max-w-screen-xl mx-auto px-4 py-8 gap-8">
         {/* Sidebar */}

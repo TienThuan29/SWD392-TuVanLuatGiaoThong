@@ -3,10 +3,13 @@
 import HeaderTop_C from '@/components/combination/HeaderTop_C'
 import React, { useState } from 'react'
 import { FaUsers, FaBook, FaHome } from 'react-icons/fa'
+import { BiSolidPackage } from "react-icons/bi";
 import Link from 'next/link'
 import { Color } from '@/configs/CssConstant'
 import UserManagementSection from './UserManagementSection'
 import LawManagementSection from './LawManagementSection'
+import UsagePackageSection from './UsagePackageSection'
+import { useAuth } from '@/context/AuthContext'
 
 const Tabs = {
   users: {
@@ -20,10 +23,19 @@ const Tabs = {
     name: 'Quản lý dữ liệu luật',
     icon: <FaBook className="h-4 w-4" style={{ color: Color.MainColor }} />,
     component: LawManagementSection
+  },
+  packages: {
+    id: 3,
+    name: 'Quản lý gói sử dụng',
+    icon: <BiSolidPackage className="h-4 w-4" style={{ color: Color.MainColor }} />,
+    component: UsagePackageSection
   }
 }
 
 export default function Dashboard() {
+
+  const { user, setUser } = useAuth();
+
   const [activeTab, setActiveTab] = useState<keyof typeof Tabs>(() => {
     return 'users';
   });
@@ -38,7 +50,7 @@ export default function Dashboard() {
       {/* Header Section */}
       <div className="sticky top-0 z-50 bg-white border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
-          <HeaderTop_C />
+          <HeaderTop_C logedUser={user}/>
         </div>
       </div>
 
@@ -90,6 +102,19 @@ export default function Dashboard() {
                   <FaBook className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" style={{ color: Color.MainColor }} />
                 </div>
                 <span className="font-medium group-hover:text-gray-900 transition-colors duration-300">Quản lý dữ liệu luật</span>
+              </button>
+            </div>
+
+            {/* Usage Package Management Section */}
+            <div className="px-4 py-2">
+              <button
+                onClick={() => setActiveTab('packages')}
+                className={`w-full group flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 transition-all duration-300 rounded-lg hover:shadow-md active:scale-95 border border-gray-200/50 hover:border-gray-300/50 ${activeTab === 'packages' ? 'bg-gray-50 shadow-md border-gray-300/50' : ''}`}
+              >
+                <div className="flex items-center justify-center w-9 h-9 rounded-full bg-white/80 group-hover:bg-white transition-colors duration-300 shadow-sm group-hover:shadow-md border border-gray-200/50 group-hover:border-gray-300/50">
+                  <BiSolidPackage className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" style={{ color: Color.MainColor }} />
+                </div>
+                <span className="font-medium group-hover:text-gray-900 transition-colors duration-300">Quản lý gói sử dụng</span>
               </button>
             </div>
 

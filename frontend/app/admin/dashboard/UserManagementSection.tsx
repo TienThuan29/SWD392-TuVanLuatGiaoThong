@@ -4,24 +4,21 @@ import React, { useState, useEffect } from 'react';
 import { User } from '@/models/User';
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import { Input } from '@/components/modern-ui/input';
+import { useUserCrud } from '@/hooks/useUserCrud';
 
-// Sample data - Replace with actual API calls
-const sampleUsers: User[] = [
-  {
-    username: 'user1',
-    email: 'user1@example.com',
-    fullname: 'User One',
-    avatarUrl: '',
-    birthDay: '1990-01-01',
-    isEnable: true,
-    createdDate: '2024-01-01',
-    updatedDate: '2024-01-01',
-  },
-  // Add more sample users as needed
-];
 
 export default function UserManagementSection() {
-  const [users, setUsers] = useState<User[]>(sampleUsers);
+
+  const {
+    users,
+    getAllUsers,
+    getUserById,
+    createUser,
+    updateUser,
+    deleteUser,
+  } = useUserCrud();
+
+  // const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [formData, setFormData] = useState<Partial<User>>({
@@ -33,6 +30,11 @@ export default function UserManagementSection() {
     isEnable: true,
   });
 
+  useEffect(() => {
+    getAllUsers();
+    // console.log(users)
+  }, [getAllUsers]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -43,25 +45,25 @@ export default function UserManagementSection() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingUser) {
-      // Update existing user
-      setUsers(users.map(user => 
-        user.username === editingUser.username ? { ...user, ...formData } : user
-      ));
-    } else {
-      // Add new user
-      setUsers([...users, { ...formData as User, createdDate: new Date().toISOString(), updatedDate: new Date().toISOString() }]);
-    }
-    setIsModalOpen(false);
-    setEditingUser(null);
-    setFormData({
-      username: '',
-      email: '',
-      fullname: '',
-      avatarUrl: '',
-      birthDay: '',
-      isEnable: true,
-    });
+    // if (editingUser) {
+    //   // Update existing user
+    //   setUsers(users.map(user =>
+    //     user.username === editingUser.username ? { ...user, ...formData } : user
+    //   ));
+    // } else {
+    //   // Add new user
+    //   setUsers([...users, { ...formData as User, createdDate: new Date().toISOString(), updatedDate: new Date().toISOString() }]);
+    // }
+    // setIsModalOpen(false);
+    // setEditingUser(null);
+    // setFormData({
+    //   username: '',
+    //   email: '',
+    //   fullname: '',
+    //   avatarUrl: '',
+    //   birthDay: '',
+    //   isEnable: true,
+    // });
   };
 
   const handleEdit = (user: User) => {
@@ -71,8 +73,15 @@ export default function UserManagementSection() {
   };
 
   const handleDelete = (username: string) => {
-    setUsers(users.filter(user => user.username !== username));
+    // setUsers(users.filter(user => user.username !== username));
   };
+
+  function toDateInputValue(dateString?: string) {
+    if (!dateString || dateString === 'null') return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    return date.toISOString().slice(0, 10);
+  }
 
   return (
     <div className="p-6">
@@ -116,7 +125,7 @@ export default function UserManagementSection() {
                 <td className="px-6 py-4 whitespace-nowrap">{user.username}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{user.fullname}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{user.birthDay}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{(user.birthDay == null || user.birthDay == 'null')? '(Chưa cập nhật)' : user.birthDay}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.isEnable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                     {user.isEnable ? 'Hoạt động' : 'Khóa'}
@@ -190,6 +199,33 @@ export default function UserManagementSection() {
                   required
                 />
               </div>
+              {
+                editingUser ?
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Ngày tạo</label>
+                      <Input
+                        type="date"
+                        name="createdDate"
+                        value={toDateInputValue(formData.createdDate)}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Ngày cập nhật gần nhất</label>
+                      <Input
+                        type="date"
+                        name="updatedDate"
+                        value={toDateInputValue(formData.updatedDate)}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+                  </>
+                  : null
+              }
+
               <div className="flex items-center">
                 <Input
                   type="checkbox"

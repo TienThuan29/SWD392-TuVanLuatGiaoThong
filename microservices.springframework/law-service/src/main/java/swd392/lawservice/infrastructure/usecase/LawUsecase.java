@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class LawServiceImpl implements ILawService {
+public class LawUsecase implements ILawUsecase {
 
     @Autowired
     private ITransactionLaw iTransactionLaw;

@@ -12,12 +12,10 @@ export const useUserData = () => {
     const { authTokens } = useAuth();
     const api = useAxios();
     
-    // Ref để tránh infinite loop
     const userDataRef = useRef<User | null>(null);
     const isFetchingRef = useRef(false);
     const hasInitialFetchRef = useRef(false);
 
-    // Sync ref với state
     useEffect(() => {
         userDataRef.current = userData;
     }, [userData]);
@@ -25,7 +23,6 @@ export const useUserData = () => {
     const fetchUserData = useCallback(
         async (forceRefresh = false) => {
             try {
-                // Prevent concurrent calls
                 if (isFetchingRef.current && !forceRefresh) {
                     return userDataRef.current;
                 }
@@ -36,7 +33,6 @@ export const useUserData = () => {
                     return null;
                 }
 
-                // Use cached data if available and not forcing refresh
                 if (!forceRefresh && userDataRef.current) {
                     console.log("Use caching data")
                     return userDataRef.current;
@@ -97,7 +93,7 @@ export const useUserData = () => {
                 setLoading(false);
             }
         },
-        [authTokens?.refreshToken, api] // Chỉ depend vào những thứ thực sự cần
+        [authTokens?.refreshToken, api]
     );
 
     const clearUserData = useCallback(() => {
@@ -116,7 +112,6 @@ export const useUserData = () => {
         });
     }, []);
 
-    // Effect để tự động fetch data lần đầu
     useEffect(() => {
         const shouldFetch = authTokens?.refreshToken && 
                            !hasInitialFetchRef.current && 
@@ -128,14 +123,13 @@ export const useUserData = () => {
             fetchUserData();
         }
 
-        // Reset khi logout
         if (!authTokens?.refreshToken) {
             hasInitialFetchRef.current = false;
             if (userDataRef.current) {
                 clearUserData();
             }
         }
-    }, [authTokens?.refreshToken]); // Chỉ depend vào refreshToken
+    }, [authTokens?.refreshToken]);
 
     return {
         userData,
@@ -163,7 +157,7 @@ export const useGetUserData = () => {
             return response.data.dataResponse;
 
         } catch (err) {
-            console.error('Lỗi khi lấy dữ liệu người dùng:', err);
+            // console.error('Lỗi khi lấy dữ liệu người dùng:', err);
             let errorMessage = 'Có lỗi xảy ra khi lấy dữ liệu';
             if (typeof err === "object" && err !== null && "response" in err) {
                 const errorWithResponse = err as { response: any };
