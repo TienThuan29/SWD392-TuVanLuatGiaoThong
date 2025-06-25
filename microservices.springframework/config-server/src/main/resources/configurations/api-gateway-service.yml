@@ -62,7 +62,7 @@ spring:
         - id: user-package-service
           uri: ${USER_PACKAGE_SERVICE_URL:http://localhost:8094}
           predicates:
-            - Path=/api/v1/user-packages/**     
+            - Path=/api/v1/user-packages/**
 
   application:
     name: gateway-service

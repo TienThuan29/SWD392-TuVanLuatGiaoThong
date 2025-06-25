@@ -2,12 +2,14 @@ package swd392.lawservice.domain.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import swd392.lawservice.domain.entity.Law;
-
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
-@Component
-public class LawTransaction implements ITransactionLaw{
+@Service
+@Transactional
+public class LawTransaction implements ITransactionLaw {
 
     @Autowired
     private LawRepository lawRepository;
@@ -26,26 +28,23 @@ public class LawTransaction implements ITransactionLaw{
     }
 
     @Override
-    public void save(Law law) {
+    public Law save(Law law) {
         // TODO Auto-generated method stub
-        law = lawRepository.save(law);
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        return lawRepository.save(law);
     }
 
     @Override
-    public void update(Law law) {
+    public Law update(Law law) {
         // TODO Auto-generated method stub
         lawRepository.save(law);
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
 
     @Override
-    public void delete(UUID lawId) {
+    public boolean delete(UUID lawId) {
         // TODO Auto-generated method stub
         lawRepository.deleteById(lawId);
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
-
-    
 
 }
