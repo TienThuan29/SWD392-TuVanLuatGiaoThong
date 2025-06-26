@@ -1,5 +1,6 @@
 package swd392.lawservice.infrastructure.usecase;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import swd392.lawservice.application.dto.ApiResponse;
 import swd392.lawservice.application.dto.LawTypeResponse;
@@ -13,11 +14,14 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class LawTypeUsecase implements ILawTypeUsecase {
 
-    private LawTypeRepository lawTypeRepository;
-    private ITransactionLawType transactionLawType;
-    private LawTypeMapper lawTypeMapper;
+    private final LawTypeRepository lawTypeRepository;
+
+    private final ITransactionLawType transactionLawType;
+
+    private final LawTypeMapper lawTypeMapper;
 
     @Override
     public ApiResponse<LawTypeResponse> createLawType(LawTypeRequest lawTypeRequest) {

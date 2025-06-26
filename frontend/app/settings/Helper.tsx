@@ -1,9 +1,16 @@
 'use client';
 
-import React from 'react';
+import { User } from '@/models/User';
+import React, { useState } from 'react';
 import { FiHelpCircle, FiMessageSquare, FiMail, FiPhone } from 'react-icons/fi';
 
-export default function Helper() {
+type Props = {
+  logedUser: User;
+}
+
+export default function Helper({ logedUser }: Props) {
+  const [user, setUser] = useState<User>(logedUser);
+
   const faqs = [
     {
       question: 'Làm thế nào để đặt lịch tư vấn?',

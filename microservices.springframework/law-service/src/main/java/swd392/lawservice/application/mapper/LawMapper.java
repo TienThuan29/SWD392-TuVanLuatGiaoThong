@@ -8,6 +8,7 @@ import swd392.lawservice.web.dto.LawRequest;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Component("lawMapper_LawService")
 public class LawMapper {
@@ -39,6 +40,7 @@ public class LawMapper {
         if (request == null)
             return null;
         return Law.builder()
+                .id(UUID.randomUUID())
                 .title(request.getTittle())
                 .referenceNumber(request.getReferenceNumber())
                 .dateline(request.getDateline())

@@ -13,6 +13,7 @@ export const Api = {
 
     User: {
         GET_ALL: '/api/v1/admin/user-management/users'
+        
     },
 
     

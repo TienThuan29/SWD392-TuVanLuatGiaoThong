@@ -35,80 +35,80 @@ export function useUserCrud() {
 
     // Get user by ID
     const getUserById = useCallback(async (id: string) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const res = await fetch(`/api/users/${id}`);
-            if (!res.ok) throw new Error("Failed to fetch user");
-            const data = await res.json();
-            setUser(data);
-        } catch (err: any) {
-            setError(err.message || "Unknown error");
-        } finally {
-            setLoading(false);
-        }
+        // setLoading(true);
+        // setError(null);
+        // try {
+        //     const res = await api.get()
+        //     if (!res.ok) throw new Error("Failed to fetch user");
+        //     const data = await res.json();
+        //     setUser(data);
+        // } catch (err: any) {
+        //     setError(err.message || "Unknown error");
+        // } finally {
+        //     setLoading(false);
+        // }
     }, []);
 
     // Create user
     const createUser = useCallback(async (newUser: User) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const res = await fetch("/api/users", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newUser),
-            });
-            if (!res.ok) throw new Error("Failed to create user");
-            const data = await res.json();
-            setUsers((prev) => [...prev, data]);
-            return data;
-        } catch (err: any) {
-            setError(err.message || "Unknown error");
-            throw err;
-        } finally {
-            setLoading(false);
-        }
+        // setLoading(true);
+        // setError(null);
+        // try {
+        //     const res = await fetch("/api/users", {
+        //         method: "POST",
+        //         headers: { "Content-Type": "application/json" },
+        //         body: JSON.stringify(newUser),
+        //     });
+        //     if (!res.ok) throw new Error("Failed to create user");
+        //     const data = await res.json();
+        //     setUsers((prev) => [...prev, data]);
+        //     return data;
+        // } catch (err: any) {
+        //     setError(err.message || "Unknown error");
+        //     throw err;
+        // } finally {
+        //     setLoading(false);
+        // }
     }, []);
 
     // Update user
     const updateUser = useCallback(async (id: string, updatedUser: Partial<User>) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const res = await fetch(`/api/users/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(updatedUser),
-            });
-            if (!res.ok) throw new Error("Failed to update user");
-            const data = await res.json();
-            setUsers((prev) => prev.map((u) => (u.id === id ? data : u)));
-            return data;
-        } catch (err: any) {
-            setError(err.message || "Unknown error");
-            throw err;
-        } finally {
-            setLoading(false);
-        }
+        // setLoading(true);
+        // setError(null);
+        // try {
+        //     const res = await fetch(`/api/users/${id}`, {
+        //         method: "PUT",
+        //         headers: { "Content-Type": "application/json" },
+        //         body: JSON.stringify(updatedUser),
+        //     });
+        //     if (!res.ok) throw new Error("Failed to update user");
+        //     const data = await res.json();
+        //     setUsers((prev) => prev.map((u) => (u.id === id ? data : u)));
+        //     return data;
+        // } catch (err: any) {
+        //     setError(err.message || "Unknown error");
+        //     throw err;
+        // } finally {
+        //     setLoading(false);
+        // }
     }, []);
 
     // Delete user
     const deleteUser = useCallback(async (id: string) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const res = await fetch(`/api/users/${id}`, {
-                method: "DELETE",
-            });
-            if (!res.ok) throw new Error("Failed to delete user");
-            setUsers((prev) => prev.filter((u) => u.id !== id));
-        } catch (err: any) {
-            setError(err.message || "Unknown error");
-            throw err;
-        } finally {
-            setLoading(false);
-        }
+        // setLoading(true);
+        // setError(null);
+        // try {
+        //     const res = await fetch(`/api/users/${id}`, {
+        //         method: "DELETE",
+        //     });
+        //     if (!res.ok) throw new Error("Failed to delete user");
+        //     setUsers((prev) => prev.filter((u) => u.id !== id));
+        // } catch (err: any) {
+        //     setError(err.message || "Unknown error");
+        //     throw err;
+        // } finally {
+        //     setLoading(false);
+        // }
     }, []);
 
     return {

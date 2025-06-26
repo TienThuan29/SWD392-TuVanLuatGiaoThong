@@ -8,8 +8,8 @@ import { Color } from '@/configs/CssConstant'
 import Profile from './Profile'
 import PlanningPackage from './PlanningPackage'
 import Helper from './Helper'
-import { Role, User } from '@/models/User';
-import { sampleUser } from '@/data/sample';
+import { useAuth } from '@/context/AuthContext';
+import { useRoleValidator } from '@/hooks/useRoleValidator';
 
 const Tabs = {
   profile: {
@@ -34,7 +34,9 @@ const Tabs = {
 
 export default function Page() {
 
-  const [logedUser, setLogedUser] = useState<User>(sampleUser);
+  // const [logedUser, setLogedUser] = useState<User>(sampleUser);
+  const { user } = useAuth();
+  const { isAdmin, isUser } = useRoleValidator(user);
 
   const [activeTab, setActiveTab] = useState<keyof typeof Tabs>(() => {
     return 'profile';
@@ -42,7 +44,37 @@ export default function Page() {
 
   const renderContent = () => {
     const TabComponent = Tabs[activeTab].component;
-    return <TabComponent />;
+    if (!user) {
+      return (
+        <div className="flex items-center justify-center h-full min-h-[400px]">
+          <div className="flex flex-col items-center space-y-4">
+            {/* Animated spinner */}
+            <div className="relative">
+              <div className="w-12 h-12 border-4 border-gray-200 rounded-full animate-spin border-t-blue-500"></div>
+              <div className="absolute inset-0 w-12 h-12 border-4 border-transparent rounded-full animate-ping border-t-blue-300 opacity-20"></div>
+            </div>
+            
+            {/* Loading text with fade animation */}
+            <div className="text-center">
+              <h3 className="text-lg font-medium text-gray-700 animate-pulse">
+                Đang tải...
+              </h3>
+              <p className="text-sm text-gray-500 mt-1 animate-pulse delay-100">
+                Vui lòng chờ trong giây lát
+              </p>
+            </div>
+            
+            {/* Animated dots */}
+            <div className="flex space-x-1">
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-100"></div>
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-200"></div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return <TabComponent logedUser={user} />;
   };
 
   return (
@@ -50,7 +82,7 @@ export default function Page() {
       {/* Header Section */}
       <div className="sticky top-0 z-50 bg-white border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
-          <HeaderTop_C />
+          <HeaderTop_C logedUser={user} />
         </div>
       </div>
 
@@ -76,11 +108,11 @@ export default function Page() {
             <hr className='my-6 border-0 h-px bg-gradient-to-r from-transparent via-gray-500/50 to-transparent' />
 
             <h3 className="text-center text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              { logedUser?.role === Role.USER? "Tùy chọn" : "Quản lý" }
+              { isUser ? "Tùy chọn" : "Quản lý" }
             </h3>
 
             {
-              logedUser?.role === Role.USER ?
+              isUser ?
                 <>
                   {/* Profile Section */}
                   <div className="px-4 py-2">
@@ -134,8 +166,8 @@ export default function Page() {
                   <FaUser className="h-5 w-5" style={{ color: Color.MainColor }} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-medium text-gray-900">Minh Đức</span>
-                  <span className="text-xs text-gray-500">minhduc@example.com</span>
+                  <span className="font-medium text-gray-900">{user?.fullname}</span>
+                  <span className="text-xs text-gray-500">{user?.email}</span>
                 </div>
               </div>
             </div>

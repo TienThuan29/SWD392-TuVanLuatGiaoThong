@@ -23,16 +23,16 @@ import swd392.lawservice.web.dto.LawTypeRequest;
 @RequestMapping("/api/v1/law")
 public class LawController {
 
-    private ILawUsecase lawUsecase;
+    private final ILawUsecase lawUsecase;
 
-    private ILawTypeUsecase lawTypeUsecase;
+    private final ILawTypeUsecase lawTypeUsecase;
 
     @GetMapping("/health")
     public String healthCheck() {
         return "Law Service is running";
     }
 
-    @PostMapping("/type/create")
+    @PostMapping("/admin/type/create")
     public ResponseEntity<ApiResponse<?>> createLawType(@RequestBody LawTypeRequest lawTypeRequest) {
         return new ResponseEntity<>(this.lawTypeUsecase.createLawType(lawTypeRequest), HttpStatus.OK);
     }
@@ -47,27 +47,27 @@ public class LawController {
         return new ResponseEntity<>(this.lawTypeUsecase.getLawTypeById(id), HttpStatus.OK);
     }
 
-    @PutMapping("/type/update/{id}")
+    @PutMapping("/admin/type/update/{id}")
     public ResponseEntity<ApiResponse<?>> updateLawType(@PathVariable("id") UUID id, @RequestBody LawTypeRequest lawTypeRequest) {
         return new ResponseEntity<>(this.lawTypeUsecase.updateLawTypes(id, lawTypeRequest), HttpStatus.OK);
     }
 
-    @PutMapping("/type/deactivate/{id}")
+    @PutMapping("/admin/type/deactivate/{id}")
     public ResponseEntity<ApiResponse<?>> deactivateLawType(UUID id) {
         return new ResponseEntity<>(this.lawTypeUsecase.deactivateLawType(id), HttpStatus.OK);
     }
 
-    @PostMapping("/create")
+    @PostMapping("/admin/create")
     public ResponseEntity<ApiResponse<?>> createLaw(@RequestBody LawRequest lawRequest) {
         return new ResponseEntity<>(this.lawUsecase.createLaw(lawRequest), HttpStatus.OK);
     }
 
-    @PutMapping("/deactivate/{id}")
+    @PutMapping("/admin/deactivate/{id}")
     public ResponseEntity<ApiResponse<?>> deactivateLaw(@PathVariable("id") UUID id) {
         return new ResponseEntity<>(this.lawUsecase.deactivateLaw(id), HttpStatus.OK);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/admin/update/{id}")
     public ResponseEntity<ApiResponse<?>> updateLaw(@PathVariable UUID id,@RequestBody LawRequest lawRequest) {
         return new ResponseEntity<>(this.lawUsecase.updateLaw(id, lawRequest), HttpStatus.OK);
     }
@@ -77,12 +77,12 @@ public class LawController {
         return new ResponseEntity<>(this.lawUsecase.getLawById(id), HttpStatus.OK);
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("/get-all")
     public ResponseEntity<ApiResponse<?>> getAllLaw() {
         return new ResponseEntity<>(this.lawUsecase.getAllLaws(), HttpStatus.OK);
     }
 
-    @PostMapping("/delete/{id}")
+    @PostMapping("/admin/delete/{id}")
     public ResponseEntity<ApiResponse<?>> deleteLaw(@PathVariable UUID id) {
         return null;
     }

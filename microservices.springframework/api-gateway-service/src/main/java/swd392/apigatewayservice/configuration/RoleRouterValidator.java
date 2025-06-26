@@ -24,7 +24,8 @@ public class RoleRouterValidator {
 
      private List<String> adminEndpoints = List.of(
              "/api/v1",
-             "/api/v1/admin"
+             "/api/v1/admin",
+             "/api/v1/**/admin"
      );
 
      public boolean isUserEndpoint(String path) {

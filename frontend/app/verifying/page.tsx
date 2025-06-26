@@ -4,7 +4,6 @@ import Constant from '@/configs/Constant';
 import { useAuth } from '@/context/AuthContext';
 import useAxios from '@/hooks/useAxios';
 import { useRoleValidator } from '@/hooks/useRoleValidator';
-import { User } from '@/models/User';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react'
 import { toast } from 'sonner';
@@ -56,7 +55,7 @@ export default function Page() {
             if (isAdmin) {
                 router.push(Constant.Page.AdminDashboardPage)
             }
-            console.log("Current role:", role);
+            // console.log("Current role:", role);
         }
     }, [user, isUser, isAdmin, role, router]);
     

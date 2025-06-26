@@ -7,17 +7,12 @@ import { Input } from '@/components/modern-ui/input';
 import { Button } from '@/components/modern-ui/button';
 import { Color } from '@/configs/CssConstant';
 
+type Props = {
+    logedUser: User;
+}
 
-export default function Profile() {
-    const [user, setUser] = useState<User>({
-        username: '',
-        email: '',
-        fullname: '',
-        avatarUrl: '',
-        birthDay: '',
-        isEnable: true,
-        role: 'USER'
-    });
+export default function Profile({ logedUser }: Props) {
+    const [user, setUser] = useState<User>(logedUser);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;

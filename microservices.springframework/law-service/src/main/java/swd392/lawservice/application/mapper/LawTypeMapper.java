@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import swd392.lawservice.application.dto.LawTypeResponse;
 import swd392.lawservice.domain.entity.LawType;
 import swd392.lawservice.web.dto.LawTypeRequest;
+import java.util.UUID;
 
 @Component("lawTypeMapper_LawService")
 public class LawTypeMapper {
@@ -11,6 +12,7 @@ public class LawTypeMapper {
     public LawType toEntity(LawTypeRequest lawTypeRequest) {
         if (lawTypeRequest == null) return null;
         return LawType.builder()
+                .id(UUID.randomUUID())
                 .name(lawTypeRequest.getName())
                 .isDeleted(Boolean.FALSE)
                 .build();

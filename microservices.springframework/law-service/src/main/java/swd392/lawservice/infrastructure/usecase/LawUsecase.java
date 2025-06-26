@@ -20,10 +20,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class LawUsecase implements ILawUsecase {
 
-    private ITransactionLaw transactionLaw;
-    private LawRepository lawRepository;
-    private LawTypeRepository lawTypeRepository;
-    private LawMapper lawMapper;
+    private final ITransactionLaw transactionLaw;
+    private final LawRepository lawRepository;
+    private final LawTypeRepository lawTypeRepository;
+    private final LawMapper lawMapper;
 
     @Override
     public ApiResponse<LawResponse> deactivateLaw(UUID id) {

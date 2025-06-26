@@ -3,7 +3,6 @@ package swd392.lawservice.application.usecase;
 import swd392.lawservice.application.dto.ApiResponse;
 import swd392.lawservice.application.dto.LawTypeResponse;
 import swd392.lawservice.web.dto.LawTypeRequest;
-
 import java.util.List;
 import java.util.UUID;
 
