@@ -112,5 +112,4 @@ public class ChatbotUsecase implements IChatbotUsecase {
                 }
                 return new ResponseAi("Invalid input", "No valid content provided.");
         }
-
 }
