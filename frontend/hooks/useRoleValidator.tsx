@@ -11,7 +11,11 @@ interface RoleValidator {
 
 export function useRoleValidator(user: User | null | undefined): RoleValidator {
   return useMemo(() => {
+    console.log("useRoleValidator - user:", user);
+    console.log("useRoleValidator - user.role:", user?.role);
+    
     if (!user?.role) {
+      console.log("useRoleValidator - no role found");
       return {
         isUser: false,
         isAdmin: false,
@@ -20,13 +24,23 @@ export function useRoleValidator(user: User | null | undefined): RoleValidator {
       };
     }
 
-    const decodedRole = decodeHashedString(user.role);
+    let decodedRole: string;
+    try {
+      decodedRole = decodeHashedString(user.role);
+      // console.log("useRoleValidator - decoded role:", decodedRole);
+    } catch (error) {
+      // console.log("useRoleValidator - failed to decode role, using raw role:", user.role);
+      decodedRole = user.role;
+    }
     
-    return {
-      isUser: decodedRole === Role.USER,
-      isAdmin: decodedRole === Role.ADMIN,
+    const result = {
+      isUser: decodedRole === Role.USER || decodedRole === "ROLE_USER",
+      isAdmin: decodedRole === Role.ADMIN || decodedRole === "ROLE_ADMIN",
       role: decodedRole,
       hasRole: (targetRole: string) => decodedRole === targetRole,
     };
+    
+    // console.log("useRoleValidator - result:", result);
+    return result;
   }, [user?.role]);
 }

@@ -17,6 +17,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Color } from "@/configs/CssConstant";
 import { FaArrowLeft } from "react-icons/fa";
+import useAxios from "@/hooks/useAxios";
+import { Api } from "@/configs/Api";
+import HttpStatus from "@/configs/HttpStatus";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 const formSchema = z.object({
   username: z.string().min(3, {
@@ -25,10 +30,10 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Email không hợp lệ.",
   }),
-  password: z.string().min(8, {
-    message: "Mật khẩu phải có ít nhất 8 ký tự.",
+  password: z.string().min(5, {
+    message: "Mật khẩu phải có ít nhất 5 ký tự.",
   }),
-  repeatPassword: z.string().min(8, {
+  repeatPassword: z.string().min(5, {
     message: "Vui lòng nhập lại mật khẩu.",
   }),
   fullname: z.string().min(1, {
@@ -37,7 +42,8 @@ const formSchema = z.object({
 });
 
 function RegisterForm() {
-  const [submitted, setSubmitted] = useState(false);
+
+  const router = useRouter();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -65,8 +71,19 @@ function RegisterForm() {
 
     try {
       setIsLoading(true);
-      //   await loginUser(data.username, data.password);
-      setSubmitted(true);
+      const response = await axios.post(Api.BASE_API + Api.Authenticaion.REGISTER, {
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        fullname: data.fullname
+      })
+      if (response.status == HttpStatus.OK && response.data.status == 'success') {
+        toast.success("Mã OTP đã được gửi đến email của bạn, vui lòng kiểm tra và xác thực email");
+        router.push(`/register/verify-email?email=${encodeURIComponent(data.email)}`);
+      }
+      else if (response.status == HttpStatus.OK && response.data.status == 'fail') {
+        toast.error(response.data.message)
+      }
     } catch (ex) {
       console.error(ex);
       toast.error("Register failed");
@@ -83,23 +100,7 @@ function RegisterForm() {
         </h2>
 
         <Form {...form}>
-          {submitted ? (
-            <div className="text-center p-4">
-              <p className="text-green-600 text-lg font-medium mb-4">
-                Form submitted successfully!
-              </p>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => {
-                  form.reset();
-                  setSubmitted(false);
-                }}
-              >
-                Reset Form
-              </Button>
-            </div>
-          ) : (
+          {
             <form className="space-y-6" onSubmit={handleRegister} noValidate>
               <FormField
                 control={form.control}
@@ -233,7 +234,7 @@ function RegisterForm() {
                 </a>
               </div>
             </form>
-          )}
+          }
         </Form>
       </div>
     </div>

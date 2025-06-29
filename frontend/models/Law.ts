@@ -1,7 +1,9 @@
 export type Law = {
   id?: string;
+  referenceNumber?: string;
+  dateline?: string;
   title?: string;
-  lawTypeId?: string;
+  lawType?: LawType;
   issueDate?: string;
   effectiveDate?: string;
   sourceUrl?: string;

@@ -1,117 +1,207 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Law, LawType } from '@/models/Law';
 import { FaEdit, FaTrash, FaPlus, FaUpload, FaFilePdf, FaLink } from 'react-icons/fa';
 import { Input } from '@/components/modern-ui/input';
-
-// Sample data - Replace with actual API calls
-const sampleLaws: Law[] = [
-  {
-    title: 'Luật Giao thông đường bộ',
-    lawTypeId: '1',
-    issueDate: '2024-01-01',
-    effectiveDate: '2024-01-01',
-    sourceUrl: 'https://example.com/law1',
-    filePath: '/laws/law1.pdf',
-    isDeleted: false,
-    createdDate: '2024-01-01',
-    updatedDate: '2024-01-01',
-  },
-];
-
-const sampleLawTypes: LawType[] = [
-  {
-    id: '1',
-    name: 'Luật Giao thông',
-  },
-  {
-    id: '2',
-    name: 'Nghị định',
-  },
-];
+import { useFileManager } from '@/hooks/useFileManager';
+import { useLawCrud } from '@/hooks/useLawCrud';
+import { useLawTypeCrud } from '@/hooks/useLawTypeCrud';
+import { Select } from '@/components/modern-ui/select';
+import { formatDateToISO } from '@/ownUtils/all/dateFormatUtil';
+import { toast } from 'sonner';
 
 export default function LawManagementSection() {
-  const [laws, setLaws] = useState<Law[]>(sampleLaws);
+  
+  const { uploadedFile, loading: fileLoading, uploadFile, clearUploadedFile } = useFileManager();
+  const { laws, loading: lawLoading, getAllLaws, createLaw, updateLaw, deleteLaw } = useLawCrud();
+  const { lawTypes, getAllLawTypes } = useLawTypeCrud();
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLaw, setEditingLaw] = useState<Law | null>(null);
-  const [uploadedFilePath, setUploadedFilePath] = useState<string>('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedLawTypeId, setSelectedLawTypeId] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<Partial<Law>>({
     title: '',
-    lawTypeId: '',
+    referenceNumber: '',
+    dateline: '',
     issueDate: '',
     effectiveDate: '',
     sourceUrl: '',
     filePath: '',
-    isDeleted: false,
   });
+
+  // Load data on component mount
+  useEffect(() => {
+    getAllLaws();
+    getAllLawTypes();
+  }, []);
+
+  // Update form data when file is uploaded
+  useEffect(() => {
+    if (uploadedFile) {
+      setFormData(prev => ({
+        ...prev,
+        filePath: uploadedFile.fileUrl
+      }));
+    }
+  }, [uploadedFile]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-    }));
+    if (name === 'lawTypeId') {
+      setSelectedLawTypeId(value);
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+      }));
+    }
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Here you would typically upload to your cloud storage
-    // For now, we'll simulate a successful upload
-    const fakeUpload = new Promise<string>((resolve) => {
-      setTimeout(() => {
-        resolve(`/laws/${file.name}`);
-      }, 1000);
-    });
-
+    setSelectedFile(file);
     try {
-      const filePath = await fakeUpload;
-      setUploadedFilePath(filePath);
-      setFormData(prev => ({
-        ...prev,
-        filePath
-      }));
+      await uploadFile(file, 'laws');
     } catch (error) {
       console.error('Upload failed:', error);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingLaw) {
-      // Update existing law
-      setLaws(laws.map(law => 
-        law.id === editingLaw.id ? { ...law, ...formData } : law
-      ));
-    } else {
-      // Add new law
-      setLaws([...laws, { ...formData as Law, createdDate: new Date().toISOString(), updatedDate: new Date().toISOString() }]);
+    
+    try {
+      setIsSubmitting(true);
+      
+      // Get the selected law type object
+      const selectedLawType = lawTypes.find(type => type.id === selectedLawTypeId);
+      
+      // Validate required fields
+      const requiredFields = {
+        title: formData.title,
+        lawType: selectedLawType,
+        issueDate: formData.issueDate,
+        effectiveDate: formData.effectiveDate
+      };
+
+      const emptyFields = Object.entries(requiredFields)
+        .filter(([key, value]) => !value)
+        .map(([key]) => key);
+
+      if (emptyFields.length > 0) {
+        const fieldNames = {
+          title: 'Tiêu đề',
+          lawType: 'Loại luật',
+          issueDate: 'Ngày ban hành',
+          effectiveDate: 'Ngày hiệu lực'
+        };
+        
+        const missingFields = emptyFields.map(field => fieldNames[field as keyof typeof fieldNames]).join(', ');
+        toast.error(`Vui lòng điền đầy đủ các trường bắt buộc: ${missingFields}`);
+        return;
+      }
+
+      if (editingLaw) {
+        // Update existing law
+        await updateLaw(editingLaw.id!, {
+          ...formData,
+          issueDate: formData.issueDate ? formatDateToISO(formData.issueDate) : undefined,
+          effectiveDate: formData.effectiveDate ? formatDateToISO(formData.effectiveDate) : undefined,
+          lawType: selectedLawType
+        });
+      } 
+      else {
+        // Create new law - handle file upload first
+        let finalFilePath = formData.filePath;
+        
+        if (selectedFile && !uploadedFile) {
+          // File needs to be uploaded first
+          try {
+            const fileData = await uploadFile(selectedFile, 'laws');
+            finalFilePath = fileData.fileUrl;
+            toast.success('File đã được tải lên thành công!');
+          } catch (uploadError) {
+            console.error('File upload failed:', uploadError);
+            toast.error('Tải file lên thất bại. Vui lòng thử lại.');
+            return;
+          }
+        } else if (uploadedFile) {
+          // File already uploaded
+          finalFilePath = uploadedFile.fileUrl;
+        }
+        
+        // Create the law with the uploaded file path
+        await createLaw({
+          ...formData,
+          issueDate: formData.issueDate ? formatDateToISO(formData.issueDate) : undefined,
+          effectiveDate: formData.effectiveDate ? formatDateToISO(formData.effectiveDate) : undefined,
+          lawType: selectedLawType,
+          filePath: finalFilePath
+        });
+        
+        toast.success('Luật đã được tạo thành công!');
+      }
+      
+      // Reset form and close modal
+      setIsModalOpen(false);
+      setEditingLaw(null);
+      setFormData({
+        title: '',
+        referenceNumber: '',
+        dateline: '',
+        issueDate: '',
+        effectiveDate: '',
+        sourceUrl: '',
+        filePath: '',
+      });
+      setSelectedLawTypeId('');
+      setSelectedFile(null);
+      clearUploadedFile();
+    } catch (error) {
+      console.error('Operation failed:', error);
+      toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsModalOpen(false);
-    setEditingLaw(null);
-    setFormData({
-      title: '',
-      lawTypeId: '',
-      issueDate: '',
-      effectiveDate: '',
-      sourceUrl: '',
-      filePath: '',
-      isDeleted: false,
-    });
-    setUploadedFilePath('');
   };
 
   const handleEdit = (law: Law) => {
     setEditingLaw(law);
     setFormData(law);
-    setUploadedFilePath(law.filePath || '');
+    setSelectedLawTypeId(law.lawType?.id || '');
+    setSelectedFile(null);
+    clearUploadedFile();
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    setLaws(laws.filter(law => law.id !== id));
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteLaw(id);
+    } catch (error) {
+      console.error('Delete failed:', error);
+    }
+  };
+
+  const handleOpenCreateModal = () => {
+    setEditingLaw(null);
+    setFormData({
+      title: '',
+      referenceNumber: '',
+      dateline: '',
+      issueDate: '',
+      effectiveDate: '',
+      sourceUrl: '',
+      filePath: '',
+    });
+    setSelectedLawTypeId('');
+    setSelectedFile(null);
+    clearUploadedFile();
+    setIsModalOpen(true);
   };
 
   return (
@@ -119,20 +209,7 @@ export default function LawManagementSection() {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold text-gray-800">Quản lý dữ liệu luật</h2>
         <button
-          onClick={() => {
-            setEditingLaw(null);
-            setFormData({
-              title: '',
-              lawTypeId: '',
-              issueDate: '',
-              effectiveDate: '',
-              sourceUrl: '',
-              filePath: '',
-              isDeleted: false,
-            });
-            setUploadedFilePath('');
-            setIsModalOpen(true);
-          }}
+          onClick={handleOpenCreateModal}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <FaPlus /> Thêm luật mới
@@ -157,7 +234,7 @@ export default function LawManagementSection() {
               <tr key={law.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">{law.title}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {sampleLawTypes.find(type => type.id === law.lawTypeId)?.name}
+                  {law.lawType?.name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">{law.issueDate}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{law.effectiveDate}</td>
@@ -228,10 +305,13 @@ export default function LawManagementSection() {
                 >
                   <FaUpload className="h-8 w-8 text-gray-400 mb-2" />
                   <span className="text-sm text-gray-600">
-                    {uploadedFilePath ? 'File đã tải lên' : 'Click để tải file lên'}
+                    {uploadedFile ? 'File đã tải lên thành công' : selectedFile ? 'Đang tải lên...' : 'Click để tải file lên'}
                   </span>
-                  {uploadedFilePath && (
-                    <span className="text-xs text-gray-500 mt-1">{uploadedFilePath}</span>
+                  {uploadedFile && (
+                    <span className="text-xs text-gray-500 mt-1">{uploadedFile.fileName}</span>
+                  )}
+                  {selectedFile && !uploadedFile && (
+                    <span className="text-xs text-gray-500 mt-1">{selectedFile.name}</span>
                   )}
                 </label>
               </div>
@@ -248,19 +328,40 @@ export default function LawManagementSection() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Loại luật</label>
-                <select
-                  name="lawTypeId"
-                  value={formData.lawTypeId}
+                <label className="block text-sm font-medium text-gray-700">Số hiệu văn bản</label>
+                <Input
+                  type="text"
+                  name="referenceNumber"
+                  value={formData.referenceNumber}
                   onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="VD: 23/2023/QH15"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Số ký hiệu</label>
+                <Input
+                  type="text"
+                  name="dateline"
+                  value={formData.dateline}
+                  onChange={handleInputChange}
+                  placeholder="VD: 23/2023/QH15"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Loại luật</label>
+                <Select
+                  name="lawTypeId"
+                  value={selectedLawTypeId}
+                  onChange={handleInputChange}
                   required
                 >
                   <option key="default" value="">Chọn loại luật</option>
-                  {sampleLawTypes.map(type => (
+                  {lawTypes.map(type => (
                     <option key={type.id} value={type.id}>{type.name}</option>
                   ))}
-                </select>
+                </Select>
               </div>
 
               <div>
@@ -306,9 +407,10 @@ export default function LawManagementSection() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                  disabled={isSubmitting}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {editingLaw ? 'Cập nhật' : 'Thêm mới'}
+                  {isSubmitting ? 'Đang xử lý...' : (editingLaw ? 'Cập nhật' : 'Thêm mới')}
                 </button>
               </div>
             </form>

@@ -9,6 +9,11 @@ const Constant =  {
         ResetPasswordPage: '/reset-password',
 
         AdminDashboardPage: '/admin/dashboard',
+    },
+
+    FolderOnCloud:{
+        Law: "laws",
+        ProfileImage: "profile-images"
     }
 }
 
