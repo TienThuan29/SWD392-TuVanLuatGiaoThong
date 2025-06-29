@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/payment")
+@RequestMapping("/api/v1/user-packages/payment")
 public class PaymentController {
     @Autowired
     private final IMomoPaymentUsecase momoPaymentUsecase;

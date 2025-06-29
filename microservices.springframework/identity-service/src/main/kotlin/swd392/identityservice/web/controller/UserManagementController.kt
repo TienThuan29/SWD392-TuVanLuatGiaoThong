@@ -12,7 +12,7 @@ import swd392.identityservice.application.usecase.IUserManagementUsecase
 
 @RestController
 @RequestMapping("/api/v1/admin/user-management")
-class UserManagementController(
+class   UserManagementController(
     private val userManagementUsecase: IUserManagementUsecase
 ) {
 

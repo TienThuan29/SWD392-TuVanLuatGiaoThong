@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserPackageResponseDto {
+public class UserPackageResponse {
     private UUID id;
     private UUID userId;
     private UUID packageId;

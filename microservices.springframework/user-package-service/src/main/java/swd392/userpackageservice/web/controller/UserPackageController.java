@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import swd392.userpackageservice.application.dto.ApiResponse;
-import swd392.userpackageservice.application.dto.UserPackageResponseDto;
+import swd392.userpackageservice.application.dto.UserPackageResponse;
 import swd392.userpackageservice.application.usecase.IUserPackageService;
 import swd392.userpackageservice.web.dto.UserPackageRequest;
 import java.util.UUID;
@@ -20,19 +20,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/user-packages")
+@RequestMapping("/api/v1/user-packages/user-package")
 public class UserPackageController {
 
-    private IUserPackageService userPackageService;
+    private final IUserPackageService userPackageService;
 
     @GetMapping("/health")
     public String healthCheck() {
         return "User Package Service is running!";
     }
 
-    @PostMapping("/create")
+    @PostMapping("/admin/create")
     public ResponseEntity<ApiResponse<?>> createUserPackage(@RequestBody UserPackageRequest userPackageRequest) {
-        UserPackageResponseDto responseDto = userPackageService.createUserPackage(userPackageRequest);
+        UserPackageResponse responseDto = userPackageService.createUserPackage(userPackageRequest);
         return new ResponseEntity<>(
             ApiResponse.builder()
                 .status("success")
@@ -45,7 +45,7 @@ public class UserPackageController {
 
     @GetMapping("/get/{id}")
     public ResponseEntity<ApiResponse<?>> getUserPackageById(@PathVariable UUID id) {
-        UserPackageResponseDto responseDto = userPackageService.getUserPackageById(id);
+        UserPackageResponse responseDto = userPackageService.getUserPackageById(id);
         return new ResponseEntity<>(
             ApiResponse.builder()
                 .status("success")
@@ -69,9 +69,9 @@ public class UserPackageController {
         );
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/admin/update/{id}")
     public ResponseEntity<ApiResponse<?>> updateUserPackage(@PathVariable UUID id, @RequestBody UserPackageRequest userPackageRequest) {
-        UserPackageResponseDto responseDto = userPackageService.updateUserPackage(id, userPackageRequest);
+        UserPackageResponse responseDto = userPackageService.updateUserPackage(id, userPackageRequest);
         return new ResponseEntity<>(
             ApiResponse.builder()
                 .status("success")

@@ -5,7 +5,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import swd392.userpackageservice.application.dto.UserPackageResponseDto;
+import swd392.userpackageservice.application.dto.UserPackageResponse;
 import swd392.userpackageservice.application.exception.CustomExceptions;
 import swd392.userpackageservice.application.usecase.IUserPackageService;
 import swd392.userpackageservice.domain.entity.UserPackage;
@@ -22,7 +22,7 @@ public class UserPackageServiceImpl implements IUserPackageService {
     private ITransactionUserPackage transactionUserPackage;
 
     @Override
-    public UserPackageResponseDto createUserPackage(UserPackageRequest requestDto) {
+    public UserPackageResponse createUserPackage(UserPackageRequest requestDto) {
         UserPackage userPackage = new UserPackage();
         userPackage.setUserId(requestDto.getUserId());
         userPackage.setPackageId(requestDto.getPackageId());
@@ -32,14 +32,26 @@ public class UserPackageServiceImpl implements IUserPackageService {
     }
 
     @Override
-    public UserPackageResponseDto getUserPackageById(UUID id) {
+    public UserPackageResponse getUserPackageById(UUID id) {
         UserPackage userPackage = this.userPackageRepository.findById(id)
                 .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException("UserPackage not found with id: " + id));
         return convertToResponseDto(userPackage);
     }
 
     @Override
-    public List<UserPackageResponseDto> getAllUserPackages() {
+    public UserPackageResponse getUserPackageByUserId(UUID userId) {
+        try {
+            UserPackage userPackage = this.userPackageRepository.findByUserId(userId)
+                    .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException("User package not found with user id: " + userId));
+            return convertToResponseDto(userPackage);
+        }
+        catch (Exception exception) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<UserPackageResponse> getAllUserPackages() {
         List<UserPackage> userPackages = userPackageRepository.findAll();
         return userPackages.stream()
                 .map(this::convertToResponseDto)
@@ -47,7 +59,7 @@ public class UserPackageServiceImpl implements IUserPackageService {
     }
 
     @Override
-    public UserPackageResponseDto updateUserPackage(UUID id, UserPackageRequest requestDto) {
+    public UserPackageResponse updateUserPackage(UUID id, UserPackageRequest requestDto) {
         UserPackage userPackage = this.userPackageRepository.findById(id)
                 .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException("UserPackage not found with id: " + id));
         userPackage.setUserId(requestDto.getUserId());
@@ -69,8 +81,8 @@ public class UserPackageServiceImpl implements IUserPackageService {
         }
     }
 
-    private UserPackageResponseDto convertToResponseDto(UserPackage userPackage) {
-        return UserPackageResponseDto.builder()
+    private UserPackageResponse convertToResponseDto(UserPackage userPackage) {
+        return UserPackageResponse.builder()
                 .id(userPackage.getId())
                 .userId(userPackage.getUserId())
                 .packageId(userPackage.getPackageId())
