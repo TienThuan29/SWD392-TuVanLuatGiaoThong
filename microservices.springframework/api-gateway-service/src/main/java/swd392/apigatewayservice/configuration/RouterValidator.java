@@ -32,6 +32,7 @@ public class RouterValidator {
             "/api/v1/chatbot/generate",
             "/api/v1/chatbot/generate-from-pdf",
             "/api/v1/chatbot/generate-from-pdf-multiparth",
+            "/api/v1/aws/s3/health",
             "/api/v1/law/health",
             "/api/v1/law/get",
             "/api/v1/law/get-all",

@@ -3,7 +3,6 @@ package swd392.userpackageservice.web.dto;
 import lombok.Data;
 import swd392.userpackageservice.domain.fixed.PayType;
 import swd392.userpackageservice.domain.fixed.Status;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;

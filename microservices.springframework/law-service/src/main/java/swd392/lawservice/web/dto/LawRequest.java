@@ -14,5 +14,5 @@ public class LawRequest {
     String sourceUrl;
     String filePath;
     boolean isDeleted;
-    UUID lawTypeId;
+    String lawTypeId;
 }

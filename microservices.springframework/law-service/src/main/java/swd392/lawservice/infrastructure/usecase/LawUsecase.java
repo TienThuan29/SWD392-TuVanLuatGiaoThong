@@ -41,7 +41,7 @@ public class LawUsecase implements ILawUsecase {
     @Override
     public ApiResponse<LawResponse> createLaw(LawRequest lawRequest) {
         try {
-            var lawType = this.lawTypeRepository.findById(lawRequest.getLawTypeId())
+            var lawType = this.lawTypeRepository.findById(UUID.fromString(lawRequest.getLawTypeId()))
                     .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException
                             ("Law type not found with id: " + lawRequest.getLawTypeId())
                     );
@@ -119,7 +119,7 @@ public class LawUsecase implements ILawUsecase {
         // TODO Auto-generated method stub
         Law law = lawRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Law not found with id: " + id));
-        LawType lawType = lawTypeRepository.findById(lawRequest.getLawTypeId())
+        LawType lawType = lawTypeRepository.findById(UUID.fromString(lawRequest.getLawTypeId()))
             .orElseThrow(() -> new IllegalArgumentException("LawType not found with id: " + lawRequest.getLawTypeId()));
 
         law.setTitle(lawRequest.getTittle());
@@ -151,7 +151,7 @@ public class LawUsecase implements ILawUsecase {
 
     private Law convertToLawEntity(LawRequest lawRequest) {
         // Convert LawRequestDto to Law entity
-        LawType lawType = lawTypeRepository.findById(lawRequest.getLawTypeId())
+        LawType lawType = lawTypeRepository.findById(UUID.fromString(lawRequest.getLawTypeId()))
             .orElseThrow(() -> new IllegalArgumentException("LawType not found with id: " + lawRequest.getLawTypeId()));
         
         return Law.builder()

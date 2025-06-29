@@ -2,15 +2,17 @@ package swd392.userpackageservice.domain.repository;
 
 import java.util.UUID;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import swd392.userpackageservice.domain.entity.UserPackage;
 
-@Component
+@Service
+@Transactional
+@RequiredArgsConstructor
 public class TransactionUserPackage implements ITransactionUserPackage{
-    
-    @Autowired
+
     private UserPackageRepository userPackageRepository;
 
     @Override

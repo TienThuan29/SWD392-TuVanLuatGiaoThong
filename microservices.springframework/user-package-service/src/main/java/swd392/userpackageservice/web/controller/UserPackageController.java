@@ -1,16 +1,13 @@
 package swd392.userpackageservice.web.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import swd392.userpackageservice.application.dto.ApiResponse;
 import swd392.userpackageservice.application.dto.UserPackageResponseDto;
 import swd392.userpackageservice.application.usecase.IUserPackageService;
-import swd392.userpackageservice.web.dto.UserPackageRequestDto;
-
+import swd392.userpackageservice.web.dto.UserPackageRequest;
 import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/user-packages")
-public class UserPackageConrtoller {
-    
-    @Autowired
+public class UserPackageController {
+
     private IUserPackageService userPackageService;
 
     @GetMapping("/health")
@@ -34,8 +31,8 @@ public class UserPackageConrtoller {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<?>> createUserPackage(@RequestBody UserPackageRequestDto userPackageRequestDto) {
-        UserPackageResponseDto responseDto = userPackageService.createUserPackage(userPackageRequestDto);
+    public ResponseEntity<ApiResponse<?>> createUserPackage(@RequestBody UserPackageRequest userPackageRequest) {
+        UserPackageResponseDto responseDto = userPackageService.createUserPackage(userPackageRequest);
         return new ResponseEntity<>(
             ApiResponse.builder()
                 .status("success")
@@ -73,8 +70,8 @@ public class UserPackageConrtoller {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<ApiResponse<?>> updateUserPackage(@PathVariable UUID id, @RequestBody UserPackageRequestDto userPackageRequestDto) {
-        UserPackageResponseDto responseDto = userPackageService.updateUserPackage(id, userPackageRequestDto);
+    public ResponseEntity<ApiResponse<?>> updateUserPackage(@PathVariable UUID id, @RequestBody UserPackageRequest userPackageRequest) {
+        UserPackageResponseDto responseDto = userPackageService.updateUserPackage(id, userPackageRequest);
         return new ResponseEntity<>(
             ApiResponse.builder()
                 .status("success")
