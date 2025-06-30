@@ -2,88 +2,86 @@
 
 import Footer from "@/components/combination/Footer_C";
 import Header_C from "@/components/combination/Header_C";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaCheckCircle } from "react-icons/fa";
+import { useUsagePackageCrud } from "@/hooks/useUsagePackageCrud";
+import { UsagePackage } from "@/models/UsagePackage";
 
-const plans = [
-  {
-    id: "basic-001",
-    name: "Basic Plan",
-    descriptions: [
-      "Access to core features",
-      "Email support",
-      "Basic traffic law queries",
-      "Limited daily usage"
-    ],
-    price: 9.99,
-    daily_limit: 10,
-    days_limit: 30,
-    is_deleted: false,
-    created_date: new Date("2024-01-01"),
-    updated_date: new Date("2024-01-10"),
-    button: { text: "Try for Free", type: "primary" },
-    badge: null,
-  },
-  {
-    id: "pro-002",
-    name: "Pro Plan",
-    descriptions: [
-      "Priority support",
-      "Increased daily usage",
-      "Advanced traffic law analysis",
-      "Document generation"
-    ],
-    price: 29.99,
-    daily_limit: 100,
-    days_limit: 90,
-    is_deleted: false,
-    created_date: new Date("2024-02-15"),
-    updated_date: new Date("2024-03-01"),
-    button: { text: "Try for Free", type: "primary" },
-    badge: "Popular",
-  },
-  {
-    id: "premium-003",
-    name: "Premium Plan",
-    descriptions: [
-      "Unlimited queries",
-      "24/7 priority support",
-      "Full traffic law coverage",
-      "Custom document templates",
-      "API access"
-    ],
-    price: 49.99,
-    daily_limit: 1000,
-    days_limit: 365,
-    is_deleted: false,
-    created_date: new Date("2024-03-10"),
-    updated_date: new Date("2024-03-20"),
-    button: { text: "Book a Demo", type: "secondary" },
-    badge: "Best Value",
-  },
-  {
-    id: "premium-004",
-    name: "Premium Plan",
-    descriptions: [
-      "Unlimited queries",
-      "24/7 priority support",
-      "Full traffic law coverage",
-      "Custom document templates",
-      "API access"
-    ],
-    price: 49.99,
-    daily_limit: 1000,
-    days_limit: 365,
-    is_deleted: false,
-    created_date: new Date("2024-03-10"),
-    updated_date: new Date("2024-03-20"),
-    button: { text: "Book a Demo", type: "secondary" },
-    badge: "Best Value",
-  }
-];
+// Type for formatted plan data
+type PlanData = {
+  id: string;
+  name: string;
+  descriptions: string[];
+  price: number;
+  daily_limit: number;
+  days_limit: number;
+  button: {
+    text: string;
+    type: "primary" | "secondary";
+  };
+  badge?: string;
+};
 
 function Pricing() {
   const [isAnnual, setIsAnnual] = useState(true);
+  const { usagePackages, loading, getAllUsagePackages } = useUsagePackageCrud();
+  const [plans, setPlans] = useState<PlanData[]>([]);
+
+  useEffect(() => {
+    getAllUsagePackages();
+  }, [getAllUsagePackages]);
+
+  useEffect(() => {
+    if (usagePackages.length > 0) {
+      const formattedPlans: PlanData[] = usagePackages
+        .filter((pkg: UsagePackage) => !pkg.isDeleted)
+        .map((pkg: UsagePackage, index: number) => {
+          // Split description by "." and filter out empty strings
+          const descriptions = pkg.description 
+            ? pkg.description.split('.').map(desc => desc.trim()).filter(desc => desc.length > 0)
+            : ["Truy cập AI chatbot", "Hỗ trợ tìm kiếm thông tin luật giao thông"];
+          
+          return {
+            id: pkg.id || `plan-${index}`,
+            name: pkg.name || "Gói cơ bản",
+            descriptions: descriptions,
+            price: pkg.price || 0,
+            daily_limit: pkg.dailyLimit || 10,
+            days_limit: pkg.daysLimit || 30,
+            button: {
+              text: "Chọn gói",
+              type: index === 1 ? "primary" : "secondary" // Make the second plan primary
+            },
+            badge: index === 1 ? "Popular" : undefined
+          };
+        });
+      
+      setPlans(formattedPlans);
+    }
+  }, [usagePackages]);
+
+  if (loading) {
+    return (
+      <section className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-300 rounded mb-4"></div>
+            <div className="h-4 bg-gray-300 rounded mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="bg-white rounded-xl shadow-lg p-6">
+                  <div className="h-6 bg-gray-300 rounded mb-4"></div>
+                  <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                  <div className="h-32 bg-gray-300 rounded mb-4"></div>
+                  <div className="h-10 bg-gray-300 rounded"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-gray-50 py-16">
@@ -115,9 +113,9 @@ function Pricing() {
               {/* Price */}
               <div className="mb-4">
                 <span className="text-4xl font-extrabold text-[#0069d1]">
-                  ${price}
+                  {price.toLocaleString('vi-VN')}
                 </span>
-                <span className="text-sm text-gray-700"> VNĐ / month</span>
+                <span className="text-sm text-gray-700"> VNĐ / tháng</span>
               </div>
 
               {/* Title */}
@@ -125,13 +123,13 @@ function Pricing() {
               
               {/* Usage Limits */}
               <div className="text-sm text-gray-700 mb-4">
-                <p>Daily Limit: {daily_limit} queries</p>
-                <p>Valid for: {days_limit} days</p>
+                <p>Giới hạn hàng ngày: {daily_limit} lượt truy vấn</p>
+                <p>Có hiệu lực: {days_limit} ngày</p>
               </div>
 
               {/* Features */}
               <div className="border-t border-gray-200 pt-4 mb-6 flex-grow">
-                <h4 className="font-semibold mb-3 text-gray-900">Features</h4>
+                <h4 className="font-semibold mb-3 text-gray-900">Tính năng</h4>
                 <ul className="text-xs text-gray-700 space-y-2">
                   {descriptions.map((desc, idx) => (
                     <li key={idx} className="flex items-start gap-2">

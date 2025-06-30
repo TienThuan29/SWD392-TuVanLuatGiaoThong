@@ -59,6 +59,7 @@ export function useLawCrud() {
         setLoading(true);
         setError(null);
         try {
+            console.log("New law ", newLaw)
             const response = await api.post(Api.Law.CREATE, newLaw)
             if (response.status === HttpStatus.OK) {
                 setLaws((prev) => [...prev, response.data.dataResponse]);

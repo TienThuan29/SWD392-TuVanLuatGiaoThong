@@ -1,95 +1,135 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { UsagePackage } from "@/models/UsagePackage";
-import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus, FaEye } from "react-icons/fa";
 import { Input } from "@/components/modern-ui/input";
-
-// Sample data - Replace with actual API calls
-const samplePackages: UsagePackage[] = [
-  {
-    id: "1",
-    name: "Gói cơ bản",
-    descriptions: ["10 câu hỏi/ngày", "Hỗ trợ cơ bản"],
-    price: 50000,
-    daily_limit: 10,
-    days_limit: 30,
-    is_deleted: false,
-    created_date: new Date().toISOString() as any,
-    updated_date: new Date().toISOString() as any,
-  },
-];
+import { useUsagePackageCrud } from "@/hooks/useUsagePackageCrud";
 
 export default function UsagePackageSection() {
-  const [packages, setPackages] = useState<UsagePackage[]>(samplePackages);
+  const {
+    usagePackages,
+    loading,
+    getAllUsagePackages,
+    createUsagePackage,
+    updateUsagePackage,
+    deleteUsagePackage,
+  } = useUsagePackageCrud();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPackage, setEditingPackage] = useState<UsagePackage | null>(null);
+  const [viewingPackage, setViewingPackage] = useState<UsagePackage | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [formData, setFormData] = useState<Partial<UsagePackage>>({
     name: "",
-    descriptions: [],
+    description: "",
     price: 0,
-    daily_limit: 0,
-    days_limit: 0,
-    is_deleted: false,
+    dailyLimit: 0,
+    daysLimit: 0,
+    isDeleted: false,
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+  // Column resizing state
+  const [columnWidths, setColumnWidths] = useState({
+    name: 200,
+    description: 150,
+    price: 150,
+    dailyLimit: 150,
+    daysLimit: 120,
+    status: 150,
+    actions: 120,
+  });
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizingColumn, setResizingColumn] = useState<string | null>(null);
+  const tableRef = useRef<HTMLTableElement>(null);
+
+  // Fetch data on component mount
+  useEffect(() => {
+    getAllUsagePackages();
+  }, [getAllUsagePackages]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : name === "price" || name === "daily_limit" || name === "days_limit" ? Number(value) : value,
+      [name]: type === "checkbox" ? checked : name === "price" || name === "dailyLimit" || name === "daysLimit" ? Number(value) : value,
     }));
   };
 
-  const handleDescriptionsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({
-      ...prev,
-      descriptions: e.target.value.split(",").map((desc) => desc.trim()),
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingPackage) {
-      setPackages(
-        packages.map((pkg) =>
-          pkg.id === editingPackage.id ? { ...pkg, ...formData } : pkg
-        )
-      );
-    } else {
-      setPackages([
-        ...packages,
-        {
-          ...formData,
-          id: (Math.random() * 100000).toFixed(0),
-          created_date: new Date().toISOString() as any,
-          updated_date: new Date().toISOString() as any,
-        } as UsagePackage,
-      ]);
+    try {
+      if (editingPackage) {
+        await updateUsagePackage(editingPackage.id!, formData);
+      } else {
+        await createUsagePackage(formData);
+      }
+      setIsModalOpen(false);
+      setEditingPackage(null);
+      setFormData({
+        name: "",
+        description: "",
+        price: 0,
+        dailyLimit: 0,
+        daysLimit: 0,
+        isDeleted: false,
+      });
+    } catch (error) {
+      console.error("Error saving package:", error);
     }
-    setIsModalOpen(false);
-    setEditingPackage(null);
-    setFormData({
-      name: "",
-      descriptions: [],
-      price: 0,
-      daily_limit: 0,
-      days_limit: 0,
-      is_deleted: false,
-    });
   };
 
   const handleEdit = (pkg: UsagePackage) => {
     setEditingPackage(pkg);
     setFormData({
       ...pkg,
-      descriptions: pkg.descriptions || [],
+      description: pkg.description || "",
     });
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id?: string) => {
-    setPackages(packages.filter((pkg) => pkg.id !== id));
+  const handleView = (pkg: UsagePackage) => {
+    setViewingPackage(pkg);
+    setIsViewModalOpen(true);
+  };
+
+  const handleDelete = async (id?: string) => {
+    if (id) {
+      try {
+        await deleteUsagePackage(id);
+      } catch (error) {
+        console.error("Error deleting package:", error);
+      }
+    }
+  };
+
+  // Column resizing handlers
+  const handleMouseDown = (e: React.MouseEvent, column: string) => {
+    e.preventDefault();
+    setIsResizing(true);
+    setResizingColumn(column);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isResizing || !resizingColumn || !tableRef.current) return;
+
+    const tableRect = tableRef.current.getBoundingClientRect();
+    const newWidth = e.clientX - tableRect.left;
+    
+    setColumnWidths(prev => ({
+      ...prev,
+      [resizingColumn]: Math.max(100, newWidth), // Minimum width of 100px
+    }));
+  };
+
+  const handleMouseUp = () => {
+    setIsResizing(false);
+    setResizingColumn(null);
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
   };
 
   return (
@@ -101,11 +141,11 @@ export default function UsagePackageSection() {
             setEditingPackage(null);
             setFormData({
               name: "",
-              descriptions: [],
+              description: "",
               price: 0,
-              daily_limit: 0,
-              days_limit: 0,
-              is_deleted: false,
+              dailyLimit: 0,
+              daysLimit: 0,
+              isDeleted: false,
             });
             setIsModalOpen(true);
           }}
@@ -115,52 +155,163 @@ export default function UsagePackageSection() {
         </button>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      )}
+
       {/* Package Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên gói</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mô tả</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá (VNĐ)</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giới hạn/ngày</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số ngày</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {packages.map((pkg) => (
-              <tr key={pkg.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">{pkg.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{pkg.descriptions?.join(", ")}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{pkg.price?.toLocaleString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{pkg.daily_limit}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{pkg.days_limit}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${pkg.is_deleted ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-                    {pkg.is_deleted ? 'Đã xóa' : 'Đang hoạt động'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button
-                    onClick={() => handleEdit(pkg)}
-                    className="text-blue-600 hover:text-blue-900 mr-4"
+      {!loading && (
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="overflow-x-auto">
+            <table ref={tableRef} className="w-full divide-y divide-gray-200" style={{ tableLayout: 'fixed', minWidth: '1000px' }}>
+              <thead className="bg-gray-50">
+                <tr>
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
+                    style={{ width: columnWidths.name }}
                   >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(pkg.id)}
-                    className="text-red-600 hover:text-red-900"
+                    Tên gói
+                    <div
+                      className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400"
+                      onMouseDown={(e) => handleMouseDown(e, 'name')}
+                    />
+                  </th>
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
+                    style={{ width: columnWidths.description }}
                   >
-                    <FaTrash />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                    Mô tả
+                    <div
+                      className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400"
+                      onMouseDown={(e) => handleMouseDown(e, 'description')}
+                    />
+                  </th>
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
+                    style={{ width: columnWidths.price }}
+                  >
+                    Giá (VNĐ)
+                    <div
+                      className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400"
+                      onMouseDown={(e) => handleMouseDown(e, 'price')}
+                    />
+                  </th>
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
+                    style={{ width: columnWidths.dailyLimit }}
+                  >
+                    Giới hạn/ngày
+                    <div
+                      className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400"
+                      onMouseDown={(e) => handleMouseDown(e, 'dailyLimit')}
+                    />
+                  </th>
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
+                    style={{ width: columnWidths.daysLimit }}
+                  >
+                    Số ngày
+                    <div
+                      className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400"
+                      onMouseDown={(e) => handleMouseDown(e, 'daysLimit')}
+                    />
+                  </th>
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
+                    style={{ width: columnWidths.status }}
+                  >
+                    Trạng thái
+                    <div
+                      className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400"
+                      onMouseDown={(e) => handleMouseDown(e, 'status')}
+                    />
+                  </th>
+                  <th 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
+                    style={{ width: columnWidths.actions }}
+                  >
+                    Thao tác
+                    <div
+                      className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400"
+                      onMouseDown={(e) => handleMouseDown(e, 'actions')}
+                    />
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {usagePackages.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                      Không có dữ liệu gói sử dụng
+                    </td>
+                  </tr>
+                ) : (
+                  usagePackages.map((pkg) => (
+                    <tr key={pkg.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.name }}>
+                        <div className="truncate" title={pkg.name}>
+                          {pkg.name}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 overflow-hidden text-ellipsis" style={{ width: columnWidths.description }}>
+                        <div className="truncate" title={pkg.description}>
+                          {pkg.description}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.price }}>
+                        <div className="truncate" title={pkg.price?.toLocaleString()}>
+                          {pkg.price?.toLocaleString()}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.dailyLimit }}>
+                        <div className="truncate" title={pkg.dailyLimit?.toString()}>
+                          {pkg.dailyLimit}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.daysLimit }}>
+                        <div className="truncate" title={pkg.daysLimit?.toString()}>
+                          {pkg.daysLimit}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.status }}>
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${pkg.isDeleted ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                          {pkg.isDeleted ? 'Đã xóa' : 'Đang hoạt động'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium overflow-hidden text-ellipsis" style={{ width: columnWidths.actions }}>
+                        <button
+                          onClick={() => handleView(pkg)}
+                          className="text-green-600 hover:text-green-900 mr-4"
+                          title="Xem chi tiết"
+                        >
+                          <FaEye />
+                        </button>
+                        <button
+                          onClick={() => handleEdit(pkg)}
+                          className="text-blue-600 hover:text-blue-900 mr-4"
+                          title="Chỉnh sửa"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(pkg.id)}
+                          className="text-red-600 hover:text-red-900"
+                          title="Xóa"
+                        >
+                          <FaTrash />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Modal */}
       {isModalOpen && (
@@ -181,12 +332,14 @@ export default function UsagePackageSection() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Mô tả (phân tách bằng dấu phẩy)</label>
-                <Input
-                  type="text"
-                  name="descriptions"
-                  value={formData.descriptions?.join(", ")}
-                  onChange={handleDescriptionsChange}
+                <label className="block text-sm font-medium text-gray-700">Mô tả</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows={3}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Nhập mô tả gói sử dụng..."
                 />
               </div>
               <div>
@@ -204,8 +357,8 @@ export default function UsagePackageSection() {
                 <label className="block text-sm font-medium text-gray-700">Giới hạn/ngày</label>
                 <Input
                   type="number"
-                  name="daily_limit"
-                  value={formData.daily_limit}
+                  name="dailyLimit"
+                  value={formData.dailyLimit}
                   onChange={handleInputChange}
                   required
                   min={0}
@@ -215,8 +368,8 @@ export default function UsagePackageSection() {
                 <label className="block text-sm font-medium text-gray-700">Số ngày</label>
                 <Input
                   type="number"
-                  name="days_limit"
-                  value={formData.days_limit}
+                  name="daysLimit"
+                  value={formData.daysLimit}
                   onChange={handleInputChange}
                   required
                   min={0}
@@ -225,8 +378,8 @@ export default function UsagePackageSection() {
               <div className="flex items-center">
                 <Input
                   type="checkbox"
-                  name="is_deleted"
-                  checked={formData.is_deleted}
+                  name="isDeleted"
+                  checked={formData.isDeleted}
                   onChange={handleInputChange}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
@@ -248,6 +401,64 @@ export default function UsagePackageSection() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* View Detail Modal */}
+      {isViewModalOpen && viewingPackage && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
+            <h3 className="text-lg font-semibold mb-4">Chi tiết gói sử dụng</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Tên gói</label>
+                <p className="mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                  {viewingPackage.name}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Mô tả</label>
+                <p className="mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md whitespace-pre-wrap">
+                  {viewingPackage.description || "Không có mô tả"}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Giá (VNĐ)</label>
+                <p className="mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                  {viewingPackage.price?.toLocaleString()}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Giới hạn/ngày</label>
+                <p className="mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                  {viewingPackage.dailyLimit}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Số ngày</label>
+                <p className="mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                  {viewingPackage.daysLimit}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Trạng thái</label>
+                <p className="mt-1">
+                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${viewingPackage.isDeleted ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                    {viewingPackage.isDeleted ? 'Đã xóa' : 'Đang hoạt động'}
+                  </span>
+                </p>
+              </div>
+              <div className="flex justify-end mt-6">
+                <button
+                  type="button"
+                  onClick={() => setIsViewModalOpen(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                >
+                  Đóng
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

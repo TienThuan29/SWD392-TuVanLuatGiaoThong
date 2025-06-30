@@ -4,6 +4,7 @@ export type Law = {
   dateline?: string;
   title?: string;
   lawType?: LawType;
+  lawTypeId?: string;
   issueDate?: string;
   effectiveDate?: string;
   sourceUrl?: string;

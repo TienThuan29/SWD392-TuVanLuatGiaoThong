@@ -33,23 +33,50 @@ export function useFileManager() {
             });
 
             if (response.status === HttpStatus.CREATED) {
-                const fileData = response.data.dataResponse;
+                const responseData = response.data.dataResponse;
+                console.log('Upload response:', response.data);
+                console.log('Response data:', responseData);
+                
+                // Handle different response structures
+                let fileData: FileUploadResponse;
+                
+                if (typeof responseData === 'string') {
+                    // If dataResponse is a string (file URL), construct the object
+                    fileData = {
+                        fileUrl: responseData,
+                        fileName: file.name,
+                        folderName: folderName
+                    };
+                } else if (responseData && typeof responseData === 'object' && responseData.fileUrl) {
+                    // If dataResponse is already an object with fileUrl
+                    fileData = responseData;
+                } else {
+                    const errorMessage = "Response không có cấu trúc đúng";
+                    console.error('Invalid response structure:', responseData);
+                    toast.error(errorMessage);
+                    throw new Error(errorMessage);
+                }
+                
+                console.log('Processed file data:', fileData);
                 setUploadedFile(fileData);
                 toast.success("Tải file lên thành công");
                 return fileData;
             } else {
-                toast.error("Có lỗi xảy ra khi tải file lên");
+                const errorMessage = "Có lỗi xảy ra khi tải file lên";
+                toast.error(errorMessage);
+                throw new Error(errorMessage);
             }
         } 
         catch (err: any) {
-            toast.error("Có lỗi xảy ra khi tải file lên");
-            setError(err.message || "Unknown error");
+            const errorMessage = err.message || "Có lỗi xảy ra khi tải file lên";
+            toast.error(errorMessage);
+            setError(errorMessage);
             throw err;
         } 
         finally {
             setLoading(false);
         }
-    }, []);
+    }, [api]);
 
     // Create folder in S3
     const createFolder = useCallback(async (folderName: string) => {

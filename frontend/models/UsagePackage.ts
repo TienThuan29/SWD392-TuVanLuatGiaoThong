@@ -1,14 +1,15 @@
 export type UsagePackage = {
   id?: string;
   name?: string;
-  descriptions?: string[];
+  description?: string;
   price?: number;
-  daily_limit?: number;
-  days_limit?: number;
-  is_deleted?: boolean;
-  created_date?: Date;
-  updated_date?: Date;
+  dailyLimit?: number;
+  daysLimit?: number;
+  isDeleted?: boolean;
+  createdDate?: string;
+  updatedDate?: string;
 };
+
 
 export type UserPackage = {
   userId?: string;

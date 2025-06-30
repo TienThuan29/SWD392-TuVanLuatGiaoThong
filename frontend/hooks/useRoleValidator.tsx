@@ -11,11 +11,11 @@ interface RoleValidator {
 
 export function useRoleValidator(user: User | null | undefined): RoleValidator {
   return useMemo(() => {
-    console.log("useRoleValidator - user:", user);
-    console.log("useRoleValidator - user.role:", user?.role);
+    // console.log("useRoleValidator - user:", user);
+    // console.log("useRoleValidator - user.role:", user?.role);
     
     if (!user?.role) {
-      console.log("useRoleValidator - no role found");
+      // console.log("useRoleValidator - no role found");
       return {
         isUser: false,
         isAdmin: false,
