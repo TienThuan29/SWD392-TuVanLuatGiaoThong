@@ -76,12 +76,13 @@ public class GlobalGatewayFilter implements GlobalFilter, Ordered {
                     ){
                         System.out.println("Role user is pass");
                     }
-                    if (response.dataResponse.contains("ROLE_ADMIN") &&
+                    else if (response.dataResponse.contains("ROLE_ADMIN") &&
                         roleRouterValidator.isAdminEndpoint(request.getPath().value())
                     ){
                         System.out.println("Role admin is pass");
                     }
                     else {
+                        System.out.println("No role is pass");
                         return onError(exchange, HttpStatus.FORBIDDEN);
                     }
                 }

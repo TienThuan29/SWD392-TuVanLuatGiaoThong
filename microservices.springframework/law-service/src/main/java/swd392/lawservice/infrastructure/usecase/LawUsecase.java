@@ -53,7 +53,7 @@ public class LawUsecase implements ILawUsecase {
                     .build();
         }
         catch (Exception exception) {
-            throw new CustomExceptions.InternalServerException(exception.getMessage());
+            throw new CustomExceptions.InternalServerException("Create law fail, message: "+exception.getMessage());
         }
     }
 
@@ -122,7 +122,7 @@ public class LawUsecase implements ILawUsecase {
         LawType lawType = lawTypeRepository.findById(UUID.fromString(lawRequest.getLawTypeId()))
             .orElseThrow(() -> new IllegalArgumentException("LawType not found with id: " + lawRequest.getLawTypeId()));
 
-        law.setTitle(lawRequest.getTittle());
+        law.setTitle(lawRequest.getTitle());
         law.setLawType(lawType);
         law.setReferenceNumber(lawRequest.getReferenceNumber());
         law.setDateline(lawRequest.getDateline());
@@ -130,7 +130,6 @@ public class LawUsecase implements ILawUsecase {
         law.setEffectiveDate(lawRequest.getEffectiveDate());
         law.setSourceUrl(lawRequest.getSourceUrl());
         law.setFilePath(lawRequest.getFilePath());
-        law.setDeleted(lawRequest.isDeleted());
         transactionLaw.save(law);
         return convertToLawResponseDto(law);
     }
@@ -155,7 +154,7 @@ public class LawUsecase implements ILawUsecase {
             .orElseThrow(() -> new IllegalArgumentException("LawType not found with id: " + lawRequest.getLawTypeId()));
         
         return Law.builder()
-            .title(lawRequest.getTittle())
+            .title(lawRequest.getTitle())
             .lawType(lawType)
             .referenceNumber(lawRequest.getReferenceNumber())
             .dateline(lawRequest.getDateline())
@@ -163,7 +162,6 @@ public class LawUsecase implements ILawUsecase {
             .effectiveDate(lawRequest.getEffectiveDate())
             .sourceUrl(lawRequest.getSourceUrl())
             .filePath(lawRequest.getFilePath())
-            .isDeleted(lawRequest.isDeleted())
             .build();
     }
 
@@ -180,7 +178,7 @@ public class LawUsecase implements ILawUsecase {
 
         LawResponse lawResponseDto = new LawResponse();
         lawResponseDto.setId(law.getId());
-        lawResponseDto.setTittle(law.getTitle());
+        lawResponseDto.setTitle(law.getTitle());
         lawResponseDto.setIssueDate(law.getIssueDate());
         lawResponseDto.setReferenceNumber(law.getReferenceNumber());
         lawResponseDto.setDateline(law.getDateline());

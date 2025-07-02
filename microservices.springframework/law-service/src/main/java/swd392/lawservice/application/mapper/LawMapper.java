@@ -1,5 +1,6 @@
 package swd392.lawservice.application.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import swd392.lawservice.application.dto.LawResponse;
 import swd392.lawservice.domain.entity.Law;
@@ -11,16 +12,17 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Component("lawMapper_LawService")
+@RequiredArgsConstructor
 public class LawMapper {
 
-    private LawTypeMapper lawTypeMapper;
+    private final LawTypeMapper lawTypeMapper;
 
     public LawResponse toResponse(Law law) {
         if (law == null)
             return null;
         LawResponse dto = new LawResponse();
         dto.setId(law.getId());
-        dto.setTittle(law.getTitle());
+        dto.setTitle(law.getTitle());
         dto.setReferenceNumber(law.getReferenceNumber());
         dto.setDateline(law.getDateline());
         dto.setIssueDate(law.getIssueDate());
@@ -41,14 +43,14 @@ public class LawMapper {
             return null;
         return Law.builder()
                 .id(UUID.randomUUID())
-                .title(request.getTittle())
+                .title(request.getTitle())
                 .referenceNumber(request.getReferenceNumber())
                 .dateline(request.getDateline())
                 .issueDate(request.getIssueDate())
                 .effectiveDate(request.getEffectiveDate())
                 .sourceUrl(request.getSourceUrl())
                 .filePath(request.getFilePath())
-                .isDeleted(request.isDeleted())
+                .isDeleted(Boolean.FALSE)
                 .lawType(lawType)
                 .build();
     }
@@ -57,14 +59,13 @@ public class LawMapper {
         if (lawRequest == null || law == null) {
             return null;
         }
-        law.setTitle(lawRequest.getTittle());
+        law.setTitle(lawRequest.getTitle());
         law.setReferenceNumber(lawRequest.getReferenceNumber());
         law.setDateline(lawRequest.getDateline());
         law.setSourceUrl(lawRequest.getSourceUrl());
         law.setFilePath(lawRequest.getFilePath());
         law.setIssueDate(lawRequest.getIssueDate());
         law.setEffectiveDate(lawRequest.getEffectiveDate());
-        law.setDeleted(lawRequest.isDeleted());
         var zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
         law.setUpdatedDate(ZonedDateTime.now(zoneId).toInstant());
 

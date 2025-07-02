@@ -2,6 +2,7 @@ package aas.cloudstorageservice.web.controller
 
 import aas.cloudstorageservice.application.dto.ApiResponse
 import aas.cloudstorageservice.application.usecase.IAwsS3BucketUsecase
+import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,11 +15,18 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 @RequestMapping("/api/v1/aws/s3")
 class AwsS3Controller(
-    private val awsS3BucketUsecase: IAwsS3BucketUsecase
+    private val awsS3BucketUsecase: IAwsS3BucketUsecase,
+    private val environment: Environment
 ) {
 
     @GetMapping("/health")
     fun health() : String {
+        val config = mapOf(
+            "maxFileSize" to "${environment.getProperty("spring.servlet.multipart.max-file-size")}",
+            "maxRequestSize" to "${environment.getProperty("spring.servlet.multipart.max-request-size")}",
+            "enabled" to "${environment.getProperty("spring.servlet.multipart.enabled")}"
+        )
+        println(config);
         return "AWS S3 Bucket Service is up and running"
     }
 

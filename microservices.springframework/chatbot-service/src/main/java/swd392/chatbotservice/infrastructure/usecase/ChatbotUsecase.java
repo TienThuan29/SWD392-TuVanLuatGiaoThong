@@ -1,14 +1,15 @@
 package swd392.chatbotservice.infrastructure.usecase;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
-
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.content.Media;
 import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatModel;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,33 +19,36 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MimeType;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
 import swd392.chatbotservice.application.dto.ChatRequest;
 import swd392.chatbotservice.application.dto.ResponseAi;
+import swd392.chatbotservice.application.exception.CustomExceptions;
 import swd392.chatbotservice.application.usecase.IChatbotUsecase;
+import swd392.chatbotservice.domain.entity.ChatHistory;
+import swd392.chatbotservice.domain.entity.ChatItem;
+import swd392.chatbotservice.domain.repository.IChatbotRepository;
 import swd392.chatbotservice.infrastructure.configuration.ChatbotConfiguration;
+import swd392.chatbotservice.infrastructure.thirdparty.GeminiApi;
+import swd392.chatbotservice.web.dto.UserPromptRequest;
+
 
 @Service
+@RequiredArgsConstructor
 public class ChatbotUsecase implements IChatbotUsecase {
 
-        @Autowired
-        private ChatbotConfiguration config;
+        private final ChatbotConfiguration config;
 
-        @Autowired
-        private VertexAiGeminiChatModel chatModel;
+        private final VertexAiGeminiChatModel chatModel;
+
+        private final IChatbotRepository chatbotRepository;
+
+        private final GeminiApi geminiApi;
 
         @Override
-        public String generateContent(String prompt) {
-
+        public final String generateContent(String prompt) {
                 RestTemplate restTemplate = new RestTemplate();
-
                 String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="
                                 + config.getApiKey();
-
-                // Set up headers - tạo đối tượng HttpHeaders để cấu hình
                 HttpHeaders headers = new HttpHeaders();
-
-                // Cho biết loại dữ liệu sẽ nhận - cụ thể ở đây là JSON
                 headers.setContentType(MediaType.APPLICATION_JSON);
 
                 // Construct request body - tạo cấu trúc body
@@ -62,13 +66,68 @@ public class ChatbotUsecase implements IChatbotUsecase {
         }
 
         @Override
+        public ChatHistory generateWithAuthenticatedUser(UserPromptRequest userPromptRequest) {
+                var generatedContent = this.geminiApi.getTextContentOnly(userPromptRequest.getPrompt());
+                // 1. Begin a new chat, id = null
+                var zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
+                ChatHistory chatHistory = null;
+                if (userPromptRequest.getChatId() == null || userPromptRequest.getChatId().toString().isEmpty()) {
+                        List<ChatItem> newHistories = List.of(
+                                ChatItem.builder()
+                                        .userText(userPromptRequest.getPrompt())
+                                        .botText(generatedContent)
+                                        .createdDate(ZonedDateTime.now(zoneId).toInstant().toString())
+                                        .build()
+                        );
+                        chatHistory = ChatHistory.builder()
+                                .id(UUID.randomUUID())
+                                .userId(userPromptRequest.getUserId())
+                                .chatTitle("New Chat")
+                                .histories(newHistories)
+                                .build();
+                        this.chatbotRepository.save(chatHistory);
+                }
+                // 2. Continue chat, id != null
+                else {
+                        chatHistory = this.chatbotRepository.findById(userPromptRequest.getChatId());
+                        if (chatHistory == null)
+                                throw new CustomExceptions.ResourceNotFoundException(
+                                        "Chat history not found with id: " + userPromptRequest.getChatId()
+                                );
+                        else {
+                                // Update chat history
+                                List<ChatItem> updatedHistories = chatHistory.getHistories();
+                                updatedHistories.add(
+                                        ChatItem.builder()
+                                                .userText(userPromptRequest.getPrompt())
+                                                .botText(generatedContent)
+                                                .createdDate(ZonedDateTime.now(zoneId).toInstant().toString())
+                                                .build()
+                                );
+                                chatHistory.setHistories(updatedHistories);
+                                this.chatbotRepository.update(chatHistory);
+                        }
+                }
+
+                return chatHistory;
+        }
+
+        public ResponseAi generateContentFromPDF(String prompt) {
+                var userMessage = UserMessage.builder()
+                        .text(prompt)
+                        .build();
+                var aiResponse = this.chatModel.call(new Prompt(List.of(userMessage)));
+                return new ResponseAi(prompt, aiResponse.getResult().getOutput().getText());
+        }
+
+        @Override
         public ResponseAi generateContentFromPDF(String pdfUrl, String prompt) {
 
-                var pdfData = new ClassPathResource(pdfUrl);
+                //var pdfData = new ClassPathResource(pdfUrl);
 
                 var userMessage = UserMessage.builder()
                                 .text(prompt)
-                                .media(List.of(new Media(new MimeType("application", "pdf"), pdfData)))
+                                //.media(List.of(new Media(new MimeType("application", "pdf"), pdfData)))
                                 .build();
 
                 var aiResponse = this.chatModel.call(new Prompt(List.of(userMessage)));

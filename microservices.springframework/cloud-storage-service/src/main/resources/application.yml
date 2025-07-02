@@ -3,3 +3,14 @@ spring:
     import: ${CONFIG_IMPORT_SERVER_URL:configserver:http://localhost:8888}
   application:
     name: cloud-storage-service
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
+      enabled: true
+
+server:
+  tomcat:
+    max-http-post-size: 25MB
+    max-swallow-size: 25MB
+  port: 8091

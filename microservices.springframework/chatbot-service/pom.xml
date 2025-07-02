@@ -33,6 +33,13 @@
 	</properties>
 	<dependencies>
 
+		<!-- Hashing lib -->
+		<dependency>
+			<groupId>org.hashids</groupId>
+			<artifactId>hashids</artifactId>
+			<version>1.0.3</version>
+		</dependency>
+
         <!-- Open Feign Client -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -51,16 +58,18 @@
         </dependency>
 		
 		<!-- Spring data with dynamo db		-->
-		<!-- <dependency>
+		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-commons</artifactId>
-			<version>3.2.2</version>
-		</dependency> -->
+			<version>3.4.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-dynamodb</artifactId>
 			<version>1.12.714</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.github.derjust</groupId>
 			<artifactId>spring-data-dynamodb</artifactId>

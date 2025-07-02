@@ -37,7 +37,9 @@ public class RouterValidator {
             "/api/v1/law/get",
             "/api/v1/law/get-all",
             "/api/v1/law/type/get",
-            "/api/v1/law/type/get-all"
+            "/api/v1/law/type/get-all",
+            "/api/v1/user-packages/usage-package/get-all",
+            "/api/v1/user-packages/usage-package/get"
     );
 
     /**

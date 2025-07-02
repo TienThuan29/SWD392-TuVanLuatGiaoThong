@@ -1,4 +1,4 @@
-package swd392.lawservice.application.exception;
+package swd392.chatbotservice.application.exception;
 
 import lombok.Getter;
 import lombok.Setter;

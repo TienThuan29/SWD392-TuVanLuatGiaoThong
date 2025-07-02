@@ -1,2 +1,14 @@
 server:
   port: 8093
+
+spring:
+  ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: ${GEMINI_PROJECT_ID}
+          location: ${GEMINI_LOCATION}
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}

@@ -8,7 +8,7 @@ import java.util.UUID;
 @Data
 public class LawResponse {
     UUID id;
-    String tittle;
+    String title;
     String referenceNumber;
     String dateline;
     Instant issueDate;

@@ -6,13 +6,12 @@ import java.util.UUID;
 
 @Data
 public class LawRequest {
-    String tittle;
+    String title;
     String referenceNumber;
     String dateline;
     Instant issueDate;
     Instant effectiveDate;
     String sourceUrl;
     String filePath;
-    boolean isDeleted;
     String lawTypeId;
 }

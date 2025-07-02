@@ -5,7 +5,6 @@ import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import com.google.cloud.vertexai.Transport;
 import com.google.cloud.vertexai.VertexAI;
 

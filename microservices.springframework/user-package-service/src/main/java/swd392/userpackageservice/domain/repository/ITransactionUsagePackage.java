@@ -1,7 +1,6 @@
 package swd392.userpackageservice.domain.repository;
 
 import swd392.userpackageservice.domain.entity.UsagePackage;
-
 import java.util.UUID;
 
 public interface ITransactionUsagePackage {

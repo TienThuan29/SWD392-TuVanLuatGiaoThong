@@ -19,13 +19,7 @@ public class ChatItem {
     @JsonProperty("bot_text")
     private String botText;
 
-    @JsonProperty("date_instant")
-    private Instant dateInstant;
-
-    @JsonProperty("is_deleted")
-    private Boolean isDeleted;
-
     @JsonProperty("created_date")
-    private Instant createdDate;
+    private String createdDate;
 
 }
