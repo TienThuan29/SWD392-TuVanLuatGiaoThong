@@ -1,17 +1,20 @@
 package swd392.chatbotservice.application.usecase;
 
 import org.springframework.web.multipart.MultipartFile;
+import swd392.chatbotservice.application.dto.ChatHistoryResponse;
 import swd392.chatbotservice.application.dto.ChatRequest;
 import swd392.chatbotservice.application.dto.ResponseAi;
-import swd392.chatbotservice.domain.entity.ChatHistory;
 import swd392.chatbotservice.web.dto.UserPromptRequest;
+import java.util.List;
+import java.util.UUID;
 
 public interface IChatbotUsecase {
 
-    // Generates content based on the provided prompt from Gemini.
     String generateContent(String prompt);
 
-    ChatHistory generateWithAuthenticatedUser(UserPromptRequest userPromptRequest);
+    ChatHistoryResponse generateWithAuthenticatedUser(UserPromptRequest userPromptRequest);
+
+    List<ChatHistoryResponse> getAllChatHistoriesByUserId(UUID userId);
 
     ResponseAi generateContentFromPDF(String url, String prompt);
 

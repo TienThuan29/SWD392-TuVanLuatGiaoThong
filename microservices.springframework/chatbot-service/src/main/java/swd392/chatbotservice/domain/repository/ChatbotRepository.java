@@ -3,6 +3,7 @@ package swd392.chatbotservice.domain.repository;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBSaveExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,17 @@ public class ChatbotRepository implements IChatbotRepository {
     @Override
     public ChatHistory findById(UUID id) {
         return dynamoDBMapper.load(ChatHistory.class, id);
+    }
+
+    @Override
+    public List<ChatHistory> findByUserId(UUID userId) {
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                .withFilterExpression("user_id = :userId")
+                .withExpressionAttributeValues(Map.of(
+                        ":userId", new AttributeValue().withS(userId.toString())
+                ));
+
+        return dynamoDBMapper.scan(ChatHistory.class, scanExpression);
     }
 
     @Override

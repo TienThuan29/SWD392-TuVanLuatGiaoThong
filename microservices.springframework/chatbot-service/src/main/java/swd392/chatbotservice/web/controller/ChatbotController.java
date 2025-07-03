@@ -2,16 +2,13 @@ package swd392.chatbotservice.web.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import swd392.chatbotservice.application.dto.ApiResponse;
 import swd392.chatbotservice.application.dto.ChatRequest;
 import swd392.chatbotservice.application.dto.RequestPDF;
 import swd392.chatbotservice.application.usecase.IChatbotUsecase;
 import swd392.chatbotservice.web.dto.UserPromptRequest;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,6 +41,17 @@ public class ChatbotController {
                 .message("Content generated successfully for authenticated user")
                 .dataResponse(chatbotUsecase.generateWithAuthenticatedUser(userPromptRequest))
                 .build()
+        );
+    }
+
+    @GetMapping("/authenticated-user/get-histories/{userId}")
+    public ResponseEntity<ApiResponse<?>> getAllChatHistoriesByUserId(@PathVariable("userId") UUID userId) {
+        return ResponseEntity.ok(
+          ApiResponse.builder()
+                  .status("success")
+                  .message("Content generated successfully for authenticated user")
+                  .dataResponse(chatbotUsecase.getAllChatHistoriesByUserId(userId))
+                  .build()
         );
     }
 

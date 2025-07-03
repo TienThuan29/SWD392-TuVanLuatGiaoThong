@@ -5,6 +5,8 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -19,9 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MimeType;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import swd392.chatbotservice.application.dto.ChatHistoryResponse;
 import swd392.chatbotservice.application.dto.ChatRequest;
 import swd392.chatbotservice.application.dto.ResponseAi;
 import swd392.chatbotservice.application.exception.CustomExceptions;
+import swd392.chatbotservice.application.mapper.ChatHistoryMapper;
 import swd392.chatbotservice.application.usecase.IChatbotUsecase;
 import swd392.chatbotservice.domain.entity.ChatHistory;
 import swd392.chatbotservice.domain.entity.ChatItem;
@@ -42,6 +46,8 @@ public class ChatbotUsecase implements IChatbotUsecase {
         private final IChatbotRepository chatbotRepository;
 
         private final GeminiApi geminiApi;
+
+        private final ChatHistoryMapper chatHistoryMapper;
 
         @Override
         public final String generateContent(String prompt) {
@@ -66,7 +72,7 @@ public class ChatbotUsecase implements IChatbotUsecase {
         }
 
         @Override
-        public ChatHistory generateWithAuthenticatedUser(UserPromptRequest userPromptRequest) {
+        public ChatHistoryResponse generateWithAuthenticatedUser(UserPromptRequest userPromptRequest) {
                 var generatedContent = this.geminiApi.getTextContentOnly(userPromptRequest.getPrompt());
                 // 1. Begin a new chat, id = null
                 var zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
@@ -109,7 +115,13 @@ public class ChatbotUsecase implements IChatbotUsecase {
                         }
                 }
 
-                return chatHistory;
+                return this.chatHistoryMapper.toResponse(chatHistory);
+        }
+
+        @Override
+        public List<ChatHistoryResponse> getAllChatHistoriesByUserId(UUID userId) {
+                return this.chatbotRepository.findByUserId(userId)
+                        .stream().map(chatHistoryMapper::toResponse).collect(Collectors.toList());
         }
 
         public ResponseAi generateContentFromPDF(String prompt) {

@@ -13,6 +13,8 @@ public interface IChatbotRepository  {
 
     public ChatHistory findById(UUID id);
 
+    public List<ChatHistory> findByUserId(UUID userId);
+
     public void delete(ChatHistory chatHistory);
 
     public void update(ChatHistory chatHistory);
