@@ -1,7 +1,6 @@
 package swd392.chatbotservice.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +17,9 @@ public class ChatItem {
 
     @JsonProperty("bot_text")
     private String botText;
+
+    @JsonProperty("bot_sumerization")
+    private String botSumerization;
 
     @JsonProperty("created_date")
     private String createdDate;

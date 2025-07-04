@@ -14,7 +14,7 @@ public interface IChatbotUsecase {
 
     ChatHistoryResponse generateWithAuthenticatedUser(UserPromptRequest userPromptRequest);
 
-    List<ChatHistoryResponse> getAllChatHistoriesByUserId(UUID userId);
+    List<ChatHistoryResponse> getAllChatHistoriesByUserId(String userId);
 
     ResponseAi generateContentFromPDF(String url, String prompt);
 

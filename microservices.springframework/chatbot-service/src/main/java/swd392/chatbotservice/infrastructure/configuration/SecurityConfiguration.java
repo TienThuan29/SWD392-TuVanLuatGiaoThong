@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private static final List<String> ALLOWED_ORIGINS = Arrays.asList("http://localhost:3000");
+    private static final List<String> ALLOWED_ORIGINS = Arrays.asList("http://localhost:3000", "http://192.168.2.73:3000");
     private static final List<String> ALLOWED_METHODS = Arrays.asList("GET", "POST", "PUT", "DELETE");
     private static final List<String> ALLOWED_HEADERS = Arrays.asList("*");
     private static final long CORS_MAX_AGE = 3600L;

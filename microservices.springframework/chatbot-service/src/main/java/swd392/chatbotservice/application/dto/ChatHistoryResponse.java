@@ -13,8 +13,6 @@ public class ChatHistoryResponse {
 
     private UUID id;
 
-    private UUID userId;
-
     private Instant createdDate;
 
     private String chatTitle;

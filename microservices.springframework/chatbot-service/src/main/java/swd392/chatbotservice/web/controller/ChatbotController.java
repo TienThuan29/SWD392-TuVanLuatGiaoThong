@@ -45,7 +45,7 @@ public class ChatbotController {
     }
 
     @GetMapping("/authenticated-user/get-histories/{userId}")
-    public ResponseEntity<ApiResponse<?>> getAllChatHistoriesByUserId(@PathVariable("userId") UUID userId) {
+    public ResponseEntity<ApiResponse<?>> getAllChatHistoriesByUserId(@PathVariable("userId") String userId) {
         return ResponseEntity.ok(
           ApiResponse.builder()
                   .status("success")
@@ -67,7 +67,7 @@ public class ChatbotController {
         );
     }
 
-    @PostMapping("/generate-from-pdf-multiparth")
+    @PostMapping("/generate-from-pdf-multiparth")   
     public ResponseEntity<ApiResponse<Object>> generateContentFromPdf(@RequestBody ChatRequest request) throws Exception {
         return ResponseEntity.ok(
             ApiResponse.builder()

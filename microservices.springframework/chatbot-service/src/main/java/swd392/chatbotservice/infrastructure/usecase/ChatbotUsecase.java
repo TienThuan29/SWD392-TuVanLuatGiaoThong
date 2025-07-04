@@ -32,6 +32,9 @@ import swd392.chatbotservice.domain.entity.ChatItem;
 import swd392.chatbotservice.domain.repository.IChatbotRepository;
 import swd392.chatbotservice.infrastructure.configuration.ChatbotConfiguration;
 import swd392.chatbotservice.infrastructure.thirdparty.GeminiApi;
+import swd392.chatbotservice.infrastructure.thirdparty.dto.GeminiTrafficResponse;
+import swd392.chatbotservice.infrastructure.thirdparty.dto.TrafficLawResponse;
+import swd392.chatbotservice.infrastructure.utils.HashingUtil;
 import swd392.chatbotservice.web.dto.UserPromptRequest;
 
 
@@ -48,6 +51,8 @@ public class ChatbotUsecase implements IChatbotUsecase {
         private final GeminiApi geminiApi;
 
         private final ChatHistoryMapper chatHistoryMapper;
+
+        private final HashingUtil hashingUtil;
 
         @Override
         public final String generateContent(String prompt) {
@@ -73,54 +78,70 @@ public class ChatbotUsecase implements IChatbotUsecase {
 
         @Override
         public ChatHistoryResponse generateWithAuthenticatedUser(UserPromptRequest userPromptRequest) {
-                var generatedContent = this.geminiApi.getTextContentOnly(userPromptRequest.getPrompt());
-                // 1. Begin a new chat, id = null
+//                var generatedContent = this.geminiApi.getTextContentOnly(userPromptRequest.getPrompt());
+                ChatHistory savedChatHistory = null;
                 var zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
-                ChatHistory chatHistory = null;
+                // 1. Begin a new chat, id = null
                 if (userPromptRequest.getChatId() == null || userPromptRequest.getChatId().toString().isEmpty()) {
+                        GeminiTrafficResponse geminiResponse = geminiApi.generateTrafficLawResponse(
+                                userPromptRequest.getPrompt(), null
+                        );
                         List<ChatItem> newHistories = List.of(
                                 ChatItem.builder()
                                         .userText(userPromptRequest.getPrompt())
-                                        .botText(generatedContent)
+                                        .botText(geminiResponse.getFullAnswer())
+                                        .botSumerization(geminiResponse.getSummarizeAnswer())
                                         .createdDate(ZonedDateTime.now(zoneId).toInstant().toString())
                                         .build()
                         );
-                        chatHistory = ChatHistory.builder()
+                        ChatHistory chatHistory = ChatHistory.builder()
                                 .id(UUID.randomUUID())
-                                .userId(userPromptRequest.getUserId())
+                                .userId(UUID.fromString(
+                                        hashingUtil.decode(userPromptRequest.getUserId()))
+                                )
                                 .chatTitle("New Chat")
                                 .histories(newHistories)
                                 .build();
+                        savedChatHistory = chatHistory;
                         this.chatbotRepository.save(chatHistory);
                 }
                 // 2. Continue chat, id != null
                 else {
-                        chatHistory = this.chatbotRepository.findById(userPromptRequest.getChatId());
+                        ChatHistory chatHistory = this.chatbotRepository.findById(userPromptRequest.getChatId());
                         if (chatHistory == null)
                                 throw new CustomExceptions.ResourceNotFoundException(
                                         "Chat history not found with id: " + userPromptRequest.getChatId()
                                 );
                         else {
                                 // Update chat history
-                                List<ChatItem> updatedHistories = chatHistory.getHistories();
-                                updatedHistories.add(
+                                List<ChatItem> chatItems = chatHistory.getHistories();
+                                // Call Gemini API to get the response with contexts history
+                                GeminiTrafficResponse geminiResponse = geminiApi.generateTrafficLawResponse(
+                                        userPromptRequest.getPrompt(),
+                                        chatHistory.getHistories().stream()
+                                                .map(ChatItem::getBotSumerization).collect(Collectors.toList())
+                                );
+                                chatItems.add(
                                         ChatItem.builder()
                                                 .userText(userPromptRequest.getPrompt())
-                                                .botText(generatedContent)
+                                                .botText(geminiResponse.getFullAnswer())
+                                                .botSumerization(geminiResponse.getSummarizeAnswer())
                                                 .createdDate(ZonedDateTime.now(zoneId).toInstant().toString())
                                                 .build()
                                 );
-                                chatHistory.setHistories(updatedHistories);
+                                chatHistory.setHistories(chatItems);
+                                savedChatHistory = chatHistory;
                                 this.chatbotRepository.update(chatHistory);
                         }
                 }
 
-                return this.chatHistoryMapper.toResponse(chatHistory);
+                return this.chatHistoryMapper.toResponse(savedChatHistory);
         }
 
         @Override
-        public List<ChatHistoryResponse> getAllChatHistoriesByUserId(UUID userId) {
-                return this.chatbotRepository.findByUserId(userId)
+        public List<ChatHistoryResponse> getAllChatHistoriesByUserId(String userId) {
+                String decodedUserId = this.hashingUtil.decode(userId);
+                return this.chatbotRepository.findByUserId(UUID.fromString(decodedUserId))
                         .stream().map(chatHistoryMapper::toResponse).collect(Collectors.toList());
         }
 

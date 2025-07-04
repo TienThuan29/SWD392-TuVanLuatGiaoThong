@@ -22,7 +22,7 @@ class SecurityConfiguration(
     private val oAuth2LoginSuccessHandler: OAuth2LoginSuccessHandler
 ) {
 
-    private val ALLOWED_ORIGINS = listOf("http://localhost:3000");
+    private val ALLOWED_ORIGINS = listOf("http://localhost:3000", "http://192.168.2.73:3000");
     private val ALLOWED_METHODS = listOf("GET", "POST", "PUT", "DELETE");
     private val ALLOWED_HEADERS = listOf("*");
     private val CORS_MAX_AGE: Long = 3600;

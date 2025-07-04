@@ -9,7 +9,7 @@ public class UserPromptRequest {
 
     UUID chatId;
 
-    UUID userId;
+    String userId;
 
     String prompt;
 
