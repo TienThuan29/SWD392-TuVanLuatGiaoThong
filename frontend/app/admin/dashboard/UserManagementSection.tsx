@@ -141,7 +141,7 @@ export default function UserManagementSection() {
           <div className="flex justify-center items-center py-12">
             <div className="text-center">
               <Spinner_C size="lg" color="blue-600" />
-              <p className="mt-4 text-gray-600">Đang tải dữ liệu người dùng...</p>
+              <p className="mt-6  text-gray-600">Đang tải dữ liệu...</p>
             </div>
           </div>
         ) : (

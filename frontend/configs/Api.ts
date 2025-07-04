@@ -2,7 +2,8 @@ import Env from "./Env";
 
 export const Api = {
     // BASE_API: Env.backendApiGateWayUrl,
-    BASE_API: "http://localhost:8222",
+    // BASE_API: "http://localhost:8222",
+    BASE_API: "http://192.168.2.73:8222",
 
     Authenticaion: {
         LOGIN: '/api/v1/identity/authenticate',
@@ -30,6 +31,12 @@ export const Api = {
         GET_BY_ID: '/api/v1/law/type/get/',
         UPDATE: '/api/v1/law/admin/type/update/',
         CREATE: '/api/v1/law/admin/type/create'
+    },
+
+    Chatbot: {
+        ASK_TO_GENERATE: '/api/v1/chatbot/generate',
+        ASK_T0_GENERATE_WITH_AUTH_USER: '/api/v1/chatbot/authenticated-user/generate',
+        GET_ALL_CHAT_HISTORIES_OF_USER: '/api/v1/chatbot/authenticated-user/get-histories/',
     },
 
     File: {

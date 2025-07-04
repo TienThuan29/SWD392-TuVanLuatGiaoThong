@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { IoSend } from 'react-icons/io5'
 import { FaUser, FaRobot, FaPlus, FaHome, FaBars } from 'react-icons/fa'
-import { ChatHistory } from '@/models/ChatHistory'
+import { ChatHistory, ChatItem } from '@/models/ChatHistory'
 import Header_C from '@/components/combination/Header_C'
 import Link from 'next/link'
 import { Input } from '@/components/modern-ui/input'
@@ -10,125 +10,132 @@ import { Color } from '@/configs/CssConstant'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/modern-ui/avatar'
 import HeaderTop_C from '@/components/combination/HeaderTop_C'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/context/AuthContext' // Cập nhật đường dẫn import
+import { useAuth } from '@/context/AuthContext'
 import useAxios from '@/hooks/useAxios'
+import { useChatbotManager } from '@/hooks/useChatbotManager'
+import { SAMPLE_QUESTIONS } from './questions'
 
-// Sample chat history data
-const sampleChatHistories: ChatHistory[] = [
-  // {
-  //   id: 'chat_001',
-  //   user_id: 'user_001',
-  //   history: [
-  //     {
-  //       user: 'Xin chào, tôi cần tư vấn về luật giao thông',
-  //       bot: 'Chào bạn! Tôi rất vui được giúp đỡ bạn về các vấn đề liên quan đến luật giao thông. Bạn có thể cho tôi biết cụ thể bạn cần tư vấn về vấn đề gì không?',
-  //       date_time: '2024-03-20T10:00:00Z'
-  //     },
-  //     {
-  //       user: 'Tôi muốn biết về mức phạt khi vượt đèn đỏ',
-  //       bot: 'Theo Nghị định 100/2019/NĐ-CP, mức phạt khi vượt đèn đỏ được quy định như sau:\n\n- Đối với xe ô tô: Phạt tiền từ 3.000.000 đồng đến 5.000.000 đồng\n- Đối với xe máy: Phạt tiền từ 1.000.000 đồng đến 2.000.000 đồng\n\nNgoài ra, người vi phạm còn bị tước quyền sử dụng giấy phép lái xe từ 1 đến 3 tháng.',
-  //       date_time: '2024-03-20T10:01:00Z'
-  //     },
-  //     {
-  //       user: 'Vậy còn mức phạt khi không đội mũ bảo hiểm thì sao?',
-  //       bot: 'Theo quy định hiện hành, mức phạt khi không đội mũ bảo hiểm khi tham gia giao thông bằng xe máy như sau:\n\n- Phạt tiền từ 200.000 đồng đến 300.000 đồng\n- Ngoài ra, người vi phạm còn bị tước quyền sử dụng giấy phép lái xe từ 1 đến 3 tháng\n\nLưu ý: Mũ bảo hiểm phải đạt chuẩn và được cài quai đúng quy cách.',
-  //       date_time: '2024-03-20T10:02:00Z'
-  //     },
-  //     {
-  //       user: 'Tôi muốn biết về quy định tốc độ tối đa trong khu vực đông dân cư',
-  //       bot: 'Theo quy định tại Điều 6 Thông tư 31/2019/TT-BGTVT, tốc độ tối đa trong khu vực đông dân cư được quy định như sau:\n\n- Đối với xe ô tô con, xe ô tô khách đến 30 chỗ ngồi: 50 km/h\n- Đối với xe ô tô khách trên 30 chỗ ngồi: 40 km/h\n- Đối với xe mô tô, xe gắn máy: 40 km/h\n- Đối với xe máy chuyên dùng: 30 km/h\n\nLưu ý: Tốc độ này có thể được điều chỉnh thấp hơn tùy theo điều kiện giao thông thực tế.',
-  //       date_time: '2024-03-20T10:03:00Z'
-  //     },
-  //     {
-  //       user: 'Cảm ơn bạn. Cho tôi hỏi thêm về quy định về nồng độ cồn khi lái xe',
-  //       bot: 'Theo quy định hiện hành về nồng độ cồn khi tham gia giao thông:\n\n1. Đối với người điều khiển xe ô tô:\n- Không được có nồng độ cồn trong máu hoặc hơi thở\n\n2. Đối với người điều khiển xe mô tô, xe gắn máy:\n- Nồng độ cồn trong máu không vượt quá 50 mg/100 ml máu\n- Nồng độ cồn trong khí thở không vượt quá 0,25 mg/1 lít khí thở\n\nMức phạt vi phạm:\n- Xe ô tô: Phạt tiền từ 6.000.000 đồng đến 8.000.000 đồng\n- Xe mô tô, xe gắn máy: Phạt tiền từ 2.000.000 đồng đến 3.000.000 đồng\n\nNgoài ra, người vi phạm còn bị tước quyền sử dụng giấy phép lái xe từ 10 đến 12 tháng.',
-  //       date_time: '2024-03-20T10:04:00Z'
-  //     },
-  //     {
-  //       user: 'Vậy khi bị tước giấy phép lái xe, tôi có thể xin cấp lại không?',
-  //       bot: 'Theo quy định, việc cấp lại giấy phép lái xe sau khi bị tước phụ thuộc vào các yếu tố sau:\n\n1. Thời gian tước giấy phép lái xe đã hết\n2. Người vi phạm đã chấp hành xong quyết định xử phạt\n3. Đã nộp đầy đủ lệ phí cấp lại\n\nQuy trình xin cấp lại:\n- Nộp hồ sơ tại cơ quan quản lý giấy phép lái xe\n- Hồ sơ bao gồm: Đơn đề nghị, CMND/CCCD, ảnh thẻ, biên lai nộp phạt\n- Thời gian xử lý: 5-7 ngày làm việc\n\nLưu ý: Nếu vi phạm nghiêm trọng hoặc tái phạm nhiều lần, có thể bị từ chối cấp lại giấy phép lái xe.',
-  //       date_time: '2024-03-20T10:05:00Z'
-  //     }
-  //   ],
-  //   is_deleted: false,
-  //   created_date: '2024-03-20T09:59:00Z'
-  // },
-  // {
-  //   id: 'chat_002',
-  //   user_id: 'user_001',
-  //   history: [
-  //     {
-  //       user: 'Tôi cần tư vấn về việc đi sai làn đường',
-  //       bot: 'Theo quy định hiện hành, mức phạt cho hành vi đi sai làn đường như sau:\n\n- Đối với xe ô tô: Phạt tiền từ 3.000.000 đồng đến 5.000.000 đồng\n- Đối với xe máy: Phạt tiền từ 400.000 đồng đến 600.000 đồng\n\nNgười vi phạm cũng có thể bị tước quyền sử dụng giấy phép lái xe từ 1 đến 3 tháng.',
-  //       date_time: '2024-03-20T11:00:00Z'
-  //     }
-  //   ],
-  //   is_deleted: false,
-  //   created_date: '2024-03-20T10:59:00Z'
-  // }
-]
 
+const AUTHENTICATION_REQUIRED = true;
+const SHOW_AUTH_TOAST = false;
+
+// Message type for chat UI
 interface Message {
-  id: number
-  content: string
-  isUser: boolean
-  dateTime?: string
+  id: number;
+  content: string;
+  isUser: boolean;
+  dateTime?: string;
 }
 
-// Đặt hằng số này ở đầu file, ngoài component để dễ dàng thay đổi
-// Set thành FALSE để tắt xác thực (cho phép chat mà không cần đăng nhập)
-// Set thành TRUE để bật xác thực (bắt buộc đăng nhập mới được chat)
-const AUTHENTICATION_REQUIRED = true;
-
-// Thêm hằng số mới để điều khiển việc hiển thị thông báo toast
-const SHOW_AUTH_TOAST = false; // Set thành TRUE để hiển thị toast thông báo, FALSE để tắt
-
 export default function Page() {
+
   const router = useRouter()
   const { user, isLoggedIn } = useAuth()
-  // Khởi tạo axios instance từ hook useAxios
-  const axiosInstance = useAxios()
-  
-  const [selectedChatId, setSelectedChatId] = useState<string>(sampleChatHistories[0]?.id || '')
+  const api = useAxios()
+  const {
+    chatHistories,
+    currentChat,
+    loading: chatbotLoading,
+    getAllChatHistoriesOfUser,
+    askToGenerateWithAuthUser,
+  } = useChatbotManager();
+
+  const [selectedChatId, setSelectedChatId] = useState<string>()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>(() => {
-    const selectedChat = sampleChatHistories.find(chat => chat.id === selectedChatId)
-    return selectedChat?.history?.map((chat, index) => [
-      {
-        id: index * 2,
-        content: chat.user || '',
-        isUser: true,
-        dateTime: chat.date_time
-      },
-      {
-        id: index * 2 + 1,
-        content: chat.bot || '',
-        isUser: false,
-        dateTime: chat.date_time
-      }
-    ]).flat() || []
-  })
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showLoginPrompt, setShowLoginPrompt] = useState(false)
-  
-  // Hàm kiểm tra xác thực dựa vào hằng số AUTHENTICATION_REQUIRED
+  const [messages, setMessages] = useState<Message[]>([])
+  const [sampleQuestions, setSampleQuestions] = useState<string[]>([])
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      getAllChatHistoriesOfUser(user.id)
+    }
+  }, [user, getAllChatHistoriesOfUser])
+
+  useEffect(() => {
+    const shuffled = [...SAMPLE_QUESTIONS].sort(() => 0.5 - Math.random());
+    setSampleQuestions(shuffled.slice(0, 4));
+  }, []);
+
+  // When chatHistories or selectedChatId changes, update messages
+  useEffect(() => {
+    if (!selectedChatId) {
+      setMessages([])
+      return
+    }
+    const selectedChat = chatHistories.find(chat => chat.id === selectedChatId)
+    if (!selectedChat) {
+      setMessages([])
+      return
+    }
+    // Convert ChatItem[] to Message[]
+    const chatMessages: Message[] = selectedChat.histories.flatMap((item, idx) => [
+      item.userText
+        ? {
+          id: idx * 2,
+          content: item.userText,
+          isUser: true,
+          dateTime: item.createdDate ? (typeof item.createdDate === 'string' ? item.createdDate : item.createdDate.toISOString()) : undefined,
+        }
+        : undefined,
+      item.botText
+        ? {
+          id: idx * 2 + 1,
+          content: item.botText,
+          isUser: false,
+          dateTime: item.createdDate ? (typeof item.createdDate === 'string' ? item.createdDate : item.createdDate.toISOString()) : undefined,
+        }
+        : undefined,
+    ].filter(Boolean) as Message[])
+    setMessages(chatMessages)
+  }, [selectedChatId, chatHistories])
+
+  // When currentChat changes (after sending a message), update messages and chatHistories
+  useEffect(() => {
+    if (currentChat && selectedChatId === currentChat.id) {
+      // Update messages for the current chat
+      const chatMessages: Message[] = currentChat.histories.flatMap((item, idx) => [
+        item.userText
+          ? {
+            id: idx * 2,
+            content: item.userText,
+            isUser: true,
+            dateTime: item.createdDate ? (typeof item.createdDate === 'string' ? item.createdDate : item.createdDate.toISOString()) : undefined,
+          }
+          : undefined,
+        item.botText
+          ? {
+            id: idx * 2 + 1,
+            content: item.botText,
+            isUser: false,
+            dateTime: item.createdDate ? (typeof item.createdDate === 'string' ? item.createdDate : item.createdDate.toISOString()) : undefined,
+          }
+          : undefined,
+      ].filter(Boolean) as Message[])
+      setMessages(chatMessages)
+    }
+    // If new chat, select it
+    if (currentChat && !selectedChatId) {
+      setSelectedChatId(currentChat.id)
+    }
+  }, [currentChat, selectedChatId])
+
   const checkAuthRequired = () => {
     if (!AUTHENTICATION_REQUIRED) {
-      return false; // Không yêu cầu xác thực nếu AUTHENTICATION_REQUIRED = false
+      return false;
     }
-    return !isLoggedIn(); // Yêu cầu xác thực nếu AUTHENTICATION_REQUIRED = true và người dùng chưa đăng nhập
+    return !isLoggedIn();
   }
-  
+
   const handleSendMessage = async () => {
-    // Kiểm tra trạng thái đăng nhập trước khi gửi tin nhắn (dựa vào hằng số AUTHENTICATION_REQUIRED)
     if (checkAuthRequired()) {
       setShowLoginPrompt(true)
       return
     }
-    
-    if (!inputMessage.trim()) return
-
+    if (!inputMessage.trim() || !user?.id) return
     const userMessage: Message = {
       id: Date.now(),
       content: inputMessage,
@@ -138,80 +145,60 @@ export default function Page() {
     setMessages((prev) => [...prev, userMessage])
     setInputMessage('')
     setIsLoading(true)
-
     try {
-      // Sử dụng useAxios thay vì fetch
-      const response = await axiosInstance.post('/api/v1/chatbot/generate-from-pdf', {
+      const payload = {
+        chatId: selectedChatId || '',
+        userId: user.id,
         prompt: inputMessage,
-        url: "/trunguong.pdf"
-      });
-
-      // Lấy dữ liệu từ response axios (không cần .json())
-      const data = response.data;
-      
-      const aiMessage: Message = {
-        id: Date.now() + 1,
-        content: data.dataResponse?.response || 'Không thể lấy được câu trả lời. Vui lòng thử lại sau.',
-        isUser: false,
-        dateTime: new Date().toISOString()
       }
-      setMessages((prev) => [...prev, aiMessage])
-    } catch (error) {
-      console.error('Error calling chatbot API:', error);
-      
-      const errorMessage: Message = {
-        id: Date.now() + 1,
-        content: 'Đã xảy ra lỗi khi kết nối với hệ thống. Vui lòng thử lại sau.',
-        isUser: false,
-        dateTime: new Date().toISOString()
+      const result = await askToGenerateWithAuthUser(payload)
+      // If this was a new chat, refresh the sidebar
+      if (!selectedChatId && result?.id) {
+        setSelectedChatId(result.id)
+        await getAllChatHistoriesOfUser(user.id)
       }
-      setMessages((prev) => [...prev, errorMessage])
-    } finally {
+    }
+    catch (error) {
+      console.log(error)
+    } 
+    finally {
       setIsLoading(false)
     }
   }
 
   const handleChatSelect = (chatId: string) => {
     setSelectedChatId(chatId)
-    const selectedChat = sampleChatHistories.find(chat => chat.id === chatId)
-    setMessages(selectedChat?.history?.map((chat, index) => [
-      {
-        id: index * 2,
-        content: chat.user || '',
-        isUser: true,
-        dateTime: chat.date_time
-      },
-      {
-        id: index * 2 + 1,
-        content: chat.bot || '',
-        isUser: false,
-        dateTime: chat.date_time
-      }
-    ]).flat() || [])
+    setIsSidebarOpen(false)
   }
 
   const getChatTitle = (chat: ChatHistory) => {
-    const firstMessage = chat.history?.[0]?.user
+    const firstMessage = chat.histories?.[0]?.userText
     return firstMessage ? `${firstMessage.slice(0, 30)}...` : 'Cuộc trò chuyện mới'
   }
 
-    // Cập nhật hàm handleSuggestedQuestion
   const handleSuggestedQuestion = (question: string) => {
-    // Đặt câu hỏi vào ô input trước (không cần kiểm tra xác thực)
     setInputMessage(question)
-    
-    // Sau đó kiểm tra xác thực, nếu chưa đăng nhập thì hiển thị modal
     if (checkAuthRequired()) {
       setShowLoginPrompt(true)
     }
   }
+
+  // New chat handler
+  const handleNewChat = () => {
+    setSelectedChatId(undefined);
+    setMessages([]);
+    setInputMessage('');
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
       <div className="sticky top-0 z-50 bg-white border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
-          <HeaderTop_C />
+          <HeaderTop_C logedUser={user} />
         </div>
       </div>
 
@@ -235,12 +222,11 @@ export default function Page() {
 
         {/* Sidebar */}
         <div
-          className={`fixed lg:static w-80 border-r border-gray-200/50 bg-white/95 backdrop-blur-sm h-full transition-transform duration-300 ease-in-out z-40 ${
-            isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-          }`}
+          className={`fixed lg:static w-80 border-r border-gray-200/50 bg-white/95 backdrop-blur-sm h-full transition-transform duration-300 ease-in-out z-40 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+            }`}
         >
           <div className="flex flex-col h-full">
-            <Link 
+            <Link
               href="/"
               className="group flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 transition-all duration-300 rounded-lg mx-2 my-1 hover:shadow-md active:scale-95 border border-gray-200/50 hover:border-gray-300/50 backdrop-blur-sm"
             >
@@ -255,29 +241,30 @@ export default function Page() {
 
             <div className="flex h-16 items-center justify-between border-b border-gray-200/50 px-4">
               <h2 className="text-lg font-semibold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">Lịch sử chat</h2>
-              <button className="rounded-full p-2 hover:bg-gray-50 transition-colors duration-200 border border-gray-200/50 hover:border-gray-300/50">
+              {/* New chat */}
+              <button title='Tạo cuộc trò chuyện mới' onClick={handleNewChat} className="rounded-full p-2 hover:bg-gray-50 transition-colors duration-200 border border-gray-200/50 hover:border-gray-300/50">
                 <FaPlus className="h-5 w-5" style={{ color: Color.MainColor }} />
               </button>
+
             </div>
 
             <div className="overflow-y-auto flex-1 px-2 py-2">
-              {sampleChatHistories.map((chat) => (
+              {chatHistories.map((chat) => (
                 <button
                   key={chat.id}
                   onClick={() => {
                     handleChatSelect(chat.id || '')
                     setIsSidebarOpen(false)
                   }}
-                  className={`w-full px-4 py-3 text-left hover:bg-gray-50/80 transition-all duration-200 rounded-lg mb-1 border border-transparent hover:border-gray-200/50 ${
-                    selectedChatId === chat.id 
-                      ? 'bg-gray-50/80 border-gray-200/50 shadow-sm' 
-                      : ''
-                  }`}
+                  className={`w-full px-4 py-3 text-left hover:bg-gray-50/80 transition-all duration-200 rounded-lg mb-1 border border-transparent hover:border-gray-200/50 ${selectedChatId === chat.id
+                    ? 'bg-gray-50/80 border-gray-200/50 shadow-sm'
+                    : ''
+                    }`}
                 >
                   <div className="flex flex-col">
                     <span className="font-medium text-gray-900 line-clamp-1">{getChatTitle(chat)}</span>
                     <span className="text-xs text-gray-500 mt-0.5">
-                      {chat.created_date ? new Date(chat.created_date).toLocaleDateString() : ''}
+                      {chat.createdDate ? new Date(chat.createdDate).toLocaleDateString() : ''}
                     </span>
                   </div>
                 </button>
@@ -288,12 +275,12 @@ export default function Page() {
             <div className="border-t border-gray-200/50 p-4 bg-gray-50/50">
               <div className="flex items-center gap-3">
                 <Avatar>
-                  <AvatarImage src="https://raw.githubusercontent.com/thangdevalone/modern-ui/refs/heads/main/public/assets/logo.png" alt="Default avatar" />
+                  <AvatarImage src={ user?.avatarUrl || "https://raw.githubusercontent.com/thangdevalone/modern-ui/refs/heads/main/public/assets/logo.png" } alt="Default avatar" />
                   <AvatarFallback>MD</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
-                  <span className="font-medium text-gray-900">Minh Đức</span>
-                  <span className="text-xs text-gray-500">minhduc@example.com</span>
+                  <span className="font-medium text-gray-900">{user?.fullname}</span>
+                  <span className="text-xs text-gray-500">{  }</span>
                 </div>
               </div>
             </div>
@@ -305,7 +292,7 @@ export default function Page() {
           {/* Chat Container */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
             {messages.length > 0 ? (
-              // Hiển thị tin nhắn nếu có
+
               messages.map((message) => (
                 <div
                   key={message.id}
@@ -341,7 +328,8 @@ export default function Page() {
                 </div>
               ))
             ) : (
-              // Hiển thị lời chào khi không có tin nhắn
+              
+              // Sample questions
               <div className="flex flex-col items-center justify-center h-full">
                 <div className="flex flex-col items-center max-w-md text-center">
                   <div className="w-20 h-20 bg-white rounded-full shadow-md flex items-center justify-center mb-6">
@@ -349,39 +337,24 @@ export default function Page() {
                   </div>
                   <h3 className="text-2xl font-bold mb-3" style={{ color: Color.MainColor }}>Chào mừng đến với Tư Vấn Luật Giao Thông</h3>
                   <p className="text-gray-600 mb-6">
-                    Tôi là trợ lý ảo có thể giải đáp các thắc mắc của bạn về luật giao thông đường bộ Việt Nam. 
+                    Tôi là trợ lý ảo có thể giải đáp các thắc mắc của bạn về luật giao thông đường bộ Việt Nam.
                     Hãy đặt câu hỏi để bắt đầu cuộc trò chuyện!
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
-                    <button
-                      onClick={() => handleSuggestedQuestion("Quy định về nồng độ cồn")}
-                      className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition-colors text-sm text-left"
-                    >
-                      Quy định về nồng độ cồn
-                    </button>
-                    <button
-                      onClick={() => handleSuggestedQuestion("Mức phạt vượt đèn đỏ")}
-                      className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition-colors text-sm text-left"
-                    >
-                      Mức phạt vượt đèn đỏ
-                    </button>
-                    <button
-                      onClick={() => handleSuggestedQuestion("Quy định về tốc độ trong khu dân cư")}
-                      className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition-colors text-sm text-left"
-                    >
-                      Quy định về tốc độ trong khu dân cư
-                    </button>
-                    <button
-                      onClick={() => handleSuggestedQuestion("Bằng lái xe hạng A1 có thể lái xe gì")}
-                      className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition-colors text-sm text-left"
-                    >
-                      Bằng lái xe hạng A1 có thể lái xe gì
-                    </button>
+                    {sampleQuestions.map((question, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleSuggestedQuestion(question)}
+                        className="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition-colors text-sm text-left"
+                      >
+                        {question}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
             )}
-            
+
             {isLoading && (
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-full" style={{ backgroundColor: Color.MainColor }}>
@@ -406,6 +379,7 @@ export default function Page() {
                 onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                 placeholder={checkAuthRequired() ? "Đăng nhập để chat với trợ lý..." : "Nhập tin nhắn của bạn..."}
                 className="flex-1"
+                ref={inputRef}
               />
               <button
                 onClick={handleSendMessage}

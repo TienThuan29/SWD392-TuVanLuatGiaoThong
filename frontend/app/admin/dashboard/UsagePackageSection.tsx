@@ -5,6 +5,7 @@ import { UsagePackage } from "@/models/UsagePackage";
 import { FaEdit, FaTrash, FaPlus, FaEye } from "react-icons/fa";
 import { Input } from "@/components/modern-ui/input";
 import { useUsagePackageCrud } from "@/hooks/useUsagePackageCrud";
+import Spinner_C from "@/components/combination/Spinner_C";
 
 export default function UsagePackageSection() {
   const {
@@ -118,7 +119,7 @@ export default function UsagePackageSection() {
 
     const tableRect = tableRef.current.getBoundingClientRect();
     const newWidth = e.clientX - tableRect.left;
-    
+
     setColumnWidths(prev => ({
       ...prev,
       [resizingColumn]: Math.max(100, newWidth), // Minimum width of 100px
@@ -157,8 +158,11 @@ export default function UsagePackageSection() {
 
       {/* Loading State */}
       {loading && (
-        <div className="flex justify-center items-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="flex justify-center items-center py-12">
+          <div className="text-center">
+            <Spinner_C size="lg" color="blue-600" />
+            <p className="mt-6  text-gray-600">Đang tải dữ liệu...</p>
+          </div>
         </div>
       )}
 
@@ -169,7 +173,7 @@ export default function UsagePackageSection() {
             <table ref={tableRef} className="w-full divide-y divide-gray-200" style={{ tableLayout: 'fixed', minWidth: '1000px' }}>
               <thead className="bg-gray-50">
                 <tr>
-                  <th 
+                  <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
                     style={{ width: columnWidths.name }}
                   >
@@ -179,7 +183,7 @@ export default function UsagePackageSection() {
                       onMouseDown={(e) => handleMouseDown(e, 'name')}
                     />
                   </th>
-                  <th 
+                  <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
                     style={{ width: columnWidths.description }}
                   >
@@ -189,7 +193,7 @@ export default function UsagePackageSection() {
                       onMouseDown={(e) => handleMouseDown(e, 'description')}
                     />
                   </th>
-                  <th 
+                  <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
                     style={{ width: columnWidths.price }}
                   >
@@ -199,7 +203,7 @@ export default function UsagePackageSection() {
                       onMouseDown={(e) => handleMouseDown(e, 'price')}
                     />
                   </th>
-                  <th 
+                  <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
                     style={{ width: columnWidths.dailyLimit }}
                   >
@@ -209,7 +213,7 @@ export default function UsagePackageSection() {
                       onMouseDown={(e) => handleMouseDown(e, 'dailyLimit')}
                     />
                   </th>
-                  <th 
+                  <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
                     style={{ width: columnWidths.daysLimit }}
                   >
@@ -219,7 +223,7 @@ export default function UsagePackageSection() {
                       onMouseDown={(e) => handleMouseDown(e, 'daysLimit')}
                     />
                   </th>
-                  <th 
+                  <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
                     style={{ width: columnWidths.status }}
                   >
@@ -229,7 +233,7 @@ export default function UsagePackageSection() {
                       onMouseDown={(e) => handleMouseDown(e, 'status')}
                     />
                   </th>
-                  <th 
+                  <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
                     style={{ width: columnWidths.actions }}
                   >
