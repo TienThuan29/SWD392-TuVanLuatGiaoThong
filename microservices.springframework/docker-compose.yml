@@ -1,3 +1,4 @@
+# docker-compose -f docker-compose-production.yml -p swd392-api-production up -d
 services:
   config-server:
     build:
@@ -8,12 +9,12 @@ services:
     ports:
       - "8888:8888"
     environment:
-      - CONFIG_IMPORT_SERVER_URL={YOUR_CONFIG_IMPORT_SERVER_URL} #configserver:http://config-server:8888
+      - CONFIG_IMPORT_SERVER_URL=configserver:http://config-server:8888
     depends_on:
       rabbit-mq:
         condition: service_healthy
     networks:
-      - aas-app-network
+      - swd-app-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8888/api/v1/configserver/health"]
       interval: 5s
@@ -29,76 +30,51 @@ services:
     ports:
       - "8222:8222"
     environment:
-      - CONFIG_IMPORT_SERVER_URL={YOUR_CONFIG_IMPORT_SERVER_URL}
-      - CLASSROOM_SERVICE_URL={YOUR_CLASSROOM_SERVICE_URL}
-      - SUBMISSION_SERVICE_URL={YOUR_SUBMISSION_SERVICE_URL}
+      - CONFIG_IMPORT_SERVER_URL=configserver:http://config-server:8888
+      - IDENTITY_SERVICE_URL=http://identity-service:8989
+      - CLOUD_STORAGE_SERVICE_URL=http://cloud-storage-service:8091
+      - LAW_SERVICE_URL=http://law-service:8092
+      - CHATBOT_SERVICE_URL=http://chatbot-service:8093
+      - USER_PACKAGE_SERVICE_URL=http://user-package-service:8094
+      - ALLOWED_ORIGINS=http://localhost:3000,http://192.168.2.73:8222
     depends_on:
       rabbit-mq:
         condition: service_healthy
       config-server:
         condition: service_healthy
     networks:
-      - aas-app-network
+      - swd-app-network
 
-#  classroom-service:
-#    build:
-#      context: ./classroom-service
-#      dockerfile: Dockerfile
-#    image: classroom-service
-#    container_name: classroom-service
-#    working_dir: /app
-#    environment:
-#      - CONFIG_IMPORT_SERVER_URL={YOUR_CONFIG_IMPORT_SERVER_URL}
-#      - POSTGRES_DB_URL={YOUR_POSTGRES_DB_URL}
-#      - POSTGRES_USER={YOUR_POSTGRES_USER}
-#      - POSTGRES_PASSWORD={YOUR_POSTGRES_PASSWORD}
-#    depends_on:
-#      rabbit-mq:
-#        condition: service_healthy
-#      config-server:
-#        condition: service_healthy
-#    networks:
-#      - aas-app-network
-#
-#  submission-service:
-#    build:
-#      context: ./submission-service
-#      dockerfile: Dockerfile
-#    image: submission-service
-#    container_name: submission-service
-#    working_dir: /app
-#    environment:
-#      - CONFIG_IMPORT_SERVER_URL={YOUR_CONFIG_IMPORT_SERVER_URL}
-#      - AWS_REGION={AWS_REGION}
-#      - AWS_DYNAMODB_ENDPOINT={AWS_DYNAMODB_ENDPOINT}
-#      - AWS_ASSESS_KEY={CREDENTIALS_AWS_ACCESS_KEY}
-#      - AWS_SECRET_KEY={CREDENTIALS_AWS_SECRET_KEY}
-#    depends_on:
-#      rabbit-mq:
-#        condition: service_healthy
-#      config-server:
-#        condition: service_healthy
-#    networks:
-#      - aas-app-network
-
-  rabbit-mq:
-    image: rabbitmq:3-management
-    container_name: rabbit-mq
+  identity-service:
+    build:
+      context: ./identity-service
+      dockerfile: Dockerfile
+    image: identity-service
+    container_name: identity-service
     ports:
-      - "5672:5672" # RabbitMQ message broker port
-      - "15672:15672" # RabbitMQ management console
+      - "8989:8989"
     environment:
-      RABBITMQ_DEFAULT_USER: {YOUR_RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASS: {YOUR_RABBITMQ_DEFAULT_PASS}
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
+      - CONFIG_IMPORT_SERVER_URL=configserver:http://config-server:8888
+      - MAIL_USERNAME=
+      - MAIL_PASSWORD=
+      - GG_CLIENT_ID=
+      - GG_CLIENT_SECRET=
+      - POSTGRES_DB_URL=
+      - POSTGRES_USER=
+      - POSTGRES_PASSWORD=
+      - JWT_SECRET_KEY=
+      - HASHING_SECRET_KEY=
+      - FRONTEND_OAUTH2_REDIRECT_URL=
+      - ALLOWED_ORIGINS=http://localhost:3000,http://192.168.2.73:8222
+    depends_on:
+      rabbit-mq:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
-      - aas-app-network
-    healthcheck:
-      test: ["CMD", "rabbitmqctl", "status"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
+      - swd-app-network
 
   chatbot-service:
     build:
@@ -109,18 +85,141 @@ services:
     ports:
       - "8093:8093"
     environment:
-      - GEMINI_API_KEY={gemini.api.key}
+      - CONFIG_IMPORT_SERVER_URL=configserver:http://config-server:8888
+      - GEMINI_PROJECT_ID=
+      - GEMINI_LOCATION=
+      - GEMINI_API_KEY=
+      - AWS_DYNAMODB_ENDPOINT=
+      - AWS_REGION=
+      - AWS_ASSESS_KEY=
+      - AWS_SECRET_KEY=
+      - HASHING_SECRET_KEY=
+      - ALLOWED_ORIGINS=http://localhost:3000,http://192.168.2.73:8222
+    depends_on:
+      rabbit-mq:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - swd-app-network
+
+  cloud-storage-service:
+    build:
+      context: ./cloud-storage-service
+      dockerfile: Dockerfile
+    image: cloud-storage-service
+    container_name: cloud-storage-service
+    ports:
+      - "8091:8091"
+    environment:
+      - CONFIG_IMPORT_SERVER_URL=configserver:http://config-server:8888
+      - AWS_ENDPOINT=
+      - AWS_ACCESS_KEY=
+      - AWS_SECRET_KEY=
+      - AWS_BUCKET_NAME=
+      - AWS_REGION=
+      - ALLOWED_ORIGINS=http://localhost:3000,http://192.168.2.73:8222
     depends_on:
       rabbit-mq:
         condition: service_healthy
       config-server:
         condition: service_healthy
     networks:
-      - aas-app-network
+      - swd-app-network
+
+  law-service:
+    build:
+      context: ./law-service
+      dockerfile: Dockerfile
+    image: law-service
+    container_name: law-service
+    ports:
+      - "8092:8092"
+    environment:
+      - CONFIG_IMPORT_SERVER_URL=configserver:http://config-server:8888
+      - POSTGRES_DB_URL=
+      - POSTGRES_USER=
+      - POSTGRES_PASSWORD=
+      - ALLOWED_ORIGINS=http://localhost:3000,http://192.168.2.73:8222
+    depends_on:
+      rabbit-mq:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - swd-app-network
+
+  user-package-service:
+    build:
+      context: ./user-package-service
+      dockerfile: Dockerfile
+    image: user-package-service
+    container_name: user-package-service
+    ports:
+      - "8094:8094"
+    environment:
+      - CONFIG_IMPORT_SERVER_URL=configserver:http://config-server:8888
+      - POSTGRES_DB_URL=
+      - POSTGRES_USER=
+      - POSTGRES_PASSWORD=
+      - MOMO_PARTNER_CODE=
+      - MOMO_ACCESS_KEY=
+      - MOMO_SECRET_KEY=
+      - MOMO_ENDPOINT=
+      - MOMO_REDIRECT_URL=
+      - MOMO_IPN_URL=
+      - ALLOWED_ORIGINS=http://localhost:3000,http://192.168.2.73:8222
+    depends_on:
+      rabbit-mq:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - swd-app-network
+
+  rabbit-mq:
+    image: rabbitmq:3-management
+    container_name: rabbit-mq
+    ports:
+      - "5672:5672" # RabbitMQ message broker port
+      - "15672:15672" # RabbitMQ management console
+    environment:
+      RABBITMQ_DEFAULT_USER: swd392
+      RABBITMQ_DEFAULT_PASS: swd392
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - swd-app-network
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=swd392
+    command: redis-server --requirepass swd392
+    volumes:
+      - redis-data:/data
+    networks:
+      - swd-app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
 networks:
-  aas-app-network:
+  swd-app-network:
     driver: bridge
 
 volumes:
   rabbitmq-data:
+  redis-data:

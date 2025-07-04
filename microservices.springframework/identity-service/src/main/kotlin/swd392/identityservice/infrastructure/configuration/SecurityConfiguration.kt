@@ -1,8 +1,10 @@
 package swd392.identityservice.infrastructure.configuration
 
 import lombok.RequiredArgsConstructor
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.PropertySource
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -17,12 +19,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
+@PropertySource("classpath:security.properties")
 class SecurityConfiguration(
     private val authenticationProvider: AuthenticationProvider,
     private val oAuth2LoginSuccessHandler: OAuth2LoginSuccessHandler
 ) {
 
-    private val ALLOWED_ORIGINS = listOf("http://localhost:3000", "http://192.168.2.73:3000");
+    @Value("#{'\${app.allowed-origins}'.split(',')}")
+    private val ALLOWED_ORIGINS: MutableList<String?>? = null
     private val ALLOWED_METHODS = listOf("GET", "POST", "PUT", "DELETE");
     private val ALLOWED_HEADERS = listOf("*");
     private val CORS_MAX_AGE: Long = 3600;

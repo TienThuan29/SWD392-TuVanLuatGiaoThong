@@ -26,6 +26,11 @@ spring:
         - id: identity-service
           uri: ${IDENTITY_SERVICE_URL:http://localhost:8989}
           predicates:
+            - Path=/oauth2/authorization/google
+
+        - id: identity-service
+          uri: ${IDENTITY_SERVICE_URL:http://localhost:8989}
+          predicates:
             - Path=/api/v1/identity/**
 
         - id: identity-service
@@ -55,11 +60,6 @@ spring:
           uri: ${CHATBOT_SERVICE_URL:http://localhost:8093}
           predicates:
             - Path=/api/v1/chatbot/**
-
-        - id: law-service
-          uri: ${LAW_SERVICE_URL:http://localhost:8092}
-          predicates:
-            - Path=/api/v1/law/**
 
         - id: user-package-service
           uri: ${USER_PACKAGE_SERVICE_URL:http://localhost:8094}

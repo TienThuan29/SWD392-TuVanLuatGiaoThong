@@ -1,6 +1,7 @@
 package swd392.apigatewayservice.adapter;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -21,10 +22,10 @@ import java.util.List;
  * Last Modified: 26/3/2025
  * Notes:
  */
-@FeignClient(name = "identity-service", url = "http://localhost:8989/api/v1/identity")
+@FeignClient(name = "identity-service", url = "${app.services.identity.url:http://localhost:8989}")
 public interface IdentityClient {
 
-    @PostMapping("/authenticate/token/{token}") // ResponseEntity<ApiResponse<Object>>
+    @PostMapping("/api/v1/identity/authenticate/token/{token}") // ResponseEntity<ApiResponse<Object>>
     ApiResponse<List<String>> authenticateToken(@PathVariable("token") String token);
 
 }
