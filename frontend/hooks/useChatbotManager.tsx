@@ -12,11 +12,12 @@ export function useChatbotManager() {
   const [chatHistories, setChatHistories] = useState<ChatHistory[]>([]);
   const [currentChat, setCurrentChat] = useState<ChatHistory | null>(null);
   const [loading, setLoading] = useState(false);
+  const [chatHistoriesLoading, setChatHistoriesLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Get all chat histories of a user
   const getAllChatHistoriesOfUser = useCallback(async (userId: string) => {
-    setLoading(true);
+    setChatHistoriesLoading(true);
     setError(null);
     try {
       const response = await api.get(Api.Chatbot.GET_ALL_CHAT_HISTORIES_OF_USER + userId);
@@ -30,7 +31,7 @@ export function useChatbotManager() {
       setError(err.message || "Unknown error");
       console.log(err.message);
     } finally {
-      setLoading(false);
+      setChatHistoriesLoading(false);
     }
   }, []);
 
@@ -40,19 +41,22 @@ export function useChatbotManager() {
     setError(null);
     try {
       const response = await api.post(Api.Chatbot.ASK_T0_GENERATE_WITH_AUTH_USER, payload);
-      if (response.status === HttpStatus.OK) {
+      if (response.status === HttpStatus.OK && response.data.status == 'success') {
         setCurrentChat(response.data.dataResponse);
         return response.data.dataResponse;
-      } 
+      }
+      else if (response.status === HttpStatus.OK && response.data.status == 'fail') {
+        toast.error("Bạn đã vượt qua số  lượt hỏi trong ngày!");
+      }
       else {
         toast.error("Có lỗi xảy ra khi tạo nội dung chat");
       }
-    } 
+    }
     catch (err: any) {
       toast.error("Có lỗi xảy ra khi tạo nội dung chat");
       setError(err.message || "Unknown error");
       throw err;
-    } 
+    }
     finally {
       setLoading(false);
     }
@@ -67,6 +71,7 @@ export function useChatbotManager() {
     chatHistories,
     currentChat,
     loading,
+    chatHistoriesLoading,
     error,
     getAllChatHistoriesOfUser,
     askToGenerateWithAuthUser,

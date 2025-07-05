@@ -36,15 +36,14 @@ export default function Header_C({ logedUser } : Header_CProps) {
               onMouseLeave={() => setProductsOpen(false)}
             >
               <button className="flex items-center space-x-1 hover-maincolor transition">
-                <span>Sản phẩm</span>
+                <span>Dịch vụ</span>
                 <HiChevronDown size={16} />
               </button>
               {productsOpen && (
-                <div className="absolute top-full mt-1 left-0 bg-white border border-gray-200 rounded shadow-lg p-4 min-w-[200px] z-50">
+                <div className="absolute top-full mt-1 left-0 bg-white border border-gray-200 rounded shadow-lg p-4 min-w-[300px] z-50">
                   <ul>
-                    <li className="py-1 hover-maincolor cursor-pointer">Sản phẩm 1</li>
-                    <li className="py-1 hover-maincolor cursor-pointer">Sản phẩm 2</li>
-                    <li className="py-1 hover-maincolor cursor-pointer">Sản phẩm 3</li>
+                    <li className="py-1 hover-maincolor cursor-pointer">Tư vấn tự động với chatbot</li>
+                    <li className="py-1 hover-maincolor cursor-pointer">Tư vấn online (Sắp ra mắt)</li>
                   </ul>
                 </div>
               )}

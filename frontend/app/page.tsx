@@ -7,9 +7,11 @@ import Header_C from '@/components/combination/Header_C';
 import Footer_C from '@/components/combination/Footer_C';
 import { Color } from '@/configs/CssConstant';
 import { User } from '@/models/User';
+import { useAuth } from '@/context/AuthContext';
 
 export default function AboutPage() {
-  const [activeTab, setActiveTab] = useState('overview');
+  
+  const { user } = useAuth();
 
   const features = [
     {
@@ -69,7 +71,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <Header_C logedUser={null} />
+      <Header_C logedUser={user} />
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white py-24 overflow-hidden" style={{ background: `linear-gradient(135deg, ${Color.MainColor} 0%, #005bb5 50%, #004a94 100%)` }}>

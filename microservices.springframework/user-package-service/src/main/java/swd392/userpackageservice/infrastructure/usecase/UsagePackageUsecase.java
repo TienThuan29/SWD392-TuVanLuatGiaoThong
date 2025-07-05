@@ -14,6 +14,7 @@ import swd392.userpackageservice.domain.repository.UserPackageRepository;
 import swd392.userpackageservice.infrastructure.utils.HashingUtil;
 import swd392.userpackageservice.web.dto.UsagePackageRequest;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -126,17 +127,18 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
     @Override
     public ApiResponse<UsagePackageResponse> getCurrentUsagePackageByUserId(String userId) {
         UUID decodedUserId = UUID.fromString(this.hashingUtil.decode(userId));
+        var userPackageOptional = this.userPackageRepository.findByUserIdAndIsEnable(decodedUserId, true);
+        UsagePackageResponse usagePackageResponse = null;
 
-        UserPackage userPackage = this.userPackageRepository.findByUserIdAndIsEnable(decodedUserId, true)
-                .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException(
-                        "Cannot found current usage package for user with id: " + decodedUserId)
-                );
-        UsagePackageResponse usagePackageResponse = this.usagePackageMapper.toResponse(
-                this.usagePackageRepository.findById(userPackage.getPackageId()).orElseThrow(
-                        () -> new CustomExceptions.ResourceNotFoundException(
-                                "Cannot found usage package with id: " + userPackage.getPackageId())
-                )
-        );
+        if (userPackageOptional.isPresent()) {
+            var userPackage = userPackageOptional.get();
+            usagePackageResponse = this.usagePackageMapper.toResponse(
+                    this.usagePackageRepository.findById(userPackage.getPackageId()).orElseThrow(
+                            () -> new CustomExceptions.ResourceNotFoundException(
+                                    "Cannot found usage package with id: " + userPackage.getPackageId())
+                    )
+            );
+        }
         return ApiResponse.<UsagePackageResponse>builder()
                 .status("success")
                 .message("Get current usage package by user id successfully!")

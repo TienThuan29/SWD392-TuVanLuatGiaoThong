@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -33,7 +32,6 @@ import swd392.chatbotservice.domain.repository.IChatbotRepository;
 import swd392.chatbotservice.infrastructure.configuration.ChatbotConfiguration;
 import swd392.chatbotservice.infrastructure.thirdparty.GeminiApi;
 import swd392.chatbotservice.infrastructure.thirdparty.dto.GeminiTrafficResponse;
-import swd392.chatbotservice.infrastructure.thirdparty.dto.TrafficLawResponse;
 import swd392.chatbotservice.infrastructure.utils.HashingUtil;
 import swd392.chatbotservice.web.dto.UserPromptRequest;
 

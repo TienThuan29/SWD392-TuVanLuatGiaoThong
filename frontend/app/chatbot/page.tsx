@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { IoSend } from 'react-icons/io5'
 import { FaUser, FaRobot, FaPlus, FaHome, FaBars } from 'react-icons/fa'
 import { ChatHistory, ChatItem } from '@/models/ChatHistory'
-import Header_C from '@/components/combination/Header_C'
+// import Header_C from '@/components/combination/Header_C'
 import Link from 'next/link'
 import { Input } from '@/components/modern-ui/input'
 import { Color } from '@/configs/CssConstant'
@@ -36,6 +36,7 @@ export default function Page() {
     chatHistories,
     currentChat,
     loading: chatbotLoading,
+    chatHistoriesLoading,
     getAllChatHistoriesOfUser,
     askToGenerateWithAuthUser,
     clearCurrentChat,
@@ -252,7 +253,7 @@ export default function Page() {
             </div>
 
             <div className="overflow-y-auto flex-1 px-2 py-2">
-              {chatbotLoading ? (
+              {chatHistoriesLoading ? (
                 // Loading skeleton for chat histories
                 <div className="space-y-2">
                   {[1, 2, 3, 4, 5].map((index) => (

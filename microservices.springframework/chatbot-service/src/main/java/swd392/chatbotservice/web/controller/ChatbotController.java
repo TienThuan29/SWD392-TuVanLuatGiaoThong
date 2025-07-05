@@ -7,6 +7,7 @@ import swd392.chatbotservice.application.dto.ApiResponse;
 import swd392.chatbotservice.application.dto.ChatRequest;
 import swd392.chatbotservice.application.dto.RequestPDF;
 import swd392.chatbotservice.application.usecase.IChatbotUsecase;
+import swd392.chatbotservice.infrastructure.usecase.TrackingLimitationUsecase;
 import swd392.chatbotservice.web.dto.UserPromptRequest;
 import java.util.UUID;
 
@@ -16,6 +17,8 @@ import java.util.UUID;
 public class ChatbotController {
 
     private final IChatbotUsecase chatbotUsecase;
+
+    private final TrackingLimitationUsecase trackingLimitationUsecase;
     
     @GetMapping("/health")
     public String healthCheck() {
@@ -35,13 +38,26 @@ public class ChatbotController {
 
     @PostMapping("/authenticated-user/generate")
     public ResponseEntity<ApiResponse<?>> generateWithAuthenticatedUser(@RequestBody UserPromptRequest userPromptRequest) {
-        return ResponseEntity.ok(
-            ApiResponse.builder()
-                .status("success")
-                .message("Content generated successfully for authenticated user")
-                .dataResponse(chatbotUsecase.generateWithAuthenticatedUser(userPromptRequest))
-                .build()
-        );
+        if (this.trackingLimitationUsecase.canUserAsk(
+                userPromptRequest.getUserId()
+        )) {
+            return ResponseEntity.ok(
+                    ApiResponse.builder()
+                            .status("success")
+                            .message("Content generated successfully for authenticated user")
+                            .dataResponse(chatbotUsecase.generateWithAuthenticatedUser(userPromptRequest))
+                            .build()
+            );
+        }
+        else {
+            return ResponseEntity.ok(
+                    ApiResponse.builder()
+                            .status("fail")
+                            .message("Daily limit reached for user" )
+                            .dataResponse(null)
+                            .build()
+            );
+        }
     }
 
     @GetMapping("/authenticated-user/get-histories/{userId}")
