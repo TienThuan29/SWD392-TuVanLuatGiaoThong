@@ -18,4 +18,6 @@ public interface IUsagePackageUsecase {
     public ApiResponse<UsagePackageResponse> getUsagePackageById(UUID id);
 
     public ApiResponse<UsagePackageResponse> deactivateUsagePackage(UUID id);
+
+    public ApiResponse<UsagePackageResponse> getCurrentUsagePackageByUserId(String userId);
 }

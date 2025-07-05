@@ -6,4 +6,5 @@ import swd392.userpackageservice.domain.entity.UserPackage;
 public interface ITransactionUserPackage {
     UserPackage save(UserPackage userPackage);
     void delete(UUID id);
+    void disableAllOldPackageOfUser(UUID userId);
 }

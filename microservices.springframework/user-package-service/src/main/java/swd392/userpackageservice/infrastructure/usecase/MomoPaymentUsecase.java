@@ -1,27 +1,33 @@
 package swd392.userpackageservice.infrastructure.usecase;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import swd392.userpackageservice.application.dto.TransactionCompletionResponse;
+import swd392.userpackageservice.application.exception.CustomExceptions;
 import swd392.userpackageservice.application.mapper.TransactionHistoryMapper;
 import swd392.userpackageservice.application.usecase.IMomoPaymentUsecase;
+import swd392.userpackageservice.domain.entity.TransactionHistory;
+import swd392.userpackageservice.domain.entity.UserPackage;
 import swd392.userpackageservice.domain.fixed.PayType;
 import swd392.userpackageservice.domain.fixed.Status;
-import swd392.userpackageservice.domain.repository.TransactionHistoryRepository;
-import swd392.userpackageservice.domain.repository.TransactionHistoryTransaction;
+import swd392.userpackageservice.domain.repository.*;
+import swd392.userpackageservice.infrastructure.utils.HashingUtil;
 import swd392.userpackageservice.web.dto.TransactionHistoryRequest;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class MomoPaymentUsecase implements IMomoPaymentUsecase {
 
     @Value("${momo.partner-code}") private String partnerCode;
@@ -33,18 +39,39 @@ public class MomoPaymentUsecase implements IMomoPaymentUsecase {
 
     private final TransactionHistoryTransaction transactionHistoryTransaction;
 
-    public MomoPaymentUsecase(TransactionHistoryRepository transactionHistoryRepository,
-                                 TransactionHistoryMapper mapper) {
-        this.transactionHistoryTransaction = new TransactionHistoryTransaction(transactionHistoryRepository, mapper);
-    }
+    private final HashingUtil hashingUtil;
 
-    public String createPaymentUrl(String orderId, BigDecimal amount, UUID userId) {
+    private final ITransactionUserPackage transactionUserPackage;
+
+    private final UserPackageRepository userPackageRepository;
+
+    private final UsagePackageRepository usagePackageRepository;
+
+    private final TransactionHistoryMapper transactionHistoryMapper;
+
+
+    public String createPaymentUrl(BigDecimal amount, String userId, UUID packageId) {
+        // Decode userId from String to UUID
+        UUID decodedUserId = UUID.fromString(this.hashingUtil.decode(userId));
+        // Create a unique order ID using UUID and current timestamp
+        String orderId = UUID.randomUUID() + "-" + Instant.now().toString();
+        // Create user package order info without enable
+        UserPackage userPackage = UserPackage.builder()
+                .id(UUID.randomUUID())
+                .orderId(orderId)
+                .userId(decodedUserId)
+                .packageId(packageId)
+                .price(amount)
+                .isEnable(Boolean.FALSE)
+                .build();
+        this.transactionUserPackage.save(userPackage);
+
         String requestId = UUID.randomUUID().toString();
         String orderInfo = "Payment for order " + orderId;
 
         String rawHash = "accessKey=" + accessKey +
                 "&amount=" + amount +
-                "&extraData=" + userId +
+                "&extraData=" + decodedUserId +
                 "&ipnUrl=" + ipnUrl +
                 "&orderId=" + orderId +
                 "&orderInfo=" + orderInfo +
@@ -65,7 +92,7 @@ public class MomoPaymentUsecase implements IMomoPaymentUsecase {
         body.put("orderInfo", orderInfo);
         body.put("redirectUrl", redirectUrl);
         body.put("ipnUrl", ipnUrl);
-        body.put("extraData", userId.toString());
+        body.put("extraData", decodedUserId.toString());
         body.put("requestType", "captureWallet");
         body.put("signature", signature);
         body.put("lang", "vi");
@@ -98,22 +125,40 @@ public class MomoPaymentUsecase implements IMomoPaymentUsecase {
 
     @Override
     @Transactional
-    public void handleIpnPayload(Map<String, String> payload) {
+    public TransactionCompletionResponse handleIpnPayload(Map<String, String> payload) {
         if (payload.get("orderId") == null || payload.get("amount") == null) {
             throw new IllegalArgumentException("Missing required fields");
         }
+        String orderId = payload.get("orderId");
 
         TransactionHistoryRequest dto = new TransactionHistoryRequest();
-        dto.setOrderId(payload.get("orderId"));
+        dto.setOrderId(orderId);
         dto.setPaymentTransId(payload.get("transId"));
         dto.setAmount(new BigDecimal(payload.get("amount")));
         dto.setPayType(PayType.MOMO);
         dto.setStatus("0".equals(payload.get("resultCode")) ? Status.SUCCESS : Status.FAILED);
         dto.setMessage(payload.get("message"));
-        dto.setPaidAt(LocalDateTime.now());
+        dto.setPaidAt(Instant.now());
         dto.setUserId(UUID.fromString(payload.get("extraData")));
+        TransactionHistory savedTransaction = transactionHistoryTransaction.save(transactionHistoryMapper.toEntity(dto));
 
-        transactionHistoryTransaction.save(dto);
+        // Disable old user package if exists
+        this.transactionUserPackage.disableAllOldPackageOfUser(savedTransaction.getUserId());
+
+        // Enable the current bought package if payment is successful
+        UserPackage userPackage = this.userPackageRepository.findByOrderId(orderId).orElseThrow(
+                () -> new CustomExceptions.ResourceNotFoundException("Cannot find user package with orderId: " + orderId)
+        );
+        userPackage.setEnable(Boolean.TRUE);
+        this.transactionUserPackage.save(userPackage);
+
+        return this.transactionHistoryMapper.toTransactionCompletionResponse(
+                savedTransaction,
+                this.usagePackageRepository.findById(userPackage.getPackageId()).orElseThrow(
+                        () -> new CustomExceptions.ResourceNotFoundException(
+                                "Cannot find usage package with id: " + userPackage.getPackageId()
+                        ))
+        );
     }
 
     //chuyen doi byte sang hex

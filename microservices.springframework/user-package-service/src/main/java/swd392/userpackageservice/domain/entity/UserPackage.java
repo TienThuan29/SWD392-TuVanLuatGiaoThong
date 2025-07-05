@@ -1,5 +1,6 @@
 package swd392.userpackageservice.domain.entity;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -22,6 +23,9 @@ public class UserPackage {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id = UUID.randomUUID();
 
+    @Column(name = "order_id", nullable = false, updatable = false)
+    private String orderId;
+
     @Column(name = "user_id", nullable = false, updatable = false)
     private UUID userId;
 
@@ -29,10 +33,13 @@ public class UserPackage {
     private UUID packageId;
 
     @Column(name = "price")
-    private float price;
+    private BigDecimal price;
 
     @Column(name = "transaction_date")
     private Instant transactionDate;
+
+    @Column(name = "is_enable", nullable = false)
+    private boolean isEnable;
 
     @PrePersist
     public void prePersist() {

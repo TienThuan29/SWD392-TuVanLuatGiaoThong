@@ -43,4 +43,8 @@ public class UsagePackageController {
         return new ResponseEntity<>(this.usagePackageUsecase.getUsagePackageById(id), HttpStatus.OK);
     }
 
+    @GetMapping("/get/current-usage-package/{userId}")
+    public ResponseEntity<ApiResponse<?>> getCurrentUsagePackageByUserId(@PathVariable("userId") String userId) {
+        return new ResponseEntity<>(this.usagePackageUsecase.getCurrentUsagePackageByUserId(userId), HttpStatus.OK);
+    }
 }

@@ -41,9 +41,9 @@ public class UserPackageServiceImpl implements IUserPackageService {
     @Override
     public UserPackageResponse getUserPackageByUserId(UUID userId) {
         try {
-            UserPackage userPackage = this.userPackageRepository.findByUserId(userId)
+            UserPackage currentUserPackage = this.userPackageRepository.findByUserIdAndIsEnable(userId, true)
                     .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException("User package not found with user id: " + userId));
-            return convertToResponseDto(userPackage);
+            return convertToResponseDto(currentUserPackage);
         }
         catch (Exception exception) {
             return null;

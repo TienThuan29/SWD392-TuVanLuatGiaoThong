@@ -58,6 +58,11 @@ export function useChatbotManager() {
     }
   }, []);
 
+  // Clear current chat
+  const clearCurrentChat = useCallback(() => {
+    setCurrentChat(null);
+  }, []);
+
   return {
     chatHistories,
     currentChat,
@@ -65,5 +70,6 @@ export function useChatbotManager() {
     error,
     getAllChatHistoriesOfUser,
     askToGenerateWithAuthUser,
+    clearCurrentChat,
   };
 }

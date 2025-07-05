@@ -3,6 +3,8 @@ const Constant =  {
     Page: {
         HomePage: '/',
         LoginPage: '/login',
+        AboutPage: '/about',
+        LawsPage: '/laws',
         RegisterPage: '/register',
         VerifyPage: '/verifying',
         ForgotPasswordPage: '/forgot-password',

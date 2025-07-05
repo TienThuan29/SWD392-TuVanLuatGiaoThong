@@ -1,9 +1,7 @@
 import Env from "./Env";
 
 export const Api = {
-    // BASE_API: Env.backendApiGateWayUrl,
-    // BASE_API: "http://localhost:8222",
-    BASE_API: "http://192.168.2.73:8222",
+    BASE_API: Env.backendApiGateWayUrl? Env.backendApiGateWayUrl : "http://localhost:8222",
 
     Authenticaion: {
         LOGIN: '/api/v1/identity/authenticate',
@@ -49,7 +47,13 @@ export const Api = {
         UPDATE: '/api/v1/user-packages/usage-package/admin/update/',
         DEACTIVATE: '/api/v1/user-packages/usage-package/admin/deactivate/',
         GET_ALL: '/api/v1/user-packages/usage-package/get-all',
-        GET_BY_ID: '/api/v1/user-packages/usage-package/get/'
+        GET_BY_ID: '/api/v1/user-packages/usage-package/get/',
+        GET_CURRENT_USAGE_PACKAGE_OF_USER: '/api/v1/user-packages/usage-package/get/current-usage-package/'
+    },
+
+    Payment: {
+        BUY_PACKAGE_WITH_MOMO: '/api/v1/user-packages/payment/momo',
+        COMPLETE_PAYMENT_COMFIRMATION: '/api/v1/user-packages/payment/ipn'
     }
     
 }

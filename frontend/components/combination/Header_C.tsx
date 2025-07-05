@@ -4,6 +4,7 @@ import { HiChevronDown } from "react-icons/hi";
 import { Color } from "@/configs/CssConstant";
 import HeaderTop_C from "./HeaderTop_C";
 import { User } from "@/models/User";
+import Constant from "@/configs/Constant";
 
 type Header_CProps = {
   logedUser?: User | null;
@@ -12,8 +13,6 @@ type Header_CProps = {
 export default function Header_C({ logedUser } : Header_CProps) {
 
   const [productsOpen, setProductsOpen] = useState(false);
-  const [practiceTypesOpen, setPracticeTypesOpen] = useState(false);
-  const [resourcesOpen, setResourcesOpen] = useState(false);
 
   const mainColorStyle = { "--main-color": Color.MainColor } as React.CSSProperties;
 
@@ -76,7 +75,7 @@ export default function Header_C({ logedUser } : Header_CProps) {
             <a href="/chatbot/pricing" className="hover-maincolor transition">Nâng cấp Chatbot</a>
 
             {/* Resources & Events dropdown */}
-            <div
+            {/* <div
               className="relative cursor-pointer"
               onMouseEnter={() => setResourcesOpen(true)}
               onMouseLeave={() => setResourcesOpen(false)}
@@ -89,11 +88,11 @@ export default function Header_C({ logedUser } : Header_CProps) {
                 <div className="absolute top-full mt-1 left-0 bg-white border border-gray-200 rounded shadow-lg p-4 min-w-[220px] z-50">
                   <ul>
                     <li className="py-1 hover-maincolor cursor-pointer">Tài liệu 1</li>
-                    {/* <li className="py-1 hover-maincolor cursor-pointer">Event 1</li> */}
                   </ul>
                 </div>
               )}
-            </div>
+            </div> */}
+            <a href={Constant.Page.LawsPage} className="hover-maincolor transition">Văn bản luật</a>
           </nav>
 
           {/* Call to action button */}

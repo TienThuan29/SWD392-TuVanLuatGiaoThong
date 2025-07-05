@@ -1,7 +1,6 @@
 package swd392.userpackageservice.application.dto;
 
 import lombok.Data;
-
 import java.time.Instant;
 import java.util.UUID;
 

@@ -1,5 +1,6 @@
 package swd392.userpackageservice.web.dto;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.Data;
@@ -8,6 +9,6 @@ import lombok.Data;
 public class UserPackageRequest {
     UUID userId;
     UUID packageId;
-    float price;
+    BigDecimal price;
     Instant transactionDate;
 }

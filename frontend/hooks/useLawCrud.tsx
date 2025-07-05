@@ -4,6 +4,7 @@ import useAxios from "./useAxios";
 import { Api } from "@/configs/Api";
 import HttpStatus from "@/configs/HttpStatus";
 import { toast } from "sonner";
+import axios from "axios";
 
 export function useLawCrud() {
     const api = useAxios();
@@ -17,7 +18,9 @@ export function useLawCrud() {
         setLoading(true);
         setError(null);
         try {
-            const response = await api.get(Api.Law.GET_ALL)
+            console.log("prepapre call laws")
+            const response = await axios.get(Api.BASE_API + Api.Law.GET_ALL)
+            console.log("Laws", response.data.dataResponse)
             if (response.status === HttpStatus.OK) 
                 setLaws(response.data.dataResponse);
             else 

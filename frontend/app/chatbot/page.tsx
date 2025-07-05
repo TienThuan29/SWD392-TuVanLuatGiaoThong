@@ -38,6 +38,7 @@ export default function Page() {
     loading: chatbotLoading,
     getAllChatHistoriesOfUser,
     askToGenerateWithAuthUser,
+    clearCurrentChat,
   } = useChatbotManager();
 
   const [selectedChatId, setSelectedChatId] = useState<string>()
@@ -160,7 +161,7 @@ export default function Page() {
     }
     catch (error) {
       console.log(error)
-    } 
+    }
     finally {
       setIsLoading(false)
     }
@@ -188,6 +189,8 @@ export default function Page() {
     setSelectedChatId(undefined);
     setMessages([]);
     setInputMessage('');
+    // Clear the current chat to prevent auto-selection
+    clearCurrentChat();
     setTimeout(() => {
       inputRef.current?.focus();
     }, 100);
@@ -249,38 +252,61 @@ export default function Page() {
             </div>
 
             <div className="overflow-y-auto flex-1 px-2 py-2">
-              {chatHistories.map((chat) => (
-                <button
-                  key={chat.id}
-                  onClick={() => {
-                    handleChatSelect(chat.id || '')
-                    setIsSidebarOpen(false)
-                  }}
-                  className={`w-full px-4 py-3 text-left hover:bg-gray-50/80 transition-all duration-200 rounded-lg mb-1 border border-transparent hover:border-gray-200/50 ${selectedChatId === chat.id
-                    ? 'bg-gray-50/80 border-gray-200/50 shadow-sm'
-                    : ''
-                    }`}
-                >
-                  <div className="flex flex-col">
-                    <span className="font-medium text-gray-900 line-clamp-1">{getChatTitle(chat)}</span>
-                    <span className="text-xs text-gray-500 mt-0.5">
-                      {chat.createdDate ? new Date(chat.createdDate).toLocaleDateString() : ''}
-                    </span>
+              {chatbotLoading ? (
+                // Loading skeleton for chat histories
+                <div className="space-y-2">
+                  {[1, 2, 3, 4, 5].map((index) => (
+                    <div key={index} className="w-full px-4 py-3 rounded-lg border border-gray-200/50 bg-gray-50/50 animate-pulse">
+                      <div className="flex flex-col space-y-2">
+                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : chatHistories.length > 0 ? (
+                chatHistories.map((chat) => (
+                  <button
+                    key={chat.id}
+                    onClick={() => {
+                      handleChatSelect(chat.id || '')
+                      setIsSidebarOpen(false)
+                    }}
+                    className={`w-full px-4 py-3 text-left hover:bg-gray-50/80 transition-all duration-200 rounded-lg mb-1 border border-transparent hover:border-gray-200/50 ${selectedChatId === chat.id
+                      ? 'bg-gray-50/80 border-gray-200/50 shadow-sm'
+                      : ''
+                      }`}
+                  >
+                    <div className="flex flex-col">
+                      <span className="font-medium text-gray-900 line-clamp-1">{getChatTitle(chat)}</span>
+                      <span className="text-xs text-gray-500 mt-0.5">
+                        {chat.createdDate ? new Date(chat.createdDate).toLocaleDateString() : ''}
+                      </span>
+                    </div>
+                  </button>
+                ))
+              ) : (
+                // Empty state when no chat histories
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                    <FaRobot className="h-6 w-6 text-gray-400" />
                   </div>
-                </button>
-              ))}
+                  <p className="text-sm text-gray-500">Chưa có cuộc trò chuyện nào</p>
+                  <p className="text-xs text-gray-400 mt-1">Bắt đầu chat để tạo lịch sử</p>
+                </div>
+              )}
             </div>
 
             {/* User Profile Section */}
             <div className="border-t border-gray-200/50 p-4 bg-gray-50/50">
               <div className="flex items-center gap-3">
                 <Avatar>
-                  <AvatarImage src={ user?.avatarUrl || "https://raw.githubusercontent.com/thangdevalone/modern-ui/refs/heads/main/public/assets/logo.png" } alt="Default avatar" />
+                  <AvatarImage src={user?.avatarUrl || "https://raw.githubusercontent.com/thangdevalone/modern-ui/refs/heads/main/public/assets/logo.png"} alt="Default avatar" />
                   <AvatarFallback>MD</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
                   <span className="font-medium text-gray-900">{user?.fullname}</span>
-                  <span className="text-xs text-gray-500">{  }</span>
+                  <span className="text-xs text-gray-500">{ }</span>
                 </div>
               </div>
             </div>
@@ -328,7 +354,7 @@ export default function Page() {
                 </div>
               ))
             ) : (
-              
+
               // Sample questions
               <div className="flex flex-col items-center justify-center h-full">
                 <div className="flex flex-col items-center max-w-md text-center">

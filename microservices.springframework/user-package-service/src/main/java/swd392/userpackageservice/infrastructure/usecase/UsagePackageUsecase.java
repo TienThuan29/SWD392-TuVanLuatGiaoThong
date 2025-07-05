@@ -7,8 +7,11 @@ import swd392.userpackageservice.application.dto.UsagePackageResponse;
 import swd392.userpackageservice.application.exception.CustomExceptions;
 import swd392.userpackageservice.application.mapper.UsagePackageMapper;
 import swd392.userpackageservice.application.usecase.IUsagePackageUsecase;
+import swd392.userpackageservice.domain.entity.UserPackage;
 import swd392.userpackageservice.domain.repository.ITransactionUsagePackage;
 import swd392.userpackageservice.domain.repository.UsagePackageRepository;
+import swd392.userpackageservice.domain.repository.UserPackageRepository;
+import swd392.userpackageservice.infrastructure.utils.HashingUtil;
 import swd392.userpackageservice.web.dto.UsagePackageRequest;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +25,10 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
     private final ITransactionUsagePackage transactionUsagePackage;
 
     private final UsagePackageMapper usagePackageMapper;
+
+    private final UserPackageRepository userPackageRepository;
+
+    private final HashingUtil hashingUtil;
 
     @Override
     public ApiResponse<UsagePackageResponse> createUsagePackage(UsagePackageRequest usagePackageRequest) {
@@ -114,5 +121,26 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
                     "Update usage package with id "+ id +" fail, message: " + exception.getMessage()
             );
         }
+    }
+
+    @Override
+    public ApiResponse<UsagePackageResponse> getCurrentUsagePackageByUserId(String userId) {
+        UUID decodedUserId = UUID.fromString(this.hashingUtil.decode(userId));
+
+        UserPackage userPackage = this.userPackageRepository.findByUserIdAndIsEnable(decodedUserId, true)
+                .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException(
+                        "Cannot found current usage package for user with id: " + decodedUserId)
+                );
+        UsagePackageResponse usagePackageResponse = this.usagePackageMapper.toResponse(
+                this.usagePackageRepository.findById(userPackage.getPackageId()).orElseThrow(
+                        () -> new CustomExceptions.ResourceNotFoundException(
+                                "Cannot found usage package with id: " + userPackage.getPackageId())
+                )
+        );
+        return ApiResponse.<UsagePackageResponse>builder()
+                .status("success")
+                .message("Get current usage package by user id successfully!")
+                .dataResponse(usagePackageResponse)
+                .build();
     }
 }

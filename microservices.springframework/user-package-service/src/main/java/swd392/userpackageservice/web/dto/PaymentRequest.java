@@ -6,8 +6,8 @@ import java.util.UUID;
 
 @Data
 public class PaymentRequest {
-    private String orderId;
     private BigDecimal amount;
-    private UUID userId;
+    private String userId;
+    private UUID packageId;
 }
 

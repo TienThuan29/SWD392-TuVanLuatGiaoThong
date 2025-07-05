@@ -6,8 +6,9 @@ import { useState, useEffect } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { useUsagePackageCrud } from "@/hooks/useUsagePackageCrud";
 import { UsagePackage } from "@/models/UsagePackage";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
-// Type for formatted plan data
 type PlanData = {
   id: string;
   name: string;
@@ -23,7 +24,8 @@ type PlanData = {
 };
 
 function Pricing() {
-  const [isAnnual, setIsAnnual] = useState(true);
+
+  const router = useRouter();
   const { usagePackages, loading, getAllUsagePackages } = useUsagePackageCrud();
   const [plans, setPlans] = useState<PlanData[]>([]);
 
@@ -50,7 +52,7 @@ function Pricing() {
             days_limit: pkg.daysLimit || 30,
             button: {
               text: "Chọn gói",
-              type: index === 1 ? "primary" : "secondary" // Make the second plan primary
+              type: index === 1 ? "primary" : "secondary"
             },
             badge: index === 1 ? "Popular" : undefined
           };
@@ -59,6 +61,10 @@ function Pricing() {
       setPlans(formattedPlans);
     }
   }, [usagePackages]);
+
+  const handleSelectPackage = (packageId: string) => {
+    router.push(`/chatbot/pricing/${packageId}`);
+  };
 
   if (loading) {
     return (
@@ -142,7 +148,8 @@ function Pricing() {
 
               {/* Button */}
               <button
-                className={`w-full rounded-full py-3 text-white font-semibold transition ${button.type === "primary"
+                onClick={() => handleSelectPackage(id)}
+                className={`cursor-pointer w-full rounded-full py-3 text-white font-semibold transition ${button.type === "primary"
                     ? "bg-[#0069d1] hover:bg-[#0069d1]"
                     : "bg-[#0069d1] hover:bg-[#0069d1]"
                   }`}
@@ -158,9 +165,10 @@ function Pricing() {
 }
 
 export default function Page() {
+  const { user } = useAuth();
   return (
     <>
-      <Header_C />
+      <Header_C logedUser={user} />
       <Pricing />
       <Footer />
     </>
