@@ -38,6 +38,9 @@ public class UserPackage {
     @Column(name = "transaction_date")
     private Instant transactionDate;
 
+    @Column(name = "expired_date")
+    private Instant expiredDate;
+
     @Column(name = "is_enable", nullable = false)
     private boolean isEnable;
 

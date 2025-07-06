@@ -1,10 +1,12 @@
 package swd392.userpackageservice.domain.repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import swd392.userpackageservice.domain.entity.UserPackage;
 
@@ -19,4 +21,7 @@ public interface UserPackageRepository extends JpaRepository<UserPackage, UUID> 
     Optional<UserPackage> findByOrderId(String orderId);
 
     void deleteByUserId(UUID userId);
+
+    @Query("SELECT up FROM UserPackage up WHERE up.isEnable = true AND up.expiredDate < :currentDate")
+    List<UserPackage> findExpiredEnabledPackages(@Param("currentDate") Instant currentDate);
 }

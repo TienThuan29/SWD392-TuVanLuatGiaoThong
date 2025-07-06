@@ -118,18 +118,24 @@ class AuthenticationUsecase(
             )
         }
 
-        // OTP is valid - proceed with user registration
-        val user: User = userMapper.toEntity(registerUserRequest);
-        user.passwordAuth = passwordEncoder.encode(registerUserRequest.password);
-        user.isEnable = true;
-        userRepository.save(user);
-        return ApiResponse(
-            status = "success", message = "Đăng ký thành công!",
-            dataResponse = AuthenticationResponse(
-                accessToken = jwtUsecase.generateToken(user),
-                refreshToken = jwtUsecase.generateRefreshToken(user)
-            )
-        );
+        if (storedOtp.equals(sixDigitsOtp)) {
+            // OTP is valid - proceed with user registration
+            val user: User = userMapper.toEntity(registerUserRequest);
+            user.passwordAuth = passwordEncoder.encode(registerUserRequest.password);
+            user.isEnable = true;
+            userRepository.save(user);
+            return ApiResponse(
+                status = "success", message = "Đăng ký thành công!",
+                dataResponse = AuthenticationResponse(
+                    accessToken = jwtUsecase.generateToken(user),
+                    refreshToken = jwtUsecase.generateRefreshToken(user)
+                )
+            );
+        }
+        else {
+            return ApiResponse(status = "fail", message = "Mã OPT không không hợp lệ !", dataResponse = null);
+        }
+
     }
 
     override fun registerUser(registerRequest: RegisterRequest): ApiResponse<Any> {

@@ -3,6 +3,7 @@ package swd392.userpackageservice.infrastructure.usecase;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -22,6 +23,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -40,6 +42,8 @@ public class MomoPaymentUsecase implements IMomoPaymentUsecase {
     private final TransactionHistoryTransaction transactionHistoryTransaction;
 
     private final HashingUtil hashingUtil;
+
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final ITransactionUserPackage transactionUserPackage;
 
@@ -126,39 +130,52 @@ public class MomoPaymentUsecase implements IMomoPaymentUsecase {
     @Override
     @Transactional
     public TransactionCompletionResponse handleIpnPayload(Map<String, String> payload) {
-        if (payload.get("orderId") == null || payload.get("amount") == null) {
-            throw new IllegalArgumentException("Missing required fields");
+        try {
+            if (payload.get("orderId") == null || payload.get("amount") == null) {
+                throw new IllegalArgumentException("Missing required fields");
+            }
+            String orderId = payload.get("orderId");
+            TransactionHistoryRequest dto = new TransactionHistoryRequest();
+            dto.setOrderId(orderId);
+            dto.setPaymentTransId(payload.get("transId"));
+            dto.setAmount(new BigDecimal(payload.get("amount")));
+            dto.setPayType(PayType.MOMO);
+            dto.setStatus("0".equals(payload.get("resultCode")) ? Status.SUCCESS : Status.FAILED);
+            dto.setMessage(payload.get("message"));
+            dto.setPaidAt(Instant.now());
+            dto.setUserId(UUID.fromString(payload.get("extraData")));
+            TransactionHistory savedTransaction = transactionHistoryTransaction.save(transactionHistoryMapper.toEntity(dto));
+
+            // Disable old user package if exists
+            this.transactionUserPackage.disableAllOldPackageOfUser(savedTransaction.getUserId());
+            // Enable the current bought package if payment is successful
+            UserPackage userPackage = this.userPackageRepository.findByOrderId(orderId).orElseThrow(
+                    () -> new CustomExceptions.ResourceNotFoundException("Cannot find user package with orderId: " + orderId)
+            );
+            userPackage.setEnable(Boolean.TRUE);
+            // Update expired date based on the package's day limit
+            userPackage.setExpiredDate(
+                    userPackage.getTransactionDate().plus(
+                            usagePackageRepository.getDayLimitOfUsagePackageById(userPackage.getPackageId()),
+                            ChronoUnit.DAYS
+                    )
+            );
+            this.transactionUserPackage.save(userPackage);
+            // Clear tracking limitation cache for the user
+            if (redisTemplate.hasKey(userPackage.getUserId().toString())) {
+                redisTemplate.delete(userPackage.getUserId().toString());
+            }
+            return this.transactionHistoryMapper.toTransactionCompletionResponse(
+                    savedTransaction,
+                    this.usagePackageRepository.findById(userPackage.getPackageId()).orElseThrow(
+                            () -> new CustomExceptions.ResourceNotFoundException(
+                                    "Cannot find usage package with id: " + userPackage.getPackageId()
+                            ))
+            );
         }
-        String orderId = payload.get("orderId");
-
-        TransactionHistoryRequest dto = new TransactionHistoryRequest();
-        dto.setOrderId(orderId);
-        dto.setPaymentTransId(payload.get("transId"));
-        dto.setAmount(new BigDecimal(payload.get("amount")));
-        dto.setPayType(PayType.MOMO);
-        dto.setStatus("0".equals(payload.get("resultCode")) ? Status.SUCCESS : Status.FAILED);
-        dto.setMessage(payload.get("message"));
-        dto.setPaidAt(Instant.now());
-        dto.setUserId(UUID.fromString(payload.get("extraData")));
-        TransactionHistory savedTransaction = transactionHistoryTransaction.save(transactionHistoryMapper.toEntity(dto));
-
-        // Disable old user package if exists
-        this.transactionUserPackage.disableAllOldPackageOfUser(savedTransaction.getUserId());
-
-        // Enable the current bought package if payment is successful
-        UserPackage userPackage = this.userPackageRepository.findByOrderId(orderId).orElseThrow(
-                () -> new CustomExceptions.ResourceNotFoundException("Cannot find user package with orderId: " + orderId)
-        );
-        userPackage.setEnable(Boolean.TRUE);
-        this.transactionUserPackage.save(userPackage);
-
-        return this.transactionHistoryMapper.toTransactionCompletionResponse(
-                savedTransaction,
-                this.usagePackageRepository.findById(userPackage.getPackageId()).orElseThrow(
-                        () -> new CustomExceptions.ResourceNotFoundException(
-                                "Cannot find usage package with id: " + userPackage.getPackageId()
-                        ))
-        );
+        catch (Exception e) {
+            throw new CustomExceptions.InternalServerException("Error processing Momo IPN payload: " + e.getMessage());
+        }
     }
 
     //chuyen doi byte sang hex

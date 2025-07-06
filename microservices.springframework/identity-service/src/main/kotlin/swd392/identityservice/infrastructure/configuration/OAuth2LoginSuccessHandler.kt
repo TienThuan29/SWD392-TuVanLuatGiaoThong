@@ -11,7 +11,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
 import org.springframework.stereotype.Component
+import swd392.identityservice.domain.fixed.Role
 import java.io.IOException
+import java.util.UUID
 
 @Component
 @PropertySource("classpath:security.properties")
@@ -35,13 +37,14 @@ class OAuth2LoginSuccessHandler(
         redirectStrategy.sendRedirect(request, response, "$oauth2RedirectUrl?accessToken=$accessToken&refreshToken=$refreshToken")
     }
 
-    /**
-     * -> This function must be rework!! It is working not correctly
-     */
     private fun registerNewUser(oAuth2User: OAuth2User): User {
-        val newUser = User();
-        newUser.email = oAuth2User.getAttribute("email");
-        newUser.fullname = oAuth2User.getAttribute("name");
+        val newUser = User(
+            email = oAuth2User.getAttribute<String>("email"),
+            usernameAuth = UUID.randomUUID().toString(),
+            fullname = oAuth2User.getAttribute("name"),
+            isEnable = true,
+            role = Role.USER
+        );
         return userRepository.save(newUser);
     }
 
