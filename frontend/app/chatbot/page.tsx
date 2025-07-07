@@ -14,6 +14,9 @@ import { useAuth } from '@/context/AuthContext'
 import useAxios from '@/hooks/useAxios'
 import { useChatbotManager } from '@/hooks/useChatbotManager'
 import { SAMPLE_QUESTIONS } from './questions'
+import { HiDotsVertical } from 'react-icons/hi'
+import { FiEdit2, FiTrash2 } from 'react-icons/fi'
+import { ImSpinner2 } from 'react-icons/im'
 
 
 const AUTHENTICATION_REQUIRED = true;
@@ -40,6 +43,8 @@ export default function Page() {
     getAllChatHistoriesOfUser,
     askToGenerateWithAuthUser,
     clearCurrentChat,
+    renameChatTitle,
+    deleteChatHistory,
   } = useChatbotManager();
 
   const [selectedChatId, setSelectedChatId] = useState<string>()
@@ -50,6 +55,13 @@ export default function Page() {
   const [messages, setMessages] = useState<Message[]>([])
   const [sampleQuestions, setSampleQuestions] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement>(null);
+  // Dropdown and modal state
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const [showRenameModal, setShowRenameModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [renameValue, setRenameValue] = useState('');
+  const [targetChatId, setTargetChatId] = useState<string | null>(null);
+  const renameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -197,6 +209,50 @@ export default function Page() {
     }, 100);
   };
 
+  // Open dropdown for a chat
+  const handleDropdownOpen = (chatId: string) => {
+    setOpenDropdownId(chatId);
+  };
+  // Close dropdown
+  const handleDropdownClose = () => {
+    setOpenDropdownId(null);
+  };
+  // Open rename modal
+  const handleOpenRename = (chatId: string, currentTitle: string) => {
+    setTargetChatId(chatId);
+    setRenameValue(currentTitle);
+    setShowRenameModal(true);
+    setOpenDropdownId(null);
+    setTimeout(() => renameInputRef.current?.focus(), 100);
+  };
+  // Open delete modal
+  const handleOpenDelete = (chatId: string) => {
+    setTargetChatId(chatId);
+    setShowDeleteModal(true);
+    setOpenDropdownId(null);
+  };
+  // Confirm rename
+  const handleConfirmRename = async () => {
+    if (targetChatId && renameValue.trim()) {
+      await renameChatTitle(targetChatId, renameValue.trim());
+      setShowRenameModal(false);
+      setTargetChatId(null);
+    }
+  };
+  // Confirm delete
+  const handleConfirmDelete = async () => {
+    if (targetChatId) {
+      await deleteChatHistory(targetChatId);
+      setShowDeleteModal(false);
+      setTargetChatId(null);
+      // If deleted chat is selected, clear selection
+      if (selectedChatId === targetChatId) {
+        setSelectedChatId(undefined);
+        setMessages([]);
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
@@ -267,24 +323,55 @@ export default function Page() {
                 </div>
               ) : chatHistories.length > 0 ? (
                 chatHistories.map((chat) => (
-                  <button
-                    key={chat.id}
-                    onClick={() => {
-                      handleChatSelect(chat.id || '')
-                      setIsSidebarOpen(false)
-                    }}
-                    className={`w-full px-4 py-3 text-left hover:bg-gray-50/80 transition-all duration-200 rounded-lg mb-1 border border-transparent hover:border-gray-200/50 ${selectedChatId === chat.id
-                      ? 'bg-gray-50/80 border-gray-200/50 shadow-sm'
-                      : ''
-                      }`}
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-medium text-gray-900 line-clamp-1">{getChatTitle(chat)}</span>
-                      <span className="text-xs text-gray-500 mt-0.5">
-                        {chat.createdDate ? new Date(chat.createdDate).toLocaleDateString() : ''}
-                      </span>
-                    </div>
-                  </button>
+                  <div key={chat.id} className="relative group">
+                    <button
+                      onClick={() => {
+                        handleChatSelect(chat.id || '')
+                        setIsSidebarOpen(false)
+                      }}
+                      className={`w-full px-4 py-3 text-left hover:bg-gray-50/80 transition-all duration-200 rounded-lg mb-1 border border-transparent hover:border-gray-200/50 ${selectedChatId === chat.id
+                        ? 'bg-gray-50/80 border-gray-200/50 shadow-sm'
+                        : ''
+                        } flex items-center justify-between`}
+                      style={{ position: 'relative' }}
+                    >
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <span className="font-medium text-gray-900 line-clamp-1">{chat.chatTitle ? chat.chatTitle : getChatTitle(chat)}</span>
+                        {/* <span className="text-xs text-gray-500 mt-0.5">
+                          {chat.histories[0].createdDate ? new Date(chat.createdDate).toLocaleDateString() : ''}
+                        </span> */}
+                      </div>
+                      {/* Dropdown trigger */}
+                      <button
+                        type="button"
+                        className="cursor-pointer ml-2 p-1 rounded-full hover:bg-gray-200 transition-colors z-10"
+                        onClick={e => { e.stopPropagation(); handleDropdownOpen(chat.id); }}
+                        tabIndex={0}
+                        aria-label="Chat options"
+                      >
+                        <HiDotsVertical className="h-5 w-5 text-gray-500 group-hover:text-gray-700" />
+                      </button>
+                      {/* Dropdown menu */}
+                      {openDropdownId === chat.id && (
+                        <div className="absolute right-2 top-12 w-48 rounded-lg bg-white shadow-lg border border-gray-200/50 py-1 z-50 animate-in fade-in zoom-in duration-200">
+                          <button
+                            className="cursor-pointer w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
+                            onClick={() => handleOpenRename(chat.id, chat.chatTitle || getChatTitle(chat))}
+                          >
+                            <FiEdit2 className="h-4 w-4" />
+                            Đổi tên
+                          </button>
+                          <button
+                            className="cursor-pointer w-full text-left px-4 py-2 text-red-600 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
+                            onClick={() => handleOpenDelete(chat.id)}
+                          >
+                            <FiTrash2 className="h-4 w-4" />
+                            Xóa
+                          </button>
+                        </div>
+                      )}
+                    </button>
+                  </div>
                 ))
               ) : (
                 // Empty state when no chat histories
@@ -442,6 +529,69 @@ export default function Page() {
                 style={{ backgroundColor: Color.MainColor }}
               >
                 Đăng nhập ngay
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Rename Modal */}
+      {showRenameModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-300">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Đổi tên cuộc trò chuyện</h3>
+            <Input
+              ref={renameInputRef}
+              value={renameValue}
+              onChange={e => setRenameValue(e.target.value)}
+              className="mb-4"
+              maxLength={50}
+              onKeyDown={e => { if (e.key === 'Enter') handleConfirmRename(); }}
+            />
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowRenameModal(false)}
+                className="cursor-pointer px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleConfirmRename}
+                className="cursor-pointer px-4 py-2 text-white rounded-md transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ backgroundColor: chatbotLoading ? '#d1d5db' : Color.MainColor }}
+                disabled={!renameValue.trim() || chatbotLoading}
+              >
+                {chatbotLoading ? (
+                  <ImSpinner2 className="animate-spin h-4 w-4" />
+                ) : null}
+                Đổi tên
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-300">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Xóa cuộc trò chuyện?</h3>
+            <p className="text-gray-600 mb-6">Bạn có chắc chắn muốn xóa cuộc trò chuyện này? Hành động này không thể hoàn tác.</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="cursor-pointer px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="cursor-pointer px-4 py-2 text-white rounded-md transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ backgroundColor: chatbotLoading ? '#d1d5db' : '#ef4444' }}
+                disabled={chatbotLoading}
+              >
+                {chatbotLoading ? (
+                  <ImSpinner2 className="animate-spin h-4 w-4" />
+                ) : null}
+                Xóa
               </button>
             </div>
           </div>

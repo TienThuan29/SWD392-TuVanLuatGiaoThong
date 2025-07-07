@@ -1,7 +1,9 @@
 package swd392.chatbotservice.web.controller;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import swd392.chatbotservice.application.dto.ApiResponse;
@@ -9,9 +11,11 @@ import swd392.chatbotservice.application.dto.ChatRequest;
 import swd392.chatbotservice.application.dto.RequestPDF;
 import swd392.chatbotservice.application.usecase.IChatbotUsecase;
 import swd392.chatbotservice.infrastructure.usecase.TrackingLimitationUsecase;
+import swd392.chatbotservice.web.dto.ChatTitleRenamingRequest;
 import swd392.chatbotservice.web.dto.UserPromptRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -38,6 +42,19 @@ public class ChatbotController {
                         .message("Content generated successfully")
                         .dataResponse(chatbotUsecase.generateContent(prompt))
                         .build());
+    }
+
+    @PutMapping("/rename-title")
+    public ResponseEntity<ApiResponse<?>> renameChatTitle(
+            @RequestParam("chatId") String chatId,
+            @RequestParam("newTitle") String newTitle
+    ) {
+        return new ResponseEntity<>(this.chatbotUsecase.renameChatTitle(chatId, newTitle), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete-history/{chatId}")
+    public ResponseEntity<ApiResponse<?>> deleteChatHistory(@PathVariable("chatId")UUID chatId) {
+        return new ResponseEntity<>(this.chatbotUsecase.deleteChatHistory(chatId), HttpStatus.OK);
     }
 
     @PostMapping("/authenticated-user/generate")

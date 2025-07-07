@@ -23,17 +23,28 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class GeminiApi {
 
+    @RequiredArgsConstructor
+    public enum GeminiModel {
+        GEMINI_2_FLASH("gemini-2.0-flash"),
+
+        GEMINI_2_5_FLASH("gemini-2.5-flash");
+
+        public final String modelName;
+
+    }
+
     private final ChatbotConfiguration config;
     private final VertexAiGeminiChatModel chatModel;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final static String ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=";
-
+    //private final static String ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=";
+    private final static String ENDPOINT_TEMPLATE = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=";
 
     public GeminiResponse generateContentAsObject(String prompt, List<String> contexts) {
         String fullPrompt = this.injectContextToPrompt(contexts, prompt);
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String endpoint = ENDPOINT + config.getApiKey();
+//            String endpoint = ENDPOINT + config.getApiKey();
+            String endpoint = String.format(ENDPOINT_TEMPLATE, GeminiModel.GEMINI_2_5_FLASH.modelName) + config.getApiKey();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             Map<String, Object> content = Map.of("parts", List.of(Map.of("text", fullPrompt)));

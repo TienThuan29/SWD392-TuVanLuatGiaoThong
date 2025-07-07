@@ -11,3 +11,4 @@
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/aigeminiservice%40gen-lang-client-0740077448.iam.gserviceaccount.com",
   "universe_domain": "googleapis.com"
 }
+// GEMINI_API_KEY=AIzaSyB3sX2w8CiBw2Yq6s-Lbgd1_iWmpJ24a14;GEMINI_LOCATION=us-central1;GEMINI_PROJECT_ID=gen-lang-client-0740077448

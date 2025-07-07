@@ -35,6 +35,8 @@ export const Api = {
         ASK_TO_GENERATE: '/api/v1/chatbot/generate',
         ASK_T0_GENERATE_WITH_AUTH_USER: '/api/v1/chatbot/authenticated-user/generate',
         GET_ALL_CHAT_HISTORIES_OF_USER: '/api/v1/chatbot/authenticated-user/get-histories/',
+        RENAME_CHAT_TITLE: '/api/v1/chatbot/rename-title',
+        DELETE_HISTORY: '/api/v1/chatbot/delete-history/'
     },
 
     File: {

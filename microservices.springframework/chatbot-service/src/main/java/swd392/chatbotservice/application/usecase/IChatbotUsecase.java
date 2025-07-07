@@ -1,16 +1,22 @@
 package swd392.chatbotservice.application.usecase;
 
 import org.springframework.web.multipart.MultipartFile;
+import swd392.chatbotservice.application.dto.ApiResponse;
 import swd392.chatbotservice.application.dto.ChatHistoryResponse;
 import swd392.chatbotservice.application.dto.ChatRequest;
 import swd392.chatbotservice.application.dto.ResponseAi;
 import swd392.chatbotservice.web.dto.UserPromptRequest;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface IChatbotUsecase {
 
     String generateContent(String prompt);
+
+    ApiResponse<Map<String, String>> deleteChatHistory(UUID chatId);
+
+    ApiResponse<ChatHistoryResponse> renameChatTitle(String chatId, String newTitle);
 
     ChatHistoryResponse generateWithAuthenticatedUser(UserPromptRequest userPromptRequest);
 

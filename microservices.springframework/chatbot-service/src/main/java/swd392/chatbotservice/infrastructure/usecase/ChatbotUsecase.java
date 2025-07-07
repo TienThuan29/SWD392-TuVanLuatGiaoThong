@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MimeType;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import swd392.chatbotservice.application.dto.ApiResponse;
 import swd392.chatbotservice.application.dto.ChatHistoryResponse;
 import swd392.chatbotservice.application.dto.ChatRequest;
 import swd392.chatbotservice.application.dto.ResponseAi;
@@ -75,6 +76,45 @@ public class ChatbotUsecase implements IChatbotUsecase {
         }
 
         @Override
+        public ApiResponse<Map<String, String>> deleteChatHistory(UUID chatId) {
+                try {
+                        ChatHistory chatHistory = this.chatbotRepository.findById(chatId);
+                        if (chatHistory == null)
+                                throw new CustomExceptions.ResourceNotFoundException("Chat history not found with id: " + chatId);
+
+                        this.chatbotRepository.delete(chatHistory);
+                        return ApiResponse.<Map<String, String>>builder()
+                                .status("success")
+                                .message("Xóa lịch sử trò chuyện thành công!")
+                                .dataResponse(Map.of("id", chatId.toString())) // return id of deleted chat history to delete from frontend
+                                .build();
+                }
+                catch (Exception e) {
+                        throw new CustomExceptions.InternalServerException("Có lỗi xảy ra khi xóa lịch sử trò chuyện: " + e.getMessage());
+                }
+        }
+
+        @Override
+        public ApiResponse<ChatHistoryResponse> renameChatTitle(String chatId, String newTitle) {
+                try {
+                        ChatHistory chatHistory = this.chatbotRepository.findById(UUID.fromString(chatId));
+                        chatHistory.setChatTitle(newTitle);
+                        this.chatbotRepository.save(chatHistory);
+                        return ApiResponse.<ChatHistoryResponse>builder()
+                                .status("success")
+                                .message("Đổi tên lịch sử trò chuyện thành công!")
+                                .dataResponse(chatHistoryMapper.toResponse(chatHistory))
+                                .build();
+                }
+                catch (Exception e) {
+                        throw new CustomExceptions.InternalServerException(
+                                "Có lỗi xảy ra khi đổi tên lịch sử trò chuyện: "
+                                        + e.getMessage()
+                        );
+                }
+        }
+
+        @Override
         public ChatHistoryResponse generateWithAuthenticatedUser(UserPromptRequest userPromptRequest) {
 //                var generatedContent = this.geminiApi.getTextContentOnly(userPromptRequest.getPrompt());
                 ChatHistory savedChatHistory = null;
@@ -97,7 +137,7 @@ public class ChatbotUsecase implements IChatbotUsecase {
                                 .userId(UUID.fromString(
                                         hashingUtil.decode(userPromptRequest.getUserId()))
                                 )
-                                .chatTitle("New Chat")
+                                .chatTitle("")
                                 .histories(newHistories)
                                 .build();
                         savedChatHistory = chatHistory;

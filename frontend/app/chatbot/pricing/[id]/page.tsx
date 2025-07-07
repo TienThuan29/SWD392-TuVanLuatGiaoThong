@@ -10,6 +10,7 @@ import { UsagePackage } from "@/models/UsagePackage";
 import Spinner_C from "@/components/combination/Spinner_C";
 import { useAuth } from "@/context/AuthContext";
 import { useMomoPayment } from "@/hooks/useMomoPayment";
+import { Color } from "@/configs/CssConstant";
 
 export default function UsagePackageDetail() {
 
@@ -74,7 +75,7 @@ export default function UsagePackageDetail() {
                     <div className="max-w-4xl mx-auto px-6">
                         <div className="flex justify-center items-center py-12">
                             <div className="text-center">
-                                <Spinner_C size="lg" color="blue-600" />
+                                <Spinner_C size="lg" color={Color.MainColor} />
                                 <p className="mt-6 text-gray-600">Đang tải thông tin gói...</p>
                             </div>
                         </div>
@@ -88,7 +89,7 @@ export default function UsagePackageDetail() {
     if (!packageData) {
         return (
             <>
-                <Header_C />
+                <Header_C logedUser={user} />
                 <section className="bg-gray-50 py-16">
                     <div className="max-w-4xl mx-auto px-6">
                         <div className="text-center py-12">
@@ -96,7 +97,10 @@ export default function UsagePackageDetail() {
                             <p className="text-gray-600 mb-6">Gói sử dụng bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
                             <button
                                 onClick={handleBackToPricing}
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg transition-colors"
+                                style={{ backgroundColor: Color.MainColor }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#0056b3'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = Color.MainColor}
                             >
                                 <FaArrowLeft />
                                 Quay lại trang gói
@@ -123,7 +127,10 @@ export default function UsagePackageDetail() {
                     <div className="mb-8">
                         <button
                             onClick={handleBackToPricing}
-                            className="cursor-pointer inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors"
+                            className="cursor-pointer inline-flex items-center gap-2 transition-colors"
+                            style={{ color: Color.MainColor }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = '#0056b3'}
+                            onMouseLeave={(e) => e.currentTarget.style.color = Color.MainColor}
                         >
                             <FaArrowLeft />
                             Quay lại trang gói
@@ -139,7 +146,7 @@ export default function UsagePackageDetail() {
                             </div>
                             <div className="mt-4 lg:mt-0">
                                 <div className="text-right">
-                                    <div className="text-4xl font-bold text-blue-600">
+                                    <div className="text-4xl font-bold" style={{ color: Color.MainColor }}>
                                         {packageData.price?.toLocaleString('vi-VN')}
                                     </div>
                                     <div className="text-gray-600">VNĐ / tháng</div>
@@ -149,8 +156,8 @@ export default function UsagePackageDetail() {
 
                         {/* Package Stats */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
-                                <FaClock className="text-blue-600 text-xl" />
+                            <div className="flex items-center gap-3 p-4 rounded-lg" style={{ backgroundColor: `${Color.MainColor}20` }}>
+                                <FaClock className="text-xl" style={{ color: Color.MainColor }} />
                                 <div>
                                     <div className="font-semibold text-gray-900">{packageData.dailyLimit}</div>
                                     <div className="text-sm text-gray-600">Lượt truy vấn/ngày</div>
@@ -200,8 +207,11 @@ export default function UsagePackageDetail() {
                                 className={`cursor-pointer inline-flex items-center gap-3 px-8 py-4 text-lg font-semibold rounded-lg transition-colors shadow-lg hover:shadow-xl ${
                                     paymentLoading 
                                         ? 'bg-gray-400 text-white cursor-not-allowed' 
-                                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                                        : 'text-white'
                                 }`}
+                                style={!paymentLoading ? { backgroundColor: Color.MainColor } : {}}
+                                onMouseEnter={!paymentLoading ? (e) => e.currentTarget.style.backgroundColor = '#0056b3' : undefined}
+                                onMouseLeave={!paymentLoading ? (e) => e.currentTarget.style.backgroundColor = Color.MainColor : undefined}
                             >
                                 {paymentLoading ? (
                                     <>

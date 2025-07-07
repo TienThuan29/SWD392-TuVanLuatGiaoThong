@@ -15,6 +15,57 @@ export function useChatbotManager() {
   const [chatHistoriesLoading, setChatHistoriesLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const renameChatTitle = useCallback(async (chatId: string, newTitle: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams({ chatId, newTitle });
+      const response = await api.put(`${Api.Chatbot.RENAME_CHAT_TITLE}?${params.toString()}`);
+      if (response.status === HttpStatus.OK && response.data.dataResponse) {
+        setChatHistories((prev) => prev.map(chat => chat.id === chatId ? { ...chat, chatTitle: newTitle } : chat));
+        if (currentChat && currentChat.id === chatId) {
+          setCurrentChat({ ...currentChat, chatTitle: newTitle });
+        }
+        toast.success("Đã đổi tên cuộc trò chuyện!");
+        return response.data.dataResponse;
+      } else {
+        toast.error("Không thể đổi tên cuộc trò chuyện");
+      }
+    } catch (err: any) {
+      toast.error("Có lỗi khi đổi tên cuộc trò chuyện");
+      setError(err.message || "Unknown error");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [api, currentChat]);
+
+
+  const deleteChatHistory = useCallback(async (chatId: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.delete(Api.Chatbot.DELETE_HISTORY + chatId);
+      if (response.status === HttpStatus.OK && response.data.dataResponse?.id === chatId) {
+        setChatHistories((prev) => prev.filter(chat => chat.id !== chatId));
+        if (currentChat && currentChat.id === chatId) {
+          setCurrentChat(null);
+        }
+        toast.success("Đã xóa cuộc trò chuyện!");
+        return response.data.dataResponse;
+      } else {
+        toast.error("Không thể xóa cuộc trò chuyện");
+      }
+    } catch (err: any) {
+      toast.error("Có lỗi khi xóa cuộc trò chuyện");
+      setError(err.message || "Unknown error");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [api, currentChat]);
+  
+
   // Get all chat histories of a user
   const getAllChatHistoriesOfUser = useCallback(async (userId: string) => {
     setChatHistoriesLoading(true);
@@ -76,5 +127,7 @@ export function useChatbotManager() {
     getAllChatHistoriesOfUser,
     askToGenerateWithAuthUser,
     clearCurrentChat,
+    renameChatTitle,
+    deleteChatHistory,
   };
 }
