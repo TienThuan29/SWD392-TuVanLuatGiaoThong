@@ -39,6 +39,9 @@ const formSchema = z.object({
   fullname: z.string().min(1, {
     message: "Họ tên không được để trống.",
   }),
+}).refine((data) => data.password === data.repeatPassword, {
+  message: "Mật khẩu nhập lại không khớp.",
+  path: ["repeatPassword"],
 });
 
 function RegisterForm() {
@@ -60,33 +63,73 @@ function RegisterForm() {
 
   // Use form.handleSubmit for proper validation and submission
   const handleRegister = form.handleSubmit(async (data) => {
-    if (!data.username) {
-      toast.error("Tên đăng nhập không được để trống!");
-      return;
-    }
-    if (!data.password) {
-      toast.error("Mật khẩu không được để trống");
+    // Additional validation
+    if (data.password !== data.repeatPassword) {
+      toast.error("Mật khẩu nhập lại không khớp!");
       return;
     }
 
     try {
       setIsLoading(true);
+      
+      console.log("Sending registration data:", {
+        username: data.username,
+        email: data.email,
+        fullname: data.fullname,
+        // Don't log password for security
+      });
+
       const response = await axios.post(Api.BASE_API + Api.Authenticaion.REGISTER, {
         username: data.username,
         email: data.email,
         password: data.password,
         fullname: data.fullname
-      })
-      if (response.status == HttpStatus.OK && response.data.status == 'success') {
+      });
+
+      console.log("Registration response:", response);
+
+      if (response.status === HttpStatus.OK && response.data.status === 'success') {
         toast.success("Mã OTP đã được gửi đến email của bạn, vui lòng kiểm tra và xác thực email");
         router.push(`/register/verify-email?email=${encodeURIComponent(data.email)}`);
+      } else if (response.status === HttpStatus.OK && response.data.status === 'fail') {
+        toast.error(response.data.message || "Đăng ký thất bại");
+      } else {
+        toast.error("Đăng ký thất bại");
       }
-      else if (response.status == HttpStatus.OK && response.data.status == 'fail') {
-        toast.error(response.data.message)
+    } catch (error) {
+      console.error("Registration error:", error);
+      
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          // Server responded with error status
+          const statusCode = error.response.status;
+          const errorData = error.response.data;
+          
+          console.error("Error response data:", errorData);
+          
+          if (statusCode === 400) {
+            toast.error(errorData?.message || "Dữ liệu không hợp lệ");
+          } else if (statusCode === 409) {
+            toast.error("Tên đăng nhập hoặc email đã tồn tại");
+          } else if (statusCode === 500) {
+            // Trường hợp đặc biệt: Server báo 500 nhưng OTP có thể đã được gửi
+            toast.warning("OTP đã được gửi đến email của bạn. Vui lòng kiểm tra email!");
+            // Vẫn chuyển đến trang verify để user có thể thử nhập OTP
+            setTimeout(() => {
+              router.push(`/register/verify-email?email=${encodeURIComponent(data.email)}`);
+            }, 2000);
+          } else {
+            toast.error(errorData?.message || `Lỗi đăng ký (${statusCode})`);
+          }
+        } else if (error.request) {
+          // Network error
+          toast.error("Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng");
+        } else {
+          toast.error("Đã xảy ra lỗi không mong muốn");
+        }
+      } else {
+        toast.error("Đã xảy ra lỗi không mong muốn");
       }
-    } catch (ex) {
-      console.error(ex);
-      toast.error("Register failed");
     } finally {
       setIsLoading(false);
     }
