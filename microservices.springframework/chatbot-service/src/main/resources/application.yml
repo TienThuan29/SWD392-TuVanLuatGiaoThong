@@ -3,3 +3,14 @@ spring:
     import: ${CONFIG_IMPORT_SERVER_URL:configserver:http://localhost:8888}
   application:
     name: chatbot-service
+  ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: ${GEMINI_PROJECT_ID}
+          location: ${GEMINI_LOCATION}
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}
+

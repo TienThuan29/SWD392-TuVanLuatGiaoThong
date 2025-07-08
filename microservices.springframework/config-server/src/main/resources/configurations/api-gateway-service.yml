@@ -59,7 +59,7 @@ spring:
         - id: chatbot-service
           uri: ${CHATBOT_SERVICE_URL:http://localhost:8093}
           predicates:
-            - Path=/api/v1/chatbot/**
+            - Path=/api/v1/chatbotNen/**
 
         - id: user-package-service
           uri: ${USER_PACKAGE_SERVICE_URL:http://localhost:8094}
