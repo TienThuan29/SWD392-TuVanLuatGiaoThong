@@ -109,3 +109,24 @@
   color: var(--main-color);
 }
 
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 17, 24, 39;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+/* Custom transitions for dark mode */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Dark mode hover effects */
+.dark .hover\:bg-white:hover {
+  --hover-text-color: #2563eb;
+  background-color: rgb(243 244 246) !important;
+  color: var(--hover-text-color) !important;
+}
+
