@@ -3,7 +3,6 @@ package swd392.chatbotservice.infrastructure.thirdparty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatModel;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +33,6 @@ public class GeminiApi {
     }
 
     private final ChatbotConfiguration config;
-    private final VertexAiGeminiChatModel chatModel;
     private final ObjectMapper objectMapper = new ObjectMapper();
     //private final static String ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=";
     private final static String ENDPOINT_TEMPLATE = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=";

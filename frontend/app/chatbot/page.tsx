@@ -111,6 +111,7 @@ export default function Page() {
   useEffect(() => {
     if (currentChat && selectedChatId === currentChat.id) {
       // Update messages for the current chat
+      console.log('Updating messages for current chat:', currentChat.id)
       const chatMessages: Message[] = currentChat.histories.flatMap((item, idx) => [
         item.userText
           ? {

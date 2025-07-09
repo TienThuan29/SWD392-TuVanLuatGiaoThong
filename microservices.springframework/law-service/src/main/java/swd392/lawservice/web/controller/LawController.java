@@ -1,20 +1,21 @@
 package swd392.lawservice.web.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
+import swd392.lawservice.application.dto.CommentResponse;
+import swd392.lawservice.application.usecase.ICommentUsecase;
 import swd392.lawservice.application.usecase.ILawTypeUsecase;
 import swd392.lawservice.application.usecase.ILawUsecase;
+import swd392.lawservice.domain.entity.Comment;
+import swd392.lawservice.web.dto.CommentCreateRequest;
+import swd392.lawservice.web.dto.CommentUpdateRequest;
 import swd392.lawservice.web.dto.LawRequest;
 import swd392.lawservice.application.dto.ApiResponse;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import swd392.lawservice.web.dto.LawTypeRequest;
 
 
@@ -26,6 +27,8 @@ public class LawController {
     private final ILawUsecase lawUsecase;
 
     private final ILawTypeUsecase lawTypeUsecase;
+
+    private final ICommentUsecase commentUsecase;
 
     @GetMapping("/health")
     public String healthCheck() {
@@ -87,4 +90,25 @@ public class LawController {
         return null;
     }
 
+    @GetMapping("/comment/get-all")
+    public ResponseEntity<Page<CommentResponse>> getAllComments(@RequestParam(defaultValue = "0") int page,
+                                                                @RequestParam(defaultValue = "10") int size) {
+        return new ResponseEntity<>(this.commentUsecase.getAllComments(page, size), HttpStatus.OK);
+    }
+
+    @PostMapping("/comment/create")
+    public ResponseEntity<Comment> createComment(@Valid @RequestBody CommentCreateRequest commentCreateRequest) {
+        return new ResponseEntity<>(this.commentUsecase.createComment(commentCreateRequest), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/comment/update")
+    public ResponseEntity<Comment> updateComment(@Valid @RequestBody CommentUpdateRequest commentUpdateRequest) {
+        return new ResponseEntity<>(this.commentUsecase.updateComment(commentUpdateRequest), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/comment/delete/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable UUID id) {
+        this.commentUsecase.deleteComment(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
