@@ -134,9 +134,9 @@ export default function UsagePackageSection() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 dark:bg-gray-900">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800">Quản lý gói sử dụng</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">Quản lý gói sử dụng</h2>
         <button
           onClick={() => {
             setEditingPackage(null);
@@ -150,7 +150,7 @@ export default function UsagePackageSection() {
             });
             setIsModalOpen(true);
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors"
         >
           <FaPlus /> Thêm gói mới
         </button>
@@ -161,20 +161,20 @@ export default function UsagePackageSection() {
         <div className="flex justify-center items-center py-12">
           <div className="text-center">
             <Spinner_C size="lg" color="blue-600" />
-            <p className="mt-6  text-gray-600">Đang tải dữ liệu...</p>
+            <p className="mt-6 text-gray-600 dark:text-gray-400">Đang tải dữ liệu...</p>
           </div>
         </div>
       )}
 
       {/* Package Table */}
       {!loading && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
           <div className="overflow-x-auto">
-            <table ref={tableRef} className="w-full divide-y divide-gray-200" style={{ tableLayout: 'fixed', minWidth: '1000px' }}>
-              <thead className="bg-gray-50">
+            <table ref={tableRef} className="w-full divide-y divide-gray-200 dark:divide-gray-700" style={{ tableLayout: 'fixed', minWidth: '1000px' }}>
+              <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   <th
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider relative"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider relative"
                     style={{ width: columnWidths.name }}
                   >
                     Tên gói
@@ -245,17 +245,17 @@ export default function UsagePackageSection() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {usagePackages.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                    <td colSpan={7} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                       Không có dữ liệu gói sử dụng
                     </td>
                   </tr>
                 ) : (
                   usagePackages.map((pkg) => (
-                    <tr key={pkg.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.name }}>
+                    <tr key={pkg.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <td className="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis text-gray-900 dark:text-gray-100" style={{ width: columnWidths.name }}>
                         <div className="truncate" title={pkg.name}>
                           {pkg.name}
                         </div>
@@ -281,28 +281,31 @@ export default function UsagePackageSection() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.status }}>
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${pkg.isDeleted ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${pkg.isDeleted
+                            ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
+                            : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                          }`}>
                           {pkg.isDeleted ? 'Đã xóa' : 'Đang hoạt động'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium overflow-hidden text-ellipsis" style={{ width: columnWidths.actions }}>
                         <button
                           onClick={() => handleView(pkg)}
-                          className="text-green-600 hover:text-green-900 mr-4"
+                          className="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300 mr-4"
                           title="Xem chi tiết"
                         >
                           <FaEye />
                         </button>
                         <button
                           onClick={() => handleEdit(pkg)}
-                          className="text-blue-600 hover:text-blue-900 mr-4"
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 mr-4"
                           title="Chỉnh sửa"
                         >
                           <FaEdit />
                         </button>
                         <button
                           onClick={() => handleDelete(pkg.id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                           title="Xóa"
                         >
                           <FaTrash />
@@ -319,14 +322,14 @@ export default function UsagePackageSection() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
-            <h3 className="text-lg font-semibold mb-4">
+        <div className="fixed inset-0 backdrop-blur-sm bg-white/30 dark:bg-black/30 flex items-center justify-center">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-xl">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
               {editingPackage ? "Chỉnh sửa gói sử dụng" : "Thêm gói sử dụng mới"}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Tên gói</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tên gói</label>
                 <Input
                   type="text"
                   name="name"
@@ -342,7 +345,7 @@ export default function UsagePackageSection() {
                   value={formData.description}
                   onChange={handleInputChange}
                   rows={3}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                   placeholder="Nhập mô tả gói sử dụng..."
                 />
               </div>
@@ -393,13 +396,13 @@ export default function UsagePackageSection() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 rounded-md"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 rounded-md"
                 >
                   {editingPackage ? "Cập nhật" : "Thêm mới"}
                 </button>

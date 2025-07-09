@@ -34,10 +34,13 @@ export default function Spinner_C({
         rounded-full 
         ${sizeClass}
         border-gray-200 
+        dark:border-gray-700
         border-t-${color} 
         animate-spin 
         ${positionClass}
         ${className}
+        transition-colors
+        duration-300
       `
         .trim()
         .replace(/\s+/g, " ")}
