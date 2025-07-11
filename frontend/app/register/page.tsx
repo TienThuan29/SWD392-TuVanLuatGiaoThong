@@ -17,7 +17,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Color } from "@/configs/CssConstant";
 import { FaArrowLeft } from "react-icons/fa";
-import useAxios from "@/hooks/useAxios";
 import { Api } from "@/configs/Api";
 import HttpStatus from "@/configs/HttpStatus";
 import { useRouter } from "next/navigation";
@@ -25,9 +24,13 @@ import axios from "axios";
 import { ThemeToggle_C } from "@/components/ui/ThemeToggle_C";
 
 const formSchema = z.object({
-  username: z.string().min(3, {
-    message: "Tên người dùng phải có ít nhất 3 ký tự.",
-  }),
+  username: z.string()
+    .min(3, {
+      message: "Tên người dùng phải có ít nhất 3 ký tự.",
+    })
+    .regex(/^[a-zA-Z_][a-zA-Z0-9_]*$/, {
+      message: "Tên đăng nhập chỉ a-z,A-Z, 0-9, và ký tự _.",
+    }),
   email: z.string().email({
     message: "Email không hợp lệ.",
   }),
@@ -60,14 +63,6 @@ function RegisterForm() {
 
   // Use form.handleSubmit for proper validation and submission
   const handleRegister = form.handleSubmit(async (data) => {
-    if (!data.username) {
-      toast.error("Tên đăng nhập không được để trống!");
-      return;
-    }
-    if (!data.password) {
-      toast.error("Mật khẩu không được để trống");
-      return;
-    }
 
     try {
       setIsLoading(true);

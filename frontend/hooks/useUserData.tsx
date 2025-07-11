@@ -142,7 +142,6 @@ export const useUserData = () => {
     };
 };
 
-// Hook đơn giản hơn cho việc fetch một lần
 export const useGetUserData = () => {
     const { authTokens } = useAuth();
     const api = useAxios();
@@ -162,9 +161,11 @@ export const useGetUserData = () => {
             if (typeof err === "object" && err !== null && "response" in err) {
                 const errorWithResponse = err as { response: any };
                 errorMessage = errorWithResponse.response.data?.message || `HTTP ${errorWithResponse.response.status}`;
-            } else if (typeof err === "object" && err !== null && "request" in err) {
+            } 
+            else if (typeof err === "object" && err !== null && "request" in err) {
                 errorMessage = 'Không thể kết nối đến server';
-            } else if (typeof err === "object" && err !== null && "message" in err) {
+            } 
+            else if (typeof err === "object" && err !== null && "message" in err) {
                 errorMessage = (err as { message: string }).message;
             }
 

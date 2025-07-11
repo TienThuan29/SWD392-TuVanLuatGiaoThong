@@ -21,6 +21,8 @@ public class UsagePackageResponse {
 
     private boolean isDeleted;
 
+    private String modelType;
+
     private Instant createdDate;
 
     private Instant updatedDate;

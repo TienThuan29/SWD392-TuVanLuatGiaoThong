@@ -14,13 +14,11 @@ export default function UserManagementSection() {
     users,
     loading,
     getAllUsers,
-    getUserById,
     createUser,
     updateUser,
     deleteUser,
   } = useUserCrud();
 
-  // const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [formLoading, setFormLoading] = useState(false);

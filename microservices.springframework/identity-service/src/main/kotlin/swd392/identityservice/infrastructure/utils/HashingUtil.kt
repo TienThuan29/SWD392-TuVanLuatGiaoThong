@@ -19,4 +19,14 @@ class HashingUtil(
         return hashids.encode(*numbers)
     }
 
+    fun decode(hash: String?): String {
+        val hashids = Hashids(this.hashingKey, this.minHashLength)
+        val numbers = hashids.decode(hash)
+
+        val result = StringBuilder()
+        for (number in numbers) {
+            result.append(Char(number.toUShort()))
+        }
+        return result.toString()
+    }
 }

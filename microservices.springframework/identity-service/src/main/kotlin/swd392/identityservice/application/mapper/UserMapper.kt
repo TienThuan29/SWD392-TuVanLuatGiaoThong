@@ -1,5 +1,6 @@
 package swd392.identityservice.application.mapper
 
+import org.springframework.security.crypto.password.PasswordEncoder
 import swd392.identityservice.application.dto.UserDataResponse
 import swd392.identityservice.domain.entity.User
 import swd392.identityservice.domain.fixed.Role
@@ -10,7 +11,8 @@ import swd392.identityservice.web.dto.RegisterUserRequest
 
 @Component("userMapper_IdentityService")
 class UserMapper(
-    private val hashingUtil: HashingUtil
+    private val hashingUtil: HashingUtil,
+    private val passwordEncoder: PasswordEncoder
 ) {
 
     fun toEntity(registerRequest: RegisterRequest) : User {
@@ -45,7 +47,8 @@ class UserMapper(
             isEnable = user.isEnable,
             role = user.role?.name?.let { hashingUtil.hash(it) },
             createdDate = user.createdDate.toString(),
-            updatedDate = user.updatedDate.toString()
+            updatedDate = user.updatedDate.toString(),
+            notCreateUsernameAndPassword = (user.passwordAuth == null || user.passwordAuth?.isEmpty() == true)
         )
     }
 

@@ -1,6 +1,7 @@
 import { FiUser, FiCalendar, FiHelpCircle } from 'react-icons/fi';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Constant from '@/configs/Constant';
 
 export default function SettingsSidebar_C() {
   const pathname = usePathname();
@@ -9,17 +10,17 @@ export default function SettingsSidebar_C() {
     {
       title: 'Profile',
       icon: <FiUser className="w-5 h-5" />,
-      href: '/settings/profile',
+      href: Constant.Page.UserProfileSettingPage,
     },
     {
       title: 'Planning',
       icon: <FiCalendar className="w-5 h-5" />,
-      href: '/settings/planning',
+      href: Constant.Page.UserPlanningSettingPage,
     },
     {
       title: 'Helper',
       icon: <FiHelpCircle className="w-5 h-5" />,
-      href: '/settings/helper',
+      href: Constant.Page.UserHelperSettingPage,
     },
   ];
 

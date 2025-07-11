@@ -15,7 +15,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('light');
 
   useEffect(() => {
-    // Lấy theme từ localStorage hoặc system preference
     const savedTheme = localStorage.getItem('theme') as Theme;
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     const initialTheme = savedTheme || systemTheme;

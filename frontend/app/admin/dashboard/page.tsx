@@ -10,7 +10,6 @@ import UserManagementSection from './UserManagementSection'
 import LawManagementSection from './LawManagementSection'
 import UsagePackageSection from './UsagePackageSection'
 import { useAuth } from '@/context/AuthContext'
-import { ThemeToggle_C } from '@/components/ui/ThemeToggle_C'
 
 const Tabs = {
   users: {

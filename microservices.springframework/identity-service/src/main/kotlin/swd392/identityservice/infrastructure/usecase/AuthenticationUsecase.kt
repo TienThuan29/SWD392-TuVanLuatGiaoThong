@@ -162,7 +162,7 @@ class AuthenticationUsecase(
             )
         }
         catch (e: AuthenticationException) {
-            throw RuntimeException("Username or password is incorrect!")
+            throw RuntimeException("Tên đăng nhập hoặc mật khẩu không đúng!")
         }
         val user: User = this.getUser(authUserRequest.username);
         val jwtToken: String = jwtUsecase.generateToken(user)

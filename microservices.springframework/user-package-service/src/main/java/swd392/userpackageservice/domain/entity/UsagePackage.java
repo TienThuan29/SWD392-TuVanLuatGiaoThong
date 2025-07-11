@@ -3,12 +3,14 @@ package swd392.userpackageservice.domain.entity;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import swd392.userpackageservice.domain.fixed.ModelAI;
 
 @Data
 @Entity
@@ -37,6 +39,10 @@ public class UsagePackage {
     @Column(name = "days_limit")
     private int daysLimit;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "model_type")
+    private ModelAI modelType;
+
     @Column(name = "is_deleted")
     private boolean isDeleted;
 
@@ -45,6 +51,14 @@ public class UsagePackage {
 
     @Column(name = "updated_date")
     private Instant updatedDate;
+
+    @ManyToMany
+    @JoinTable(
+            name = "packages_models",
+            joinColumns = @JoinColumn(name = "package_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "model_id", referencedColumnName = "id")
+    )
+    private List<AIModel> aiModels;
 
     @PrePersist
     public void prePersist() {

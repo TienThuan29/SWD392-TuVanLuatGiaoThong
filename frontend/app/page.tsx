@@ -1,12 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { HiCheck, HiShieldCheck, HiLightningBolt, HiChatAlt2, HiDocumentText, HiStar, HiUsers, HiClock } from 'react-icons/hi';
-import { FaFacebookF, FaLinkedinIn, FaYoutube, FaInstagram } from 'react-icons/fa';
+import { HiCheck, HiShieldCheck, HiLightningBolt, HiChatAlt2, HiDocumentText, HiStar, HiUsers } from 'react-icons/hi';
 import Header_C from '@/components/combination/Header_C';
 import Footer_C from '@/components/combination/Footer_C';
 import { Color } from '@/configs/CssConstant';
-import { User } from '@/models/User';
 import { useAuth } from '@/context/AuthContext';
 import { ThemeToggle_C } from '@/components/ui/ThemeToggle_C';
 

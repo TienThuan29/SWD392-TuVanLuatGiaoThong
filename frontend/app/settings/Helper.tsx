@@ -4,12 +4,8 @@ import { User } from '@/models/User';
 import React, { useState } from 'react';
 import { FiHelpCircle, FiMessageSquare, FiMail, FiPhone } from 'react-icons/fi';
 
-type Props = {
-  logedUser: User;
-}
 
-export default function Helper({ logedUser }: Props) {
-  const [user, setUser] = useState<User>(logedUser);
+export default function Helper() {
 
   const faqs = [
     {

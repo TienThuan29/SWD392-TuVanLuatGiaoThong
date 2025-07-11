@@ -1,6 +1,5 @@
 package swd392.chatbotservice.web.controller;
 
-import com.amazonaws.services.dynamodbv2.xspec.S;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import swd392.chatbotservice.application.dto.ChatRequest;
 import swd392.chatbotservice.application.dto.RequestPDF;
 import swd392.chatbotservice.application.usecase.IChatbotUsecase;
 import swd392.chatbotservice.infrastructure.usecase.TrackingLimitationUsecase;
-import swd392.chatbotservice.web.dto.ChatTitleRenamingRequest;
 import swd392.chatbotservice.web.dto.UserPromptRequest;
 import java.util.HashMap;
 import java.util.Map;

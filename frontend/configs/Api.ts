@@ -13,7 +13,10 @@ export const Api = {
 
     User: {
         GET_ALL: '/api/v1/admin/user-management/users',
-        DISABLE_USER: '/api/v1/admin/user-management/disable/'
+        DISABLE_USER: '/api/v1/admin/user-management/disable/',
+        UPDATE_USER_INFO: '/api/v1/users/update/',
+        UPDATE_USERNAME_PASSWORD: '/api/v1/users/update/username-password/',
+        CHANGE_PASSWORD: '/api/v1/users/change-password/'
     },
 
     Law: {

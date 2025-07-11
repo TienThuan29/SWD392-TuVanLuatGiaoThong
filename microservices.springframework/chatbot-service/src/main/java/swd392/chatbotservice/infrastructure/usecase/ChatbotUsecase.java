@@ -116,7 +116,7 @@ public class ChatbotUsecase implements IChatbotUsecase {
 
         @Override
         public ChatHistoryResponse generateWithAuthenticatedUser(UserPromptRequest userPromptRequest) {
-//                var generatedContent = this.geminiApi.getTextContentOnly(userPromptRequest.getPrompt());
+//                var generatedContent = this.g eminiApi.getTextContentOnly(userPromptRequest.getPrompt());
                 ChatHistory savedChatHistory = null;
                 var zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
                 // 1. Begin a new chat, id = null

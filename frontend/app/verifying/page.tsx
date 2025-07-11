@@ -25,7 +25,7 @@ export default function Page() {
         }, 10000); // 10 seconds
 
         const fetchData = async () => {
-            console.log("verifying....");
+            // console.log("verifying....");
             const response = await api.get(Api.Authenticaion.USER_INFO)
             if (response.status === 200) {
                 setUser(response.data.dataResponse)
@@ -55,7 +55,6 @@ export default function Page() {
             if (isAdmin) {
                 router.push(Constant.Page.AdminDashboardPage)
             }
-            // console.log("Current role:", role);
         }
     }, [user, isUser, isAdmin, role, router]);
     

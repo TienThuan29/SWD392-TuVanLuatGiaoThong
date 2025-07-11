@@ -4,9 +4,11 @@ import useAxios from "./useAxios";
 import { Api } from "@/configs/Api";
 import HttpStatus from "@/configs/HttpStatus";
 import { toast } from "sonner";
+import { useFileManager } from "./useFileManager";
 
 export function useUserCrud() {
     const api = useAxios();
+    const { uploadFile } = useFileManager();
     const [users, setUsers] = useState<User[]>([]);
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(false);
@@ -93,6 +95,84 @@ export function useUserCrud() {
         // }
     }, []);
 
+    // Update user info with avatar upload
+    const updateUserInfo = useCallback(async (
+        userId: string, 
+        userData: { 
+            fullname?: string; 
+            birthDay?: string; 
+            avatarFile?: File;
+            avatarUrl?: string; // Add existing avatar URL
+        }
+    ) => {
+        setLoading(true);
+        setError(null);
+        
+        try {
+            let avatarUrl = undefined;
+            
+            // Upload avatar if provided
+            if (userData.avatarFile) {
+                try {
+                    const fileData = await uploadFile(userData.avatarFile, "avatars");
+                    avatarUrl = fileData.fileUrl;
+                    console.log("Avatar uploaded successfully:", avatarUrl);
+                } catch (uploadError) {
+                    console.error("Avatar upload failed:", uploadError);
+                    toast.error("Tải avatar lên thất bại. Vui lòng thử lại.");
+                    return;
+                }
+            } else if (userData.avatarUrl) {
+                // Use existing avatar URL if no new file is uploaded
+                avatarUrl = userData.avatarUrl;
+                console.log("Using existing avatar URL:", avatarUrl);
+            }
+
+            // Prepare request body
+            const requestBody: {
+                fullname?: string;
+                avatarUrl?: string;
+                birthDay?: string;
+            } = {};
+
+            if (userData.fullname !== undefined) {
+                requestBody.fullname = userData.fullname;
+            }
+            
+            if (avatarUrl) {
+                requestBody.avatarUrl = avatarUrl;
+            }
+            
+            if (userData.birthDay !== undefined) {
+                requestBody.birthDay = userData.birthDay;
+            }
+
+            console.log("Sending update request:", requestBody);
+
+            // Send PUT request to update user info
+            const response = await api.put(
+                `${Api.User.UPDATE_USER_INFO}${userId}`, 
+                requestBody
+            );
+
+            if (response.status === HttpStatus.OK) {
+                toast.success("Cập nhật thông tin thành công!");
+                return response.data.dataResponse;
+            } else {
+                const errorMessage = "Có lỗi xảy ra khi cập nhật thông tin";
+                toast.error(errorMessage);
+                throw new Error(errorMessage);
+            }
+        } catch (err: any) {
+            const errorMessage = err.message || "Có lỗi xảy ra khi cập nhật thông tin";
+            toast.error(errorMessage);
+            setError(errorMessage);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }, [api, uploadFile]);
+
     // Delete user
     const deleteUser = useCallback(async (id: string) => {
         // setLoading(true);
@@ -120,6 +200,7 @@ export function useUserCrud() {
         getUserById,
         createUser,
         updateUser,
+        updateUserInfo,
         deleteUser,
     };
 }

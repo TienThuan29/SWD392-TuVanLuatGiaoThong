@@ -36,6 +36,7 @@ public class UsagePackageMapper {
         response.setPrice(usagePackage.getPrice());
         response.setDailyLimit(usagePackage.getDailyLimit());
         response.setDaysLimit(usagePackage.getDaysLimit());
+        response.setModelType(usagePackage.getModelType().name());
         response.setDeleted(usagePackage.isDeleted());
         response.setCreatedDate(usagePackage.getCreatedDate());
         response.setUpdatedDate(usagePackage.getUpdatedDate());

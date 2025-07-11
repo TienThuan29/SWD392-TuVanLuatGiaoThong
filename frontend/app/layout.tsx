@@ -24,6 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+
       <body
         className={`${montserrat.variable} antialiased`}
       >
@@ -32,6 +33,8 @@ export default function RootLayout({
             {children}
           </UserProvider>
         </ThemeProvider>
+
+
         <Toaster />
       </body>
     </html>

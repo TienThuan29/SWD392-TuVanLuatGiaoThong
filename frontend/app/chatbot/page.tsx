@@ -1,8 +1,9 @@
-'use client'
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react'
 import { IoSend } from 'react-icons/io5'
 import { FaUser, FaRobot, FaPlus, FaHome, FaBars } from 'react-icons/fa'
-import { ChatHistory, ChatItem } from '@/models/ChatHistory'
+import { ChatHistory } from '@/models/ChatHistory'
 import Link from 'next/link'
 import { Input } from '@/components/modern-ui/input'
 import { Color } from '@/configs/CssConstant'
@@ -16,7 +17,6 @@ import { SAMPLE_QUESTIONS } from './questions'
 import { HiDotsVertical } from 'react-icons/hi'
 import { FiEdit2, FiTrash2 } from 'react-icons/fi'
 import { ImSpinner2 } from 'react-icons/im'
-import { ThemeToggle_C } from '@/components/ui/ThemeToggle_C'
 
 const AUTHENTICATION_REQUIRED = true;
 const SHOW_AUTH_TOAST = false;
@@ -209,14 +209,10 @@ export default function Page() {
     }, 100);
   };
 
-  // Open dropdown for a chat
   const handleDropdownOpen = (chatId: string) => {
     setOpenDropdownId(chatId);
   };
-  // Close dropdown
-  const handleDropdownClose = () => {
-    setOpenDropdownId(null);
-  };
+  
   // Open rename modal
   const handleOpenRename = (chatId: string, currentTitle: string) => {
     setTargetChatId(chatId);
@@ -339,15 +335,15 @@ export default function Page() {
                         <span className="font-medium text-gray-900 dark:text-gray-100 line-clamp-1">{chat.chatTitle ? chat.chatTitle : getChatTitle(chat)}</span>
                       </div>
                       {/* Dropdown trigger */}
-                      <button
-                        type="button"
+                      <div
                         className="cursor-pointer ml-2 p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors z-10"
                         onClick={e => { e.stopPropagation(); handleDropdownOpen(chat.id); }}
                         tabIndex={0}
                         aria-label="Chat options"
+                        role="button"
                       >
                         <HiDotsVertical className="h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300" />
-                      </button>
+                      </div>
                       {/* Dropdown menu */}
                       {openDropdownId === chat.id && (
                         <div className="absolute right-2 top-12 w-48 rounded-lg bg-white dark:bg-gray-800 shadow-lg border border-gray-200/50 dark:border-gray-700/50 py-1 z-50 animate-in fade-in zoom-in duration-200">

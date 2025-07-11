@@ -13,12 +13,12 @@ import { Button } from "@/components/modern-ui/button";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Env from "@/configs/Env";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { Color } from "@/configs/CssConstant";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
 import { ThemeToggle_C } from "@/components/ui/ThemeToggle_C";
 
 const formSchema = z.object({
@@ -31,6 +31,10 @@ const formSchema = z.object({
 });
 
 function LoginForm() {
+  useEffect(() => {
+    localStorage.removeItem("authTokens");
+  }, []);
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,8 +45,8 @@ function LoginForm() {
 
   const { loginUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Use form.handleSubmit for proper validation and submission
   const handleLogin = form.handleSubmit(async (data) => {
     if (!data.username) {
       toast.error("Tên đăng nhập không được để trống!");
@@ -112,13 +116,27 @@ function LoginForm() {
                     Mật khẩu
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="********"
-                      {...field}
-                      className="focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                      disabled={isLoading}
-                    />
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="********"
+                        {...field}
+                        className="focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 pr-10"
+                        disabled={isLoading}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                        disabled={isLoading}
+                      >
+                        {showPassword ? (
+                          <FaEyeSlash className="h-4 w-4" />
+                        ) : (
+                          <FaEye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
                   </FormControl>
                   <FormMessage className="text-red-600 dark:text-red-400 mt-1" />
                 </FormItem>

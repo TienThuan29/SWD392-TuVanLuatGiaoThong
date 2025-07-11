@@ -10,6 +10,10 @@ const Constant =  {
         ForgotPasswordPage: '/forgot-password',
         ResetPasswordPage: '/reset-password',
 
+        UserProfileSettingPage: '/settings/profile',
+        UserPlanningSettingPage: '/settings/planning',
+        UserHelperSettingPage: '/settings/helper',
+
         AdminDashboardPage: '/admin/dashboard',
     },
 
