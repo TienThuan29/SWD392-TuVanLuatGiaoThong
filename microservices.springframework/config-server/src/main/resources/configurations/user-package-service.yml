@@ -28,3 +28,8 @@ momo:
   endpoint: {MOMO_ENDPOINT}
   redirect-url: {MOMO_REDIRECT_URL}
   ipn-url: {MOMO_IPN_URL}
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

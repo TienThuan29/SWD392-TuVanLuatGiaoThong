@@ -7,11 +7,15 @@ import swd392.userpackageservice.application.dto.UsagePackageResponse;
 import swd392.userpackageservice.application.exception.CustomExceptions;
 import swd392.userpackageservice.application.mapper.UsagePackageMapper;
 import swd392.userpackageservice.application.usecase.IUsagePackageUsecase;
+import swd392.userpackageservice.domain.entity.AIModel;
+import swd392.userpackageservice.domain.repository.AIModelRepository;
 import swd392.userpackageservice.infrastructure.transaction.ITransactionUsagePackage;
 import swd392.userpackageservice.domain.repository.UsagePackageRepository;
 import swd392.userpackageservice.domain.repository.UserPackageRepository;
 import swd392.userpackageservice.infrastructure.utils.HashingUtil;
 import swd392.userpackageservice.web.dto.UsagePackageRequest;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +30,8 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
     private final UsagePackageMapper usagePackageMapper;
 
     private final UserPackageRepository userPackageRepository;
+
+    private final AIModelRepository aiModelRepository;
 
     private final HashingUtil hashingUtil;
 
@@ -51,7 +57,21 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
         try {
             var usagePackage = this.usagePackageRepository.findById(id)
                     .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException("Cannot found usage package with id: "+ id));
+
+            List<AIModel> aiModels = usagePackageRequest.getAiModels()
+                    .stream().map(aiModelRequest -> this.aiModelRepository.findById(aiModelRequest.getId())
+                            .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException(
+                                    "Cannot found AI model with id: " + aiModelRequest.getId())))
+                    .toList();
             usagePackage = this.usagePackageMapper.copyDataWithoutId(usagePackageRequest, usagePackage);
+
+            for (AIModel aiModel : aiModels) {
+                usagePackage.getAiModels().add(aiModel);
+            }
+//            usagePackage.setAiModels(aiModels);
+//            System.out.println("UsagePackage before save: " + usagePackage);
+//            usagePackage.getAiModels().forEach(model -> System.out.println("AI Model: " + model.getId()));
+
             var updatedUsagePackage = this.transactionUsagePackage.save(usagePackage);
             return ApiResponse.<UsagePackageResponse>builder()
                     .status("success")
@@ -60,6 +80,7 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
                     .build();
         }
         catch (Exception exception) {
+            System.out.println("Exception occurred while updating usage package: " + exception.getMessage());
             throw new CustomExceptions.InternalServerException(
                     "Update usage package with id "+ id +" fail, message: " + exception.getMessage()
             );
