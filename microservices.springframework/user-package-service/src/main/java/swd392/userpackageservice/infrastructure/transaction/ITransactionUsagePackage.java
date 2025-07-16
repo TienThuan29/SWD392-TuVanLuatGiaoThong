@@ -1,4 +1,4 @@
-package swd392.userpackageservice.domain.repository;
+package swd392.userpackageservice.infrastructure.transaction;
 
 import swd392.userpackageservice.domain.entity.UsagePackage;
 import java.util.UUID;

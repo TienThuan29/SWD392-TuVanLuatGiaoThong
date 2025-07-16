@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -42,7 +41,7 @@ public class AIModel {
     @Column(name = "updated_date")
     private Instant updatedDate;
 
-    @ManyToMany(mappedBy = "aiModels")
+    @ManyToMany(mappedBy = "aiModels", fetch =  FetchType.LAZY)
     private List<UsagePackage> usagePackages;
 
     @PrePersist

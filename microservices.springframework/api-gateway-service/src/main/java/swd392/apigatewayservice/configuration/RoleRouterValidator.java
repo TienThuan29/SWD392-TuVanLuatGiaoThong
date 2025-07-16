@@ -18,14 +18,15 @@ import java.util.List;
  */
 @Service
 public class RoleRouterValidator {
-     private List<String> userEndpoints = List.of(
+     private final List<String> userEndpoints = List.of(
              "/api/v1"
      );
 
-     private List<String> adminEndpoints = List.of(
+     private final List<String> adminEndpoints = List.of(
              "/api/v1",
              "/api/v1/admin",
-             "/api/v1/**/admin"
+             "/api/v1/**/admin",
+             "/api/v1/**/admin/**"
      );
 
      public boolean isUserEndpoint(String path) {

@@ -1,19 +1,18 @@
-package swd392.userpackageservice.domain.repository;
+package swd392.userpackageservice.infrastructure.transaction;
 
 import java.util.List;
 import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import swd392.userpackageservice.application.exception.CustomExceptions;
 import swd392.userpackageservice.domain.entity.UserPackage;
+import swd392.userpackageservice.domain.repository.UserPackageRepository;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class TransactionUserPackage implements ITransactionUserPackage{
+public class TransactionUserPackage implements ITransactionUserPackage {
 
     private final UserPackageRepository userPackageRepository;
 

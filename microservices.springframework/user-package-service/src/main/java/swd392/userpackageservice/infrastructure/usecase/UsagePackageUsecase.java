@@ -7,14 +7,12 @@ import swd392.userpackageservice.application.dto.UsagePackageResponse;
 import swd392.userpackageservice.application.exception.CustomExceptions;
 import swd392.userpackageservice.application.mapper.UsagePackageMapper;
 import swd392.userpackageservice.application.usecase.IUsagePackageUsecase;
-import swd392.userpackageservice.domain.entity.UserPackage;
-import swd392.userpackageservice.domain.repository.ITransactionUsagePackage;
+import swd392.userpackageservice.infrastructure.transaction.ITransactionUsagePackage;
 import swd392.userpackageservice.domain.repository.UsagePackageRepository;
 import swd392.userpackageservice.domain.repository.UserPackageRepository;
 import swd392.userpackageservice.infrastructure.utils.HashingUtil;
 import swd392.userpackageservice.web.dto.UsagePackageRequest;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service

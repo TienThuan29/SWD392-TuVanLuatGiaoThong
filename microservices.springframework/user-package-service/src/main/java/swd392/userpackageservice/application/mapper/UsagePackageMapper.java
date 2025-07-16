@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import swd392.userpackageservice.application.dto.UsagePackageResponse;
 import swd392.userpackageservice.domain.entity.UsagePackage;
 import swd392.userpackageservice.web.dto.UsagePackageRequest;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -36,7 +35,6 @@ public class UsagePackageMapper {
         response.setPrice(usagePackage.getPrice());
         response.setDailyLimit(usagePackage.getDailyLimit());
         response.setDaysLimit(usagePackage.getDaysLimit());
-        response.setModelType(usagePackage.getModelType().name());
         response.setDeleted(usagePackage.isDeleted());
         response.setCreatedDate(usagePackage.getCreatedDate());
         response.setUpdatedDate(usagePackage.getUpdatedDate());

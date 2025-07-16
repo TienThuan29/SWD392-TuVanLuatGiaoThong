@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import swd392.userpackageservice.domain.fixed.ModelAI;
 
 @Data
 @Entity
@@ -38,10 +37,6 @@ public class UsagePackage {
 
     @Column(name = "days_limit")
     private int daysLimit;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "model_type")
-    private ModelAI modelType;
 
     @Column(name = "is_deleted")
     private boolean isDeleted;

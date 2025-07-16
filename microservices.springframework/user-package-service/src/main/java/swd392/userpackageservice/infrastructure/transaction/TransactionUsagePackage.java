@@ -1,9 +1,11 @@
-package swd392.userpackageservice.domain.repository;
+package swd392.userpackageservice.infrastructure.transaction;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import swd392.userpackageservice.domain.entity.UsagePackage;
+import swd392.userpackageservice.domain.repository.UsagePackageRepository;
+
 import java.util.UUID;
 
 @Repository
