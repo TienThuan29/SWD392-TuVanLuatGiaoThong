@@ -1,3 +1,5 @@
+import { AIModel } from "./AIModel";
+
 export type UsagePackage = {
   id?: string;
   name?: string;
@@ -5,6 +7,7 @@ export type UsagePackage = {
   price?: number;
   dailyLimit?: number;
   daysLimit?: number;
+  aiModels?: AIModel[];
   isDeleted?: boolean;
   createdDate?: string;
   updatedDate?: string;

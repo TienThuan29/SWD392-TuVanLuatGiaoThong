@@ -6,15 +6,19 @@ import { FaEdit, FaTrash, FaPlus, FaEye } from "react-icons/fa";
 import { Input } from "@/components/modern-ui/input";
 import { useUsagePackageCrud } from "@/hooks/useUsagePackageCrud";
 import Spinner_C from "@/components/combination/Spinner_C";
+import { AIModel } from "@/models/AIModel";
+import MultiSelectAIModel from "@/components/custom/MultiSelectAIModel";
 
 export default function UsagePackageSection() {
   const {
+    aiModels,
     usagePackages,
     loading,
     getAllUsagePackages,
     createUsagePackage,
     updateUsagePackage,
     deleteUsagePackage,
+    getAllAIModels,
   } = useUsagePackageCrud();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,18 +48,27 @@ export default function UsagePackageSection() {
   const [resizingColumn, setResizingColumn] = useState<string | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
 
-  // Fetch data on component mount
   useEffect(() => {
     getAllUsagePackages();
-  }, [getAllUsagePackages]);
+    getAllAIModels();
+  }, [getAllUsagePackages, getAllAIModels]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : name === "price" || name === "dailyLimit" || name === "daysLimit" ? Number(value) : value,
-    }));
+    if (name === "aiModels") {
+      // Multi-select: get selected options
+      const selectedOptions = Array.from((e.target as HTMLSelectElement).selectedOptions).map(option => option.value);
+      setFormData((prev) => ({
+        ...prev,
+        aiModels: aiModels.filter(model => selectedOptions.includes(model.id)),
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : name === "price" || name === "dailyLimit" || name === "daysLimit" ? Number(value) : value,
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,7 +76,8 @@ export default function UsagePackageSection() {
     try {
       if (editingPackage) {
         await updateUsagePackage(editingPackage.id!, formData);
-      } else {
+      }
+      else {
         await createUsagePackage(formData);
       }
       setIsModalOpen(false);
@@ -75,8 +89,10 @@ export default function UsagePackageSection() {
         dailyLimit: 0,
         daysLimit: 0,
         isDeleted: false,
+        aiModels: []
       });
-    } catch (error) {
+    }
+    catch (error) {
       console.error("Error saving package:", error);
     }
   };
@@ -86,6 +102,7 @@ export default function UsagePackageSection() {
     setFormData({
       ...pkg,
       description: pkg.description || "",
+      aiModels: pkg.aiModels || [],
     });
     setIsModalOpen(true);
   };
@@ -147,6 +164,7 @@ export default function UsagePackageSection() {
               dailyLimit: 0,
               daysLimit: 0,
               isDeleted: false,
+              aiModels: [], // <-- important!
             });
             setIsModalOpen(true);
           }}
@@ -282,8 +300,8 @@ export default function UsagePackageSection() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap overflow-hidden text-ellipsis" style={{ width: columnWidths.status }}>
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${pkg.isDeleted
-                            ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
-                            : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                          ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
+                          : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
                           }`}>
                           {pkg.isDeleted ? 'Đã xóa' : 'Đang hoạt động'}
                         </span>
@@ -329,7 +347,7 @@ export default function UsagePackageSection() {
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tên gói</label>
+                <label className="block text-sm font-medium text-gray-700">Tên gói</label>
                 <Input
                   type="text"
                   name="name"
@@ -381,6 +399,18 @@ export default function UsagePackageSection() {
                   required
                   min={0}
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">AI Models</label>
+                {aiModels.length === 0 ? (
+                  <div className="text-sm text-red-500">Không có AI Model nào khả dụng để chọn.</div>
+                ) : (
+                  <MultiSelectAIModel
+                    aiModels={aiModels}
+                    selected={formData.aiModels || []}
+                    onChange={(selected) => setFormData((prev) => ({ ...prev, aiModels: selected }))}
+                  />
+                )}
               </div>
               <div className="flex items-center">
                 <Input
@@ -447,6 +477,20 @@ export default function UsagePackageSection() {
                 <p className="mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
                   {viewingPackage.daysLimit}
                 </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">AI Models</label>
+                {viewingPackage.aiModels && viewingPackage.aiModels.length > 0 ? (
+                  <ul className="mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                    {viewingPackage.aiModels.map(model => (
+                      <li key={model.id}>
+                        {model.modelName} ({model.provider})
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-1 text-sm text-gray-500">Không có AI Model nào</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Trạng thái</label>

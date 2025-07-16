@@ -53,7 +53,8 @@ export const Api = {
         DEACTIVATE: '/api/v1/user-packages/usage-package/admin/deactivate/',
         GET_ALL: '/api/v1/user-packages/usage-package/get-all',
         GET_BY_ID: '/api/v1/user-packages/usage-package/get/',
-        GET_CURRENT_USAGE_PACKAGE_OF_USER: '/api/v1/user-packages/usage-package/get/current-usage-package/'
+        GET_CURRENT_USAGE_PACKAGE_OF_USER: '/api/v1/user-packages/usage-package/get/current-usage-package/',
+        GET_ALL_AI_MODEL: '/api/v1/user-packages/ai-models/get-all'
     },
 
     Payment: {
