@@ -5,13 +5,34 @@ import { Api } from "@/configs/Api";
 import HttpStatus from "@/configs/HttpStatus";
 import { toast } from "sonner";
 import axios from "axios";
+import { AIModel } from "@/models/AIModel";
 
 export function useUsagePackageCrud() {
     const api = useAxios();
     const [usagePackages, setUsagePackages] = useState<UsagePackage[]>([]);
     const [usagePackage, setUsagePackage] = useState<UsagePackage | null>(null);
+    const [aiModels, setAIModels] = useState<AIModel[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const getAllAIModels = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await api.get(Api.UsagePackage.GET_ALL_AI_MODEL);
+            if (response.status === HttpStatus.OK) {
+                setAIModels(response.data.dataResponse);
+            } else {
+                toast.error("Có lỗi xảy ra khi lấy dữ liệu AI Model");
+            }
+        } catch (err: any) {
+            toast.error("Có lỗi xảy ra khi lấy dữ liệu AI Model");
+            setError(err.message || "Unknown error");
+            return [];
+        } finally {
+            setLoading(false);
+        }
+    }, [api]);
 
     // Get all usage packages
     const getAllUsagePackages = useCallback(async () => {
@@ -81,6 +102,7 @@ export function useUsagePackageCrud() {
 
     // Update usage package
     const updateUsagePackage = useCallback(async (id: string, updatedUsagePackage: Partial<UsagePackage>) => {
+        // console.log("Update usage package: ", updatedUsagePackage)
         setLoading(true);
         setError(null);
         try {
@@ -129,6 +151,7 @@ export function useUsagePackageCrud() {
     return {
         usagePackages,
         usagePackage,
+        aiModels,
         loading,
         error,
         getAllUsagePackages,
@@ -136,5 +159,6 @@ export function useUsagePackageCrud() {
         createUsagePackage,
         updateUsagePackage,
         deleteUsagePackage,
+        getAllAIModels,
     };
 }

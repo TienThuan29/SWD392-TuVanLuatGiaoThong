@@ -13,12 +13,13 @@ import { Button } from "@/components/modern-ui/button";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Env from "@/configs/Env";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { Color } from "@/configs/CssConstant";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
+import { ThemeToggle_C } from "@/components/ui/ThemeToggle_C";
 
 const formSchema = z.object({
   username: z.string().min(3, {
@@ -30,6 +31,10 @@ const formSchema = z.object({
 });
 
 function LoginForm() {
+  useEffect(() => {
+    localStorage.removeItem("authTokens");
+  }, []);
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,8 +45,8 @@ function LoginForm() {
 
   const { loginUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Use form.handleSubmit for proper validation and submission
   const handleLogin = form.handleSubmit(async (data) => {
     if (!data.username) {
       toast.error("Tên đăng nhập không được để trống!");
@@ -68,9 +73,14 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100 px-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-8">
-        <h2 className="text-3xl font-semibold text-center mb-6 text-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4 transition-colors duration-200">
+      {/* Theme Toggle - Fixed position */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle_C />
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-8 border border-gray-200/50 dark:border-gray-700/50 transition-colors duration-200">
+        <h2 className="text-3xl font-semibold text-center mb-6 text-gray-900 dark:text-white">
           Đăng nhập
         </h2>
 
@@ -81,18 +91,18 @@ function LoginForm() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-700 font-medium">
+                  <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
                     Tên đăng nhập
                   </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Tên đăng nhập của bạn"
                       {...field}
-                      className="focus:ring-indigo-500 focus:border-indigo-500"
+                      className="focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       disabled={isLoading}
                     />
                   </FormControl>
-                  <FormMessage className="text-red-600 mt-1" />
+                  <FormMessage className="text-red-600 dark:text-red-400 mt-1" />
                 </FormItem>
               )}
             />
@@ -102,26 +112,42 @@ function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-700 font-medium">
+                  <FormLabel className="text-gray-700 dark:text-gray-300 font-medium">
                     Mật khẩu
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="********"
-                      {...field}
-                      className="focus:ring-indigo-500 focus:border-indigo-500"
-                      disabled={isLoading}
-                    />
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="********"
+                        {...field}
+                        className="focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 pr-10"
+                        disabled={isLoading}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                        disabled={isLoading}
+                      >
+                        {showPassword ? (
+                          <FaEyeSlash className="h-4 w-4" />
+                        ) : (
+                          <FaEye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
                   </FormControl>
-                  <FormMessage className="text-red-600 mt-1" />
+                  <FormMessage className="text-red-600 dark:text-red-400 mt-1" />
                 </FormItem>
               )}
             />
 
             <div className="flex justify-end text-sm">
-              <a href="/register"
-                className="text-indigo-600 hover:text-indigo-800 transition">
+              <a
+                href="/register"
+                className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
+              >
                 Chưa có tài khoản? Đăng ký
               </a>
             </div>
@@ -129,7 +155,7 @@ function LoginForm() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-maincolor text-white font-semibold py-3 rounded-md shadow-md hover:bg-[#005bb5] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-maincolor text-white font-semibold py-3 rounded-md shadow-md hover:bg-[#005bb5] dark:hover:bg-[#004a99] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ backgroundColor: Color.MainColor }}
             >
               {isLoading ? "Đăng nhập..." : "Đăng nhập"}
@@ -140,7 +166,7 @@ function LoginForm() {
               type="button"
               onClick={handleLoginWithGoogle}
               variant="outline"
-              className="w-full flex items-center justify-center gap-3 border border-gray-300 hover:bg-gray-100 transition mt-3 py-3 rounded-md font-semibold"
+              className="w-full flex items-center justify-center gap-3 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-800 dark:text-white transition-colors mt-3 py-3 rounded-md font-semibold"
               disabled={isLoading}
             >
               {/* Google Logo SVG */}
@@ -173,14 +199,14 @@ function LoginForm() {
             <div className="flex justify-between text-sm">
               <a
                 href="/"
-                className="inline-flex items-center text-indigo-600 hover:text-indigo-800 transition"
+                className="inline-flex items-center text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
               >
                 <FaArrowLeft className="w-4 h-4 mr-1" />
                 Trở về trang chủ
               </a>
               <a
                 href="#"
-                className="text-indigo-600 hover:text-indigo-800 transition"
+                className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
               >
                 Quên mật khẩu?
               </a>

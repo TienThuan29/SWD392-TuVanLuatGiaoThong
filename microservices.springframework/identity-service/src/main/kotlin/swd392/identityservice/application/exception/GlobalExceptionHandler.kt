@@ -10,13 +10,25 @@ import java.time.ZonedDateTime
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
+    @ExceptionHandler(InternalServerException::class)
+    fun handleResourceNotFound(ex: InternalServerException, request: HttpServletRequest): ResponseEntity<ErrorResponse> {
+        val errorResponse = ErrorResponse(
+            timestamp = ZonedDateTime.now().toString(),
+            status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            error = HttpStatus.INTERNAL_SERVER_ERROR.reasonPhrase,
+            message = ex.message,
+            path = request.requestURI
+        )
+        return ResponseEntity(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
     @ExceptionHandler(ResourceNotFoundException::class)
     fun handleResourceNotFound(ex: ResourceNotFoundException, request: HttpServletRequest): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse(
             timestamp = ZonedDateTime.now().toString(),
             status = HttpStatus.NOT_FOUND.value(),
             error = HttpStatus.NOT_FOUND.reasonPhrase,
-            message = ex.message ?: "Resource not found",
+            message = ex.message,
             path = request.requestURI
         )
         return ResponseEntity(errorResponse, HttpStatus.NOT_FOUND)
@@ -28,7 +40,7 @@ class GlobalExceptionHandler {
             timestamp = ZonedDateTime.now().toString(),
             status = HttpStatus.NOT_FOUND.value(),
             error = HttpStatus.NOT_FOUND.reasonPhrase,
-            message = ex.message ?: "User not found",
+            message = ex.message,
             path = request.requestURI
         )
         return ResponseEntity(errorResponse, HttpStatus.NOT_FOUND)

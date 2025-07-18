@@ -11,6 +11,7 @@ import axios from 'axios';
 import { Api } from '@/configs/Api';
 import HttpStatus from '@/configs/HttpStatus';
 import Constant from '@/configs/Constant';
+import { ThemeToggle_C } from "@/components/ui/ThemeToggle_C";
 
 export default function Page() {
 
@@ -73,24 +74,29 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100 px-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-8">
-        <h2 className="text-3xl font-semibold text-center mb-6 text-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4 transition-colors duration-200">
+      {/* Theme Toggle - Fixed position */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle_C />
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-8 border border-gray-200/50 dark:border-gray-700/50 transition-colors duration-200">
+        <h2 className="text-3xl font-semibold text-center mb-6 text-gray-900 dark:text-white">
           Xác thực Email
         </h2>
         
         {isVerified ? (
           <div className="text-center">
-            <div className="text-green-600 text-6xl mb-4">✓</div>
-            <p className="text-green-600 text-lg font-medium mb-6">
+            <div className="text-green-600 dark:text-green-400 text-6xl mb-4">✓</div>
+            <p className="text-green-600 dark:text-green-400 text-lg font-medium mb-6">
               Xác thực email thành công!
             </p>
-            <p className="text-gray-600 mb-8">
+            <p className="text-gray-600 dark:text-gray-300 mb-8">
               Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập ngay bây giờ.
             </p>
             <Button
               onClick={() => window.location.href = Constant.Page.LoginPage}
-              className="w-full bg-maincolor text-white font-semibold py-3 rounded-md shadow-md hover:bg-[#005bb5] transition"
+              className="w-full bg-maincolor text-white font-semibold py-3 rounded-md shadow-md hover:bg-[#005bb5] dark:hover:bg-[#004a99] transition-colors"
               style={{ backgroundColor: Color.MainColor }}
             >
               Trở về trang đăng nhập
@@ -98,13 +104,13 @@ export default function Page() {
           </div>
         ) : (
           <>
-            <p className="text-gray-600 text-center mb-8">
+            <p className="text-gray-600 dark:text-gray-300 text-center mb-8">
               Vui lòng nhập mã xác thực 6 chữ số đã được gửi đến email của bạn
             </p>
 
             {email && (
-              <p className="text-gray-700 text-center mb-6 font-medium">
-                Email: <span className="text-indigo-600">{email}</span>
+              <p className="text-gray-700 dark:text-gray-300 text-center mb-6 font-medium">
+                Email: <span className="text-indigo-600 dark:text-indigo-400">{email}</span>
               </p>
             )}
 
@@ -118,7 +124,7 @@ export default function Page() {
                   value={digit}
                   onChange={(e) => handleInputChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
-                  className="w-12 h-12 text-center text-2xl focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-12 h-12 text-center text-2xl focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   disabled={isLoading}
                 />
               ))}
@@ -127,7 +133,7 @@ export default function Page() {
             <Button
               onClick={handleSubmit}
               disabled={isLoading}
-              className="w-full bg-maincolor text-white font-semibold py-3 rounded-md shadow-md hover:bg-[#005bb5] transition disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+              className="w-full bg-maincolor text-white font-semibold py-3 rounded-md shadow-md hover:bg-[#005bb5] dark:hover:bg-[#004a99] transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-4"
               style={{ backgroundColor: Color.MainColor }}
             >
               {isLoading ? "Đang xác thực..." : "Xác thực"}
@@ -136,14 +142,14 @@ export default function Page() {
             <div className="flex justify-between text-sm">
               <a
                 href="/register"
-                className="inline-flex items-center text-indigo-600 hover:text-indigo-800 transition"
+                className="inline-flex items-center text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
               >
                 <FaArrowLeft className="w-4 h-4 mr-1" />
                 Quay lại đăng ký
               </a>
               <button
                 onClick={() => toast.info("Mã xác thực mới đã được gửi!")}
-                className="text-indigo-600 hover:text-indigo-800 transition"
+                className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
               >
                 Gửi lại mã
               </button>

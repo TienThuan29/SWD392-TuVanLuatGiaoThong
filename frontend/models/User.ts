@@ -14,6 +14,7 @@ export type User = {
     createdDate?: string;
     updatedDate?: string;
     role?: string;
+    notCreateUsernameAndPassword?: boolean;
 };
 
 export type AuthTokens = {

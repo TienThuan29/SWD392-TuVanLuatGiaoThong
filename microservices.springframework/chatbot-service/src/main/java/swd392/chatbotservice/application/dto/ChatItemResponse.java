@@ -2,7 +2,6 @@ package swd392.chatbotservice.application.dto;
 
 import lombok.Builder;
 import lombok.Data;
-
 import java.time.Instant;
 
 @Data

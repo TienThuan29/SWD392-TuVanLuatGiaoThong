@@ -31,7 +31,7 @@ data class User(
     var avatarUrl: String? = null,
 
     @Column(name = "birthday")
-    var birthDay: Date? = null,
+    var birthDay: Instant? = null,
 
     @Column(name = "is_enable")
     var isEnable: Boolean = false,

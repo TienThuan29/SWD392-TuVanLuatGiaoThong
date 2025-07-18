@@ -13,7 +13,10 @@ export const Api = {
 
     User: {
         GET_ALL: '/api/v1/admin/user-management/users',
-        DISABLE_USER: '/api/v1/admin/user-management/disable/'
+        DISABLE_USER: '/api/v1/admin/user-management/disable/',
+        UPDATE_USER_INFO: '/api/v1/users/update/',
+        UPDATE_USERNAME_PASSWORD: '/api/v1/users/update/username-password/',
+        CHANGE_PASSWORD: '/api/v1/users/change-password/'
     },
 
     Law: {
@@ -32,11 +35,11 @@ export const Api = {
     },
 
     Chatbot: {
-        ASK_TO_GENERATE: '/api/v1/chatbotNen/generate',
-        ASK_T0_GENERATE_WITH_AUTH_USER: '/api/v1/chatbotNen/authenticated-user/generate',
-        GET_ALL_CHAT_HISTORIES_OF_USER: '/api/v1/chatbotNen/authenticated-user/get-histories/',
-        RENAME_CHAT_TITLE: '/api/v1/chatbotNen/rename-title',
-        DELETE_HISTORY: '/api/v1/chatbotNen/delete-history/'
+        ASK_TO_GENERATE: '/api/v1/chatbot/generate',
+        ASK_T0_GENERATE_WITH_AUTH_USER: '/api/v1/chatbot/authenticated-user/generate',
+        GET_ALL_CHAT_HISTORIES_OF_USER: '/api/v1/chatbot/authenticated-user/get-histories/',
+        RENAME_CHAT_TITLE: '/api/v1/chatbot/rename-title',
+        DELETE_HISTORY: '/api/v1/chatbot/delete-history/'
     },
 
     File: {
@@ -50,7 +53,8 @@ export const Api = {
         DEACTIVATE: '/api/v1/user-packages/usage-package/admin/deactivate/',
         GET_ALL: '/api/v1/user-packages/usage-package/get-all',
         GET_BY_ID: '/api/v1/user-packages/usage-package/get/',
-        GET_CURRENT_USAGE_PACKAGE_OF_USER: '/api/v1/user-packages/usage-package/get/current-usage-package/'
+        GET_CURRENT_USAGE_PACKAGE_OF_USER: '/api/v1/user-packages/usage-package/get/current-usage-package/',
+        GET_ALL_AI_MODEL: '/api/v1/user-packages/ai-models/get-all'
     },
 
     Payment: {

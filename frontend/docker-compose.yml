@@ -1,0 +1,25 @@
+# docker compose -f docker-compose-production.yml -p swd392-fe-production up -d
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nextjs-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_HASHING_SECERT_KEY=
+      - NEXT_PUBLIC_BACKEND_OAUTH2_URL=
+    # Mount volumes for development if needed
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
+    restart: unless-stopped
+    networks:
+      - swd-fe-app-network
+
+
+networks:
+  swd-fe-app-network:
+    driver: bridge

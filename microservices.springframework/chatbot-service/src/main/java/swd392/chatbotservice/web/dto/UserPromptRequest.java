@@ -13,4 +13,10 @@ public class UserPromptRequest {
 
     String prompt;
 
+    String sessionId;
+
+    String modelAlias;
+
+    String action = "sendMessage";
+
 }

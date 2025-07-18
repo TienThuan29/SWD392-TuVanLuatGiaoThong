@@ -5,14 +5,12 @@
  * @throws Error if the input format is invalid
  */
 export function formatDateToISO(dateString: string): string {
-    // Validate input format using regex
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
     if (!dateRegex.test(dateString)) {
         throw new Error(`Invalid date format. Expected "yyyy-MM-dd", got "${dateString}"`);
     }
 
-    // Simply append the time and timezone
     return `${dateString}T00:00:00Z`;
 }
 
@@ -24,22 +22,18 @@ export function formatDateToISO(dateString: string): string {
  * @throws Error if the date is invalid
  */
 function formatDateToISOWithValidation(dateString: string): string {
-    // Validate input format
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
     if (!dateRegex.test(dateString)) {
         throw new Error(`Invalid date format. Expected "yyyy-MM-dd", got "${dateString}"`);
     }
 
-    // Create Date object to validate the date
     const date = new Date(dateString + 'T00:00:00Z');
 
-    // Check if the date is valid
     if (isNaN(date.getTime())) {
         throw new Error(`Invalid date: ${dateString}`);
     }
 
-    // Return the formatted string
     return `${dateString}T00:00:00Z`;
 }
 
@@ -72,10 +66,8 @@ export function formatDateForDisplay(isoDateString: string | null | undefined): 
     }
 
     try {
-        // Parse the ISO date string
         const date = new Date(isoDateString);
-        
-        // Check if the date is valid
+
         if (isNaN(date.getTime())) {
             return null;
         }

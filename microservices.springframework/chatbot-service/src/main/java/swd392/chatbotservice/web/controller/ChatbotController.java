@@ -1,17 +1,13 @@
 package swd392.chatbotservice.web.controller;
 
-import com.amazonaws.services.dynamodbv2.xspec.S;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import swd392.chatbotservice.application.dto.ApiResponse;
-import swd392.chatbotservice.application.dto.ChatRequest;
-import swd392.chatbotservice.application.dto.RequestPDF;
 import swd392.chatbotservice.application.usecase.IChatbotUsecase;
 import swd392.chatbotservice.infrastructure.usecase.TrackingLimitationUsecase;
-import swd392.chatbotservice.web.dto.ChatTitleRenamingRequest;
 import swd392.chatbotservice.web.dto.UserPromptRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,36 +88,4 @@ public class ChatbotController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/generate-from-pdf")
-    public ResponseEntity<ApiResponse<Object>> generateContentFromPdf(@RequestBody RequestPDF request)
-            throws Exception {
-        System.out.println();
-        return ResponseEntity.ok(
-                ApiResponse.builder()
-                        .status("success")
-                        .message("Content generated from PDF successfully")
-                        .dataResponse(chatbotUsecase.generateContentFromPDF(request.getUrl(), request.getPrompt()))
-                        .build());
-    }
-
-    @PostMapping("/generate-from-pdf-multiparth")
-    public ResponseEntity<ApiResponse<Object>> generateContentFromPdf(@RequestBody ChatRequest request)
-            throws Exception {
-        return ResponseEntity.ok(
-                ApiResponse.builder()
-                        .status("success")
-                        .message("Content generated from PDF successfully")
-                        .dataResponse(chatbotUsecase.generateContentFromPDF(request.getPdfFile(), request.getPrompt()))
-                        .build());
-    }
-
-    @PostMapping("/generate")
-    public ResponseEntity<ApiResponse<Object>> generate(@RequestBody String prompt) {
-        return ResponseEntity.ok(
-                ApiResponse.builder()
-                        .status("success")
-                        .message("Content generated successfully")
-                        .dataResponse(chatbotUsecase.generateContent(prompt))
-                        .build());
-    }
 }

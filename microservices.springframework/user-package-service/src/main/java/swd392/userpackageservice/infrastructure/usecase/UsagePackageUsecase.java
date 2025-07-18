@@ -7,14 +7,14 @@ import swd392.userpackageservice.application.dto.UsagePackageResponse;
 import swd392.userpackageservice.application.exception.CustomExceptions;
 import swd392.userpackageservice.application.mapper.UsagePackageMapper;
 import swd392.userpackageservice.application.usecase.IUsagePackageUsecase;
-import swd392.userpackageservice.domain.entity.UserPackage;
-import swd392.userpackageservice.domain.repository.ITransactionUsagePackage;
+import swd392.userpackageservice.domain.entity.AIModel;
+import swd392.userpackageservice.domain.repository.AIModelRepository;
+import swd392.userpackageservice.infrastructure.transaction.ITransactionUsagePackage;
 import swd392.userpackageservice.domain.repository.UsagePackageRepository;
 import swd392.userpackageservice.domain.repository.UserPackageRepository;
 import swd392.userpackageservice.infrastructure.utils.HashingUtil;
 import swd392.userpackageservice.web.dto.UsagePackageRequest;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -28,6 +28,8 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
     private final UsagePackageMapper usagePackageMapper;
 
     private final UserPackageRepository userPackageRepository;
+
+    private final AIModelRepository aiModelRepository;
 
     private final HashingUtil hashingUtil;
 
@@ -53,7 +55,19 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
         try {
             var usagePackage = this.usagePackageRepository.findById(id)
                     .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException("Cannot found usage package with id: "+ id));
+
+            List<AIModel> aiModels = usagePackageRequest.getAiModels()
+                    .stream().map(aiModelRequest -> this.aiModelRepository.findById(aiModelRequest.getId())
+                            .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException(
+                                    "Cannot found AI model with id: " + aiModelRequest.getId())))
+                    .toList();
             usagePackage = this.usagePackageMapper.copyDataWithoutId(usagePackageRequest, usagePackage);
+
+            usagePackage.getAiModels().clear();
+            for (AIModel aiModel : aiModels) {
+                usagePackage.getAiModels().add(aiModel);
+            }
+
             var updatedUsagePackage = this.transactionUsagePackage.save(usagePackage);
             return ApiResponse.<UsagePackageResponse>builder()
                     .status("success")
@@ -62,6 +76,7 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
                     .build();
         }
         catch (Exception exception) {
+            System.out.println("Exception occurred while updating usage package: " + exception.getMessage());
             throw new CustomExceptions.InternalServerException(
                     "Update usage package with id "+ id +" fail, message: " + exception.getMessage()
             );
@@ -102,6 +117,20 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
                     "Update usage package with id "+ id +" fail, message: " + exception.getMessage()
             );
         }
+    }
+
+    @Override
+    public ApiResponse<UsagePackageResponse> getUsagePackageByUserId(String userId) {
+        UUID decodedUserId = UUID.fromString(this.hashingUtil.decode(userId));
+        var currentUserPackage = this.userPackageRepository.findByUserIdAndIsEnable(decodedUserId, true)
+                .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException("Cannot found user package with user id: " + decodedUserId));
+        var usagePackage = this.usagePackageRepository.findById(currentUserPackage.getPackageId())
+                .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException("Cannot found usage package with id: " + currentUserPackage.getPackageId()));
+        return ApiResponse.<UsagePackageResponse>builder()
+                .status("success")
+                .message("Get usage package by user id successfully!")
+                .dataResponse(this.usagePackageMapper.toResponse(usagePackage))
+                .build();
     }
 
     @Override

@@ -15,6 +15,8 @@ public class ChatHistoryMapper {
     public ChatHistoryResponse toResponse(ChatHistory chatHistory) {
         return ChatHistoryResponse.builder()
                 .id(chatHistory.getId())
+                .sessionId(chatHistory.getSessionId())
+                .modelAlias(chatHistory.getModelAlias())
                 .chatTitle(chatHistory.getChatTitle())
                 .histories(chatHistory.getHistories().stream().map(
                         this::toChatItemResponse

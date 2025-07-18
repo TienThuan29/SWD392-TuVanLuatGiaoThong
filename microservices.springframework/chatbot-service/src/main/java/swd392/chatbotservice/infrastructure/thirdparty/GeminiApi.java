@@ -22,27 +22,17 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class GeminiApi {
 
-    @RequiredArgsConstructor
-    public enum GeminiModel {
-        GEMINI_2_FLASH("gemini-2.0-flash"),
-
-        GEMINI_2_5_FLASH("gemini-2.5-flash");
-
-        public final String modelName;
-
-    }
-
     private final ChatbotConfiguration config;
     private final ObjectMapper objectMapper = new ObjectMapper();
     //private final static String ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=";
     private final static String ENDPOINT_TEMPLATE = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=";
 
-    public GeminiResponse generateContentAsObject(String prompt, List<String> contexts) {
+    public GeminiResponse generateContentAsObject(String prompt, List<String> contexts, String geminiAlias) {
         String fullPrompt = this.injectContextToPrompt(contexts, prompt);
         try {
             RestTemplate restTemplate = new RestTemplate();
 //            String endpoint = ENDPOINT + config.getApiKey();
-            String endpoint = String.format(ENDPOINT_TEMPLATE, GeminiModel.GEMINI_2_5_FLASH.modelName) + config.getApiKey();
+            String endpoint = String.format(ENDPOINT_TEMPLATE, geminiAlias) + config.getApiKey();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             Map<String, Object> content = Map.of("parts", List.of(Map.of("text", fullPrompt)));
@@ -60,9 +50,9 @@ public class GeminiApi {
     }
 
     // Response with structured response json
-    public GeminiTrafficResponse generateTrafficLawResponse(String prompt, List<String> contexts) {
+    public GeminiTrafficResponse generateTrafficLawResponse(String prompt, List<String> contexts, String geminiAlias) {
         try {
-            GeminiResponse rawResponse = generateContentAsObject(prompt, contexts);
+            GeminiResponse rawResponse = generateContentAsObject(prompt, contexts, geminiAlias);
             if (rawResponse == null) {
                 GeminiTrafficResponse errorResponse = new GeminiTrafficResponse();
                 errorResponse.setErrorMessage("Failed to get response from Gemini API");
@@ -133,26 +123,6 @@ public class GeminiApi {
         catch (Exception e) {
             return null;
         }
-    }
-
-    public String getTextContentOnly(String prompt, List<String> contexts) {
-        GeminiResponse response = generateContentAsObject(prompt, contexts);
-        return response != null ? response.getTextContent() : null;
-    }
-
-    public TrafficLawResponse getTrafficLawAnswers(String prompt, List<String> contexts) {
-        GeminiTrafficResponse response = generateTrafficLawResponse(prompt, contexts);
-        return response.getTrafficLawData();
-    }
-
-    public String getSummarizeAnswer(String prompt, List<String> contexts) {
-        GeminiTrafficResponse response = generateTrafficLawResponse(prompt, contexts);
-        return response.getSummarizeAnswer();
-    }
-
-    public String getFullAnswer(String prompt, List<String> contexts) {
-        GeminiTrafficResponse response = generateTrafficLawResponse(prompt, contexts);
-        return response.getFullAnswer();
     }
 
     private String injectContextToPrompt(

@@ -3,6 +3,7 @@ package swd392.userpackageservice.domain.entity;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -45,6 +46,14 @@ public class UsagePackage {
 
     @Column(name = "updated_date")
     private Instant updatedDate;
+
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(
+            name = "packages_models",
+            joinColumns = @JoinColumn(name = "package_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "model_id", referencedColumnName = "id")
+    )
+    private List<AIModel> aiModels;
 
     @PrePersist
     public void prePersist() {

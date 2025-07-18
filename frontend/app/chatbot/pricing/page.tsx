@@ -96,7 +96,7 @@ function Pricing() {
           Sử dụng không giới hạn AI chatbot hỗ trợ tìm kiếm thông tin về luật giao thông
         </h2>
         <p className="text-sm text-gray-700 mb-8">
-          Dùng thử miễn phí trong 7 ngày. Hủy bất cứ lúc nào.
+          Dùng thử miễn phí chatbot tư vấn 24/7.
         </p>
 
         {/* Pricing cards */}

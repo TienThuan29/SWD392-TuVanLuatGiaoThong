@@ -6,6 +6,8 @@ export type ChatItem = {
 
 export type ChatHistory = {
     id: string;
+    sessionId: string;
+    modelAlias: string;
     userId: string;
     createdDate: string;
     chatTitle: string;

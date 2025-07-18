@@ -2,12 +2,13 @@
 
 import HeaderTop_C from '@/components/combination/HeaderTop_C'
 import React, { useState } from 'react'
-import { FaUser, FaCalendarAlt, FaQuestionCircle, FaHome, FaUsers, FaBook } from 'react-icons/fa'
+import { FaUser, FaCalendarAlt, FaQuestionCircle, FaHome, FaUsers, FaBook, FaLock } from 'react-icons/fa'
 import Link from 'next/link'
 import { Color } from '@/configs/CssConstant'
 import Profile from './Profile'
 import PlanningPackage from './PlanningPackage'
 import Helper from './Helper'
+import PasswordChanging from './PasswordChanging'
 import { useAuth } from '@/context/AuthContext';
 import { useRoleValidator } from '@/hooks/useRoleValidator';
 
@@ -18,14 +19,20 @@ const Tabs = {
     icon: <FaUser className="h-4 w-4" style={{ color: Color.MainColor }} />,
     component: Profile
   },
-  planning: {
+  password: {
     id: 2,
+    name: 'Đổi mật khẩu',
+    icon: <FaLock className="h-4 w-4" style={{ color: Color.MainColor }} />,
+    component: PasswordChanging
+  },
+  planning: {
+    id: 3,
     name: 'Gói thành viên',
     icon: <FaCalendarAlt className="h-4 w-4" style={{ color: Color.MainColor }} />,
     component: PlanningPackage
   },
   help: {
-    id: 3,
+    id: 4,
     name: 'Trợ giúp',
     icon: <FaQuestionCircle className="h-4 w-4" style={{ color: Color.MainColor }} />,
     component: Helper
@@ -34,7 +41,6 @@ const Tabs = {
 
 export default function Page() {
 
-  // const [logedUser, setLogedUser] = useState<User>(sampleUser);
   const { user } = useAuth();
   const { isAdmin, isUser } = useRoleValidator(user);
 
@@ -125,6 +131,20 @@ export default function Page() {
                         <FaUser className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" style={{ color: Color.MainColor }} />
                       </div>
                       <span className="font-medium group-hover:text-gray-900 transition-colors duration-300">Thông tin cá nhân</span>
+                    </button>
+                  </div>
+
+                  {/* Password Section */}
+                  <div className="px-4 py-2">
+                    <button
+                      onClick={() => setActiveTab('password')}
+                      className={`w-full group flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 transition-all duration-300 rounded-lg hover:shadow-md active:scale-95 border border-gray-200/50 hover:border-gray-300/50 ${activeTab === 'password' ? 'bg-gray-50 shadow-md border-gray-300/50' : ''
+                        }`}
+                    >
+                      <div className="flex items-center justify-center w-9 h-9 rounded-full bg-white/80 group-hover:bg-white transition-colors duration-300 shadow-sm group-hover:shadow-md border border-gray-200/50 group-hover:border-gray-300/50">
+                        <FaLock className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" style={{ color: Color.MainColor }} />
+                      </div>
+                      <span className="font-medium group-hover:text-gray-900 transition-colors duration-300">Đổi mật khẩu</span>
                     </button>
                   </div>
 

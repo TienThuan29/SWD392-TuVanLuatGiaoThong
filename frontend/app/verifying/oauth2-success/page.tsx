@@ -61,16 +61,16 @@ export default function Page() {
 
     useEffect(() => {
         // Debug logging
-        console.log("Current state:", {
-            tokensSet,
-            userFetched,
-            user,
-            isLoggedIn: isLoggedIn(),
-            isProcessing,
-            isAdmin,
-            isUser,
-            role
-        });
+        // console.log("Current state:", {
+        //     tokensSet,
+        //     userFetched,
+        //     user,
+        //     isLoggedIn: isLoggedIn(),
+        //     isProcessing,
+        //     isAdmin,
+        //     isUser,
+        //     role
+        // });
 
         // Only redirect when tokens are set, user data is fetched, and user is logged in
         if (tokensSet && userFetched && user && isLoggedIn() && !isProcessing) {
