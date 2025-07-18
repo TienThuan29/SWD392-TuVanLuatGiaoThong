@@ -12,11 +12,12 @@ import HeaderTop_C from '@/components/combination/HeaderTop_C'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import useAxios from '@/hooks/useAxios'
-import { useChatbotManager } from '@/hooks/useChatbotManager'
+import { useChatbotManager, UserPromptRequest } from '@/hooks/useChatbotManager'
 import { SAMPLE_QUESTIONS } from './questions'
 import { HiDotsVertical } from 'react-icons/hi'
 import { FiEdit2, FiTrash2 } from 'react-icons/fi'
 import { ImSpinner2 } from 'react-icons/im'
+import { Select } from '@/components/modern-ui/select'
 
 const AUTHENTICATION_REQUIRED = true;
 const SHOW_AUTH_TOAST = false;
@@ -39,6 +40,8 @@ export default function Page() {
     currentChat,
     loading: chatbotLoading,
     chatHistoriesLoading,
+    currentUsagePackage,
+    getCurrentUsagePackageOfUser,
     getAllChatHistoriesOfUser,
     askToGenerateWithAuthUser,
     clearCurrentChat,
@@ -47,6 +50,7 @@ export default function Page() {
   } = useChatbotManager();
 
   const [selectedChatId, setSelectedChatId] = useState<string>()
+  const [selectedSessionId, setSelectedSessionId] = useState<string>()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -61,9 +65,32 @@ export default function Page() {
   const [renameValue, setRenameValue] = useState('');
   const [targetChatId, setTargetChatId] = useState<string | null>(null);
   const renameInputRef = useRef<HTMLInputElement>(null);
+  const [selectedModelAlias, setSelectedModelAlias] = useState<string>('gemini-2.0-flash');
+
+  // Set default modelAlias when currentUsagePackage changes or selectedChatId changes
+  useEffect(() => {
+    if (selectedChatId) {
+      // Old chat: lock model to the chat's modelAlias
+      const selectedChat = chatHistories.find(chat => chat.id === selectedChatId);
+      if (selectedChat && selectedChat.modelAlias) {
+        setSelectedModelAlias(selectedChat.modelAlias);
+      }
+    } else if (currentUsagePackage?.aiModels && currentUsagePackage.aiModels.length > 0) {
+      // New chat: prefer Gemini 2.0, else first model
+      const geminiModel = currentUsagePackage.aiModels.find(m => m.modelName === 'Gemini 2.0' && m.modelAlias === 'gemini-2.0-flash');
+      if (geminiModel) {
+        setSelectedModelAlias(geminiModel.modelAlias);
+      } else {
+        setSelectedModelAlias(currentUsagePackage.aiModels[0].modelAlias);
+      }
+    } else if (!currentUsagePackage || !currentUsagePackage.aiModels || currentUsagePackage.aiModels.length === 0) {
+      setSelectedModelAlias('gemini-2.0-flash');
+    }
+  }, [currentUsagePackage, selectedChatId, chatHistories]);
 
   useEffect(() => {
     if (user?.id) {
+      getCurrentUsagePackageOfUser(user.id)
       getAllChatHistoriesOfUser(user.id)
     }
   }, [user, getAllChatHistoriesOfUser])
@@ -134,6 +161,7 @@ export default function Page() {
     // If new chat, select it
     if (currentChat && !selectedChatId) {
       setSelectedChatId(currentChat.id)
+      setSelectedChatId(currentChat.sessionId)
     }
   }, [currentChat, selectedChatId])
 
@@ -160,15 +188,18 @@ export default function Page() {
     setInputMessage('')
     setIsLoading(true)
     try {
-      const payload = {
+      const payload: UserPromptRequest = {
         chatId: selectedChatId || '',
         userId: user.id,
         prompt: inputMessage,
+        sessionId: selectedSessionId || '',
+        modelAlias: selectedModelAlias || (currentUsagePackage?.aiModels?.[0]?.modelAlias ?? '')
       }
       const result = await askToGenerateWithAuthUser(payload)
       // If this was a new chat, refresh the sidebar
       if (!selectedChatId && result?.id) {
         setSelectedChatId(result.id)
+        setSelectedSessionId(result.sessionId)
         await getAllChatHistoriesOfUser(user.id)
       }
     }
@@ -180,8 +211,9 @@ export default function Page() {
     }
   }
 
-  const handleChatSelect = (chatId: string) => {
+  const handleChatSelect = (chatId: string, sessionId: string) => {
     setSelectedChatId(chatId)
+    setSelectedSessionId(sessionId)
     setIsSidebarOpen(false)
   }
 
@@ -200,6 +232,7 @@ export default function Page() {
   // New chat handler
   const handleNewChat = () => {
     setSelectedChatId(undefined);
+    setSelectedSessionId(undefined);
     setMessages([]);
     setInputMessage('');
     // Clear the current chat to prevent auto-selection
@@ -244,6 +277,7 @@ export default function Page() {
       // If deleted chat is selected, clear selection
       if (selectedChatId === targetChatId) {
         setSelectedChatId(undefined);
+        setSelectedSessionId(undefined);
         setMessages([]);
       }
     }
@@ -322,7 +356,7 @@ export default function Page() {
                   <div key={chat.id} className="relative group">
                     <button
                       onClick={() => {
-                        handleChatSelect(chat.id || '')
+                        handleChatSelect(chat.id || '', chat.sessionId || '')
                         setIsSidebarOpen(false)
                       }}
                       className={`w-full px-4 py-3 text-left hover:bg-gray-50/80 dark:hover:bg-gray-700/80 transition-all duration-200 rounded-lg mb-1 border border-transparent hover:border-gray-200/50 dark:hover:border-gray-600/50 ${selectedChatId === chat.id
@@ -347,22 +381,26 @@ export default function Page() {
                       {/* Dropdown menu */}
                       {openDropdownId === chat.id && (
                         <div className="absolute right-2 top-12 w-48 rounded-lg bg-white dark:bg-gray-800 shadow-lg border border-gray-200/50 dark:border-gray-700/50 py-1 z-50 animate-in fade-in zoom-in duration-200">
-                          <button
-                            className="cursor-pointer w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2"
-                            onClick={() => handleOpenRename(chat.id, chat.chatTitle || getChatTitle(chat))}
-                          >
-                            <FiEdit2 className="h-4 w-4" />
-                            Đổi tên
-                          </button>
-                          <button
-                            className="cursor-pointer w-full text-left px-4 py-2 text-red-600 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2"
-                            onClick={() => handleOpenDelete(chat.id)}
-                          >
-                            <FiTrash2 className="h-4 w-4" />
-                            Xóa
-                          </button>
-                        </div>
-                      )}
+                            <div
+                              className="cursor-pointer w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2"
+                              onClick={() => handleOpenRename(chat.id, chat.chatTitle || getChatTitle(chat))}
+                              role="button"
+                              tabIndex={0}
+                            >
+                              <FiEdit2 className="h-4 w-4" />
+                              Đổi tên
+                            </div>
+                            <div
+                              className="cursor-pointer w-full text-left px-4 py-2 text-red-600 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-2"
+                              onClick={() => handleOpenDelete(chat.id)}
+                              role="button"
+                              tabIndex={0}
+                            >
+                              <FiTrash2 className="h-4 w-4" />
+                              Xóa
+                            </div>
+                          </div>
+                        )}
                     </button>
                   </div>
                 ))
@@ -478,7 +516,24 @@ export default function Page() {
 
           {/* Input Area - Fixed at bottom */}
           <div className="sticky bottom-0 border-t border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm p-4 transition-colors duration-200">
+            
+            {/* Select model AI at here */}
+            
             <div className="mx-auto flex max-w-4xl items-center gap-2">
+              {currentUsagePackage?.aiModels && currentUsagePackage.aiModels.length > 0 && (
+                <Select
+                  value={selectedModelAlias}
+                  onChange={e => setSelectedModelAlias(e.target.value)}
+                  className="w-48 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  disabled={!!selectedChatId}
+                >
+                  {currentUsagePackage.aiModels.map(model => (
+                    <option key={model.modelAlias} value={model.modelAlias}>
+                      {model.modelName}
+                    </option>
+                  ))}
+                </Select>
+              )}
               <Input
                 type="text"
                 value={inputMessage}

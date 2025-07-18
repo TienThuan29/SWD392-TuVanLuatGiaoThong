@@ -4,16 +4,41 @@ import { Api } from "@/configs/Api";
 import HttpStatus from "@/configs/HttpStatus";
 import { toast } from "sonner";
 import useAxios from "./useAxios";
+import { UsagePackage } from "@/models/UsagePackage";
 
+export type UserPromptRequest = {
+  chatId?: string; 
+  userId: string; 
+  prompt: string;
+  sessionId?: string;
+  modelAlias: string;
+}
 
 export function useChatbotManager() {
 
   const api = useAxios()
+  const [currentUsagePackage, setCurrentUsagePackage] = useState<UsagePackage | null>(null);
   const [chatHistories, setChatHistories] = useState<ChatHistory[]>([]);
   const [currentChat, setCurrentChat] = useState<ChatHistory | null>(null);
   const [loading, setLoading] = useState(false);
   const [chatHistoriesLoading, setChatHistoriesLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const getCurrentUsagePackageOfUser = useCallback(async (userId: string) => {
+    try {
+      const response = await api.get(Api.UsagePackage.GET_CURRENT_USAGE_PACKAGE_OF_USER + userId);
+      if (response.status === HttpStatus.OK) {
+        // console.log(response.data.dataResponse)
+        setCurrentUsagePackage(response.data.dataResponse)
+      }
+      else {
+        toast.error('Có lỗi xảy ra khi đổi tên cuộc trò chuyện!')
+      }
+    }
+    catch(err: any) {
+      toast.error('Có lỗi xảy ra khi đổi tên cuộc trò chuyện!')
+    }
+  }, [])
 
   const renameChatTitle = useCallback(async (chatId: string, newTitle: string) => {
     setLoading(true);
@@ -73,6 +98,7 @@ export function useChatbotManager() {
     try {
       const response = await api.get(Api.Chatbot.GET_ALL_CHAT_HISTORIES_OF_USER + userId);
       if (response.status === HttpStatus.OK) {
+        // console.log(response.data.dataResponse)
         setChatHistories(response.data.dataResponse);
       } else {
         toast.error("Có lỗi xảy ra khi lấy lịch sử chat");
@@ -87,7 +113,8 @@ export function useChatbotManager() {
   }, []);
 
   // Ask to generate (new or continue chat)
-  const askToGenerateWithAuthUser = useCallback(async (payload: { chatId: string; userId: string; prompt: string }) => {
+  const askToGenerateWithAuthUser = useCallback(async (payload: UserPromptRequest): Promise<ChatHistory | undefined> => {
+    // console.log(payload)
     setLoading(true);
     setError(null);
     try {
@@ -111,6 +138,7 @@ export function useChatbotManager() {
     finally {
       setLoading(false);
     }
+    return undefined;
   }, []);
 
   // Clear current chat
@@ -122,8 +150,10 @@ export function useChatbotManager() {
     chatHistories,
     currentChat,
     loading,
+    currentUsagePackage,
     chatHistoriesLoading,
     error,
+    getCurrentUsagePackageOfUser,
     getAllChatHistoriesOfUser,
     askToGenerateWithAuthUser,
     clearCurrentChat,

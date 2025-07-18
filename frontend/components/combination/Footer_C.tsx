@@ -13,14 +13,14 @@ export default function Footer() {
         <div className="text-center mb-6">
           <p className="font-semibold text-lg">
             Nếu bạn có câu hỏi? Gọi ngay{' '}
-            <a style={{ color: Color.MainColor }} href="tel:1-888-858-2546">1-888-858-2546</a> or email{' '}
+            <a style={{ color: Color.MainColor }} href="tel:1-888-858-2546">1-888-858-2546</a> hoặc email{' '}
             <a style={{ color: Color.MainColor }} href="mailto:sales@clio.com">tuvanluat@gmail.com.vn</a>
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Nhóm của chúng tôi làm việc từ Thứ Hai đến Thứ Sáu, từ 8 giờ sáng đến 8 giờ tối theo giờ EST.</p>
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 text-sm">
+        {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8 text-sm">
           {[
             { title: 'Products', items: ['Clio Complete', 'Clio Manage', 'Clio Grow', 'Clio Accounting', 'Clio for Clients', 'Clio Draft', 'Integrations'] },
             { title: 'Features', items: ['Client Intake', 'Billing & Collections', 'Case Management', 'Document Management', 'Task Management', 'What’s New', 'See All Features'] },
@@ -41,13 +41,13 @@ export default function Footer() {
               </ul>
             </div>
           ))}
-        </div>
+        </div> */}
 
         {/* Bottom Section */}
         <div className="text-center mt-10 space-y-2">
-          <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold tracking-widest">TRANSFORMING THE LEGAL EXPERIENCE FOR ALL</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold tracking-widest">CHUYỂN ĐỔI TRẢI NGHIỆM PHÁP LÝ CHO TẤT CẢ MỌI NGƯỜI</p>
           <div className="flex justify-center gap-4 text-xs text-gray-600 dark:text-gray-400">
-            {['About Us', 'Our Mission', 'Leadership', 'Careers', 'News & Press'].map((item) => (
+            {['Về Chúng Tôi', 'Sứ Mệnh Của Chúng Tôi', 'Ban Lãnh Đạo', 'Tuyển Dụng', 'Tin Tức & Báo Chí'].map((item) => (
               <span key={item}>
                 <a href="#" className="hover:underline hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-200">{item}</a>
               </span>
@@ -71,7 +71,7 @@ export default function Footer() {
       </div>
 
       <div className="text-center text-xs py-4 border-t border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400 transition-colors duration-300">
-        {['Terms of Service', 'Legal Service', 'Trust Centre', 'Privacy Policy', 'Cookies', 'GDPR', 'Accessibility', 'AI Principles', 'Region'].map((item, idx) => (
+        {['Điều khoản Dịch vụ', 'Dịch vụ Pháp lý', 'Trung tâm Tin cậy', 'Chính sách Bảo mật', 'Cookie', 'GDPR', 'Khả năng Tiếp cận', 'Nguyên tắc AI', 'Khu vực'].map((item, idx) => (
           <span key={item}>
             <a href="#" className="hover:underline hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200">{item}</a>
             {idx < 8 && ' • '}

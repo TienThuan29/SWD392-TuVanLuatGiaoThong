@@ -41,6 +41,22 @@ const useAxios = () => {
             return req;
         });
 
+        // Add response interceptor to handle JWT invalid/expired
+        instance.interceptors.response.use(
+            response => response,
+            error => {
+                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                    // Clear tokens and user
+                    memoizedSetAuthTokens(null as any);
+                    memoizedSetUser(null as any);
+                    localStorage.removeItem(Constant.AuthTokenKey);
+                    // Redirect to login page
+                    window.location.replace(Constant.Page.LoginPage);
+                }
+                return Promise.reject(error);
+            }
+        );
+
         return instance;
     }, [authTokens, memoizedSetAuthTokens, memoizedSetUser]);
 
