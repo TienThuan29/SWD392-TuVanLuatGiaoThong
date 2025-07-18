@@ -19,6 +19,8 @@ public class AIModelResponse {
 
     private String description;
 
+    private String modelAlias;
+
     private boolean isDeleted;
 
     private Instant createdDate;

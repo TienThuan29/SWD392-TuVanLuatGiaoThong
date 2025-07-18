@@ -26,6 +26,7 @@ public class AIModelMapper {
                 .modelName(aiModel.getModelName())
                 .provider(aiModel.getProvider())
                 .description(aiModel.getDescription())
+                .modelAlias(aiModel.getAlias())
                 .isDeleted(aiModel.isDeleted())
                 .createdDate(aiModel.getCreatedDate())
                 .updatedDate(aiModel.getUpdatedDate())

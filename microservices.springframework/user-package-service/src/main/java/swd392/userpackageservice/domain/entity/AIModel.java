@@ -29,6 +29,9 @@ public class AIModel {
     @Column(name = "provider")
     private String provider;
 
+    @Column(name = "alias")
+    private String alias;
+
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 

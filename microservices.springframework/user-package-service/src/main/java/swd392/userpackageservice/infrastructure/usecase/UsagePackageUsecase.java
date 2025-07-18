@@ -14,8 +14,6 @@ import swd392.userpackageservice.domain.repository.UsagePackageRepository;
 import swd392.userpackageservice.domain.repository.UserPackageRepository;
 import swd392.userpackageservice.infrastructure.utils.HashingUtil;
 import swd392.userpackageservice.web.dto.UsagePackageRequest;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -65,12 +63,10 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
                     .toList();
             usagePackage = this.usagePackageMapper.copyDataWithoutId(usagePackageRequest, usagePackage);
 
+            usagePackage.getAiModels().clear();
             for (AIModel aiModel : aiModels) {
                 usagePackage.getAiModels().add(aiModel);
             }
-//            usagePackage.setAiModels(aiModels);
-//            System.out.println("UsagePackage before save: " + usagePackage);
-//            usagePackage.getAiModels().forEach(model -> System.out.println("AI Model: " + model.getId()));
 
             var updatedUsagePackage = this.transactionUsagePackage.save(usagePackage);
             return ApiResponse.<UsagePackageResponse>builder()
@@ -121,6 +117,20 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
                     "Update usage package with id "+ id +" fail, message: " + exception.getMessage()
             );
         }
+    }
+
+    @Override
+    public ApiResponse<UsagePackageResponse> getUsagePackageByUserId(String userId) {
+        UUID decodedUserId = UUID.fromString(this.hashingUtil.decode(userId));
+        var currentUserPackage = this.userPackageRepository.findByUserIdAndIsEnable(decodedUserId, true)
+                .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException("Cannot found user package with user id: " + decodedUserId));
+        var usagePackage = this.usagePackageRepository.findById(currentUserPackage.getPackageId())
+                .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException("Cannot found usage package with id: " + currentUserPackage.getPackageId()));
+        return ApiResponse.<UsagePackageResponse>builder()
+                .status("success")
+                .message("Get usage package by user id successfully!")
+                .dataResponse(this.usagePackageMapper.toResponse(usagePackage))
+                .build();
     }
 
     @Override

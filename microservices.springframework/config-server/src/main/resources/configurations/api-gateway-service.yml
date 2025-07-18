@@ -8,8 +8,6 @@ spring:
           '[/**]':
             allowedOriginPatterns: #allowedOrigins
               - "http://localhost:3000"
-              - "http://192.168.2.73:3000"
-              - "*"
             allowedMethods:
               - GET
               - POST
@@ -64,7 +62,7 @@ spring:
         - id: chatbot-service
           uri: ${CHATBOT_SERVICE_URL:http://localhost:8093}
           predicates:
-            - Path=/api/v1/chatbotNen/**
+            - Path=/api/v1/chatbot/**
 
         - id: user-package-service
           uri: ${USER_PACKAGE_SERVICE_URL:http://localhost:8094}

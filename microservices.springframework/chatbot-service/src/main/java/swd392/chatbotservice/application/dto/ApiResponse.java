@@ -1,7 +1,6 @@
  package swd392.chatbotservice.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.*;
 
 @Data
