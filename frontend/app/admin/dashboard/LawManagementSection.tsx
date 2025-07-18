@@ -37,12 +37,6 @@ export default function LawManagementSection() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isCreateLawTypeModalOpen, setIsCreateLawTypeModalOpen] = useState(false);
-  const [showLawTypes, setShowLawTypes] = useState(false);
-  const [newLawTypeName, setNewLawTypeName] = useState('');
-  const [isCreatingLawType, setIsCreatingLawType] = useState(false);
-  const [editingLawType, setEditingLawType] = useState<LawType | null>(null);
-  const [deletingLawTypeId, setDeletingLawTypeId] = useState<string | null>(null);
   const [viewingLaw, setViewingLaw] = useState<Law | null>(null);
   const [editingLaw, setEditingLaw] = useState<Law | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -269,130 +263,6 @@ export default function LawManagementSection() {
     setIsViewModalOpen(true);
   };
 
-  const handleCreateLawType = async () => {
-    if (!newLawTypeName.trim()) {
-      toast.error("Vui lòng nhập tên loại luật");
-      return;
-    }
-
-    try {
-      setIsCreatingLawType(true);
-      
-      if (editingLawType) {
-        // Update existing law type
-        await updateLawType(editingLawType.id!, {
-          name: newLawTypeName.trim(),
-          isDeleted: false
-        });
-        toast.success("Cập nhật loại luật thành công!");
-        setEditingLawType(null);
-      } else {
-        // Create new law type
-        const createdLawType = await createLawType({
-          name: newLawTypeName.trim(),
-          isDeleted: false
-        });
-        
-        if (createdLawType && !showLawTypes) {
-          // Auto-select the newly created law type only if not in law types view
-          setSelectedLawTypeId(createdLawType.id);
-        }
-        toast.success("Tạo loại luật thành công!");
-      }
-      
-      // Close modal and reset state
-      setIsCreateLawTypeModalOpen(false);
-      setNewLawTypeName('');
-      
-      // Refresh law types list
-      await getAllLawTypes();
-    } catch (error) {
-      console.error('Create/Update law type failed:', error);
-    } finally {
-      setIsCreatingLawType(false);
-    }
-  };
-
-  const handleEditLawType = (lawType: LawType) => {
-    setEditingLawType(lawType);
-    setNewLawTypeName(lawType.name || '');
-    setIsCreateLawTypeModalOpen(true);
-  };
-
-  const handleDeleteLawType = async (id: string) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa loại luật này?')) {
-      setDeletingLawTypeId(id);
-      try {
-        await deleteLawType(id);
-        toast.success('Xóa loại luật thành công');
-        await getAllLawTypes(); // Refresh the list
-      } catch (error) {
-        console.error('Delete failed:', error);
-        toast.error('Có lỗi xảy ra khi xóa loại luật');
-      } finally {
-        setDeletingLawTypeId(null);
-      }
-    }
-  };
-
-  const createSampleLawTypes = async () => {
-    const sampleLawTypes = [
-      "Luật Giao thông đường bộ",
-      "Nghị định về xử phạt vi phạm hành chính trong lĩnh vực giao thông đường bộ",
-      "Thông tư về quy tắc giao thông đường bộ",
-      "Nghị định về điều kiện kinh doanh vận tải bằng xe ô tô",
-      "Thông tư về cấp giấy phép lái xe",
-      "Nghị định về đăng ký, quản lý phương tiện giao thông đường bộ",
-      "Thông tư về kiểm định an toàn kỹ thuật và bảo vệ môi trường phương tiện giao thông cơ giới đường bộ",
-      "Nghị định về tổ chức, hoạt động của thanh tra giao thông",
-      "Thông tư về biển báo hiệu đường bộ",
-      "Nghị định về bảo đảm trật tự an toàn giao thông đường thủy nội địa",
-      "Luật về phòng, chống tác hại của rượu, bia",
-      "Nghị định về quản lý chất lượng công trình giao thông"
-    ];
-
-    try {
-      setIsCreatingLawType(true);
-      let createdCount = 0;
-      
-      for (const lawTypeName of sampleLawTypes) {
-        // Check if law type already exists
-        const exists = lawTypes.some(type => 
-          type.name && (
-            type.name.toLowerCase().includes(lawTypeName.toLowerCase()) || 
-            lawTypeName.toLowerCase().includes(type.name.toLowerCase())
-          )
-        );
-        
-        if (!exists) {
-          try {
-            await createLawType({
-              name: lawTypeName,
-              isDeleted: false
-            });
-            createdCount++;
-            // Small delay to avoid overwhelming the server
-            await new Promise(resolve => setTimeout(resolve, 100));
-          } catch (error) {
-            console.error(`Failed to create law type: ${lawTypeName}`, error);
-          }
-        }
-      }
-      
-      if (createdCount > 0) {
-        toast.success(`Đã tạo thành công ${createdCount} loại luật mẫu!`);
-        await getAllLawTypes(); // Refresh the list
-      } else {
-        toast.info("Tất cả các loại luật mẫu đã tồn tại!");
-      }
-    } catch (error) {
-      console.error('Failed to create sample law types:', error);
-      toast.error("Có lỗi xảy ra khi tạo loại luật mẫu");
-    } finally {
-      setIsCreatingLawType(false);
-    }
-  };
-
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -406,91 +276,6 @@ export default function LawManagementSection() {
           <FaPlus /> Thêm luật mới
         </button>
       </div>
-
-      {/* Law Types Table */}
-      {showLawTypes && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          {lawTypeLoading ? (
-            <div className="flex justify-center items-center py-12">
-              <div className="text-center">
-                <Spinner_C size="lg" color="blue-600" />
-                <p className="mt-4 text-gray-600">Đang tải dữ liệu loại luật...</p>
-              </div>
-            </div>
-          ) : (
-            <>
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      STT
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tên loại luật
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Số lượng luật
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Thao tác
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {lawTypes.map((lawType, index) => (
-                    <tr key={lawType.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {index + 1}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {lawType.name}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {laws.filter(law => law.lawType?.id === lawType.id).length} luật
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                          onClick={() => handleEditLawType(lawType)}
-                          className="text-blue-600 hover:text-blue-900 mr-4"
-                          disabled={deletingLawTypeId === lawType.id}
-                          title="Chỉnh sửa"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteLawType(lawType.id!)}
-                          className="text-red-600 hover:text-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
-                          disabled={deletingLawTypeId === lawType.id}
-                          title="Xóa"
-                        >
-                          {deletingLawTypeId === lawType.id ? (
-                            <Spinner_C size="sm" color="red-600" />
-                          ) : (
-                            <FaTrash />
-                          )}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {lawTypes.length === 0 && !lawTypeLoading && (
-                <div className="text-center py-8 text-gray-500">
-                  Không có loại luật nào. 
-                  <button 
-                    onClick={createSampleLawTypes}
-                    className="ml-2 text-blue-600 hover:text-blue-800 underline"
-                  >
-                    Tạo loại luật mẫu
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      )}
 
       {/* Law Table */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden transition-colors duration-200">
@@ -872,9 +657,6 @@ export default function LawManagementSection() {
                       {type.name}
                     </option>
                   ))}
-                  <option key="create-new" value="create-new" style={{ borderTop: '1px solid #e5e7eb', fontStyle: 'italic', color: '#3b82f6' }}>
-                    + Tạo loại luật mới
-                  </option>
                 </Select>
               </div>
 
@@ -940,92 +722,6 @@ export default function LawManagementSection() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Create Law Type Modal */}
-      {isCreateLawTypeModalOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">
-                {editingLawType ? 'Chỉnh sửa loại luật' : 'Tạo loại luật mới'}
-              </h3>
-              <button
-                onClick={() => {
-                  setIsCreateLawTypeModalOpen(false);
-                  setNewLawTypeName('');
-                  setEditingLawType(null);
-                }}
-                className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
-                disabled={isCreatingLawType}
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tên loại luật
-                </label>
-                <Input
-                  type="text"
-                  value={newLawTypeName}
-                  onChange={(e) => setNewLawTypeName(e.target.value)}
-                  placeholder="Nhập tên loại luật mới..."
-                  className="w-full"
-                  disabled={isCreatingLawType}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      handleCreateLawType();
-                    }
-                  }}
-                />
-              </div>
-              
-              {!editingLawType && (
-                <div className="border-t pt-4">
-                  <p className="text-sm text-gray-600 mb-3">Hoặc tạo nhanh các loại luật mẫu cho giao thông đường bộ:</p>
-                  <button
-                    onClick={() => {
-                      setIsCreateLawTypeModalOpen(false);
-                      setNewLawTypeName('');
-                      createSampleLawTypes();
-                    }}
-                    disabled={isCreatingLawType}
-                    className="w-full px-4 py-2 text-sm font-medium text-green-700 bg-green-50 border border-green-200 hover:bg-green-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    <FaPlus className="h-4 w-4" />
-                    Tạo tất cả loại luật mẫu
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <div className="flex justify-end gap-4 mt-6">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsCreateLawTypeModalOpen(false);
-                  setNewLawTypeName('');
-                  setEditingLawType(null);
-                }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
-                disabled={isCreatingLawType}
-              >
-                Hủy
-              </button>
-              <button
-                onClick={handleCreateLawType}
-                disabled={isCreatingLawType || !newLawTypeName.trim()}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                {isCreatingLawType && <Spinner_C size="sm" color="white" />}
-                {isCreatingLawType ? (editingLawType ? 'Đang cập nhật...' : 'Đang tạo...') : (editingLawType ? 'Cập nhật' : 'Tạo mới')}
-              </button>
-            </div>
           </div>
         </div>
       )}
