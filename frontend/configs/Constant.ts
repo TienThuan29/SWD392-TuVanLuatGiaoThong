@@ -7,6 +7,8 @@ const Constant =  {
         LawsPage: '/laws',
         RegisterPage: '/register',
         VerifyPage: '/verifying',
+        PricingPage: '/chatbot/pricing',
+        FeedbackPage: '/feedback',
         ForgotPasswordPage: '/forgot-password',
         ResetPasswordPage: '/reset-password',
 

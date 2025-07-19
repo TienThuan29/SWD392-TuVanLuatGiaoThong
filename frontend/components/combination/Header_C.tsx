@@ -42,8 +42,9 @@ export default function Header_C({ logedUser } : Header_CProps) {
               )}
             </div>
 
-            <a href="/chatbot/pricing" className="hover-maincolor transition">Nâng cấp Chatbot</a>
+            <a href={Constant.Page.PricingPage} className="hover-maincolor transition">Nâng cấp Chatbot</a>
             <a href={Constant.Page.LawsPage} className="hover-maincolor transition">Văn bản luật</a>
+            <a href={Constant.Page.FeedbackPage} className="hover-maincolor transition">Đánh giá</a>
           </nav>
 
           {/* Call to action button */}

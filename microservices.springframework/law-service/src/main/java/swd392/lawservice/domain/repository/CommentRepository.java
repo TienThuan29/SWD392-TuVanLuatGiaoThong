@@ -5,13 +5,13 @@ import org.springframework.stereotype.Repository;
 import swd392.lawservice.domain.entity.Comment;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, UUID> {
 
-
-    List<Comment> findByUserName(String userName);
+    Optional<Comment> findByUsername(String username);
 
     List<Comment> findByRating(int rating);
 

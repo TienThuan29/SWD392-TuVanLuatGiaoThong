@@ -146,6 +146,16 @@ export function useChatbotManager() {
     setCurrentChat(null);
   }, []);
 
+  // Add this function to allow adding a new chat to chatHistories
+  const addChatHistory = useCallback((chat: ChatHistory) => {
+    setChatHistories(prev => [chat, ...prev]);
+  }, []);
+
+  // Add this function to allow setting currentChat directly
+  const setCurrentChatDirect = useCallback((chat: ChatHistory) => {
+    setCurrentChat(chat);
+  }, []);
+
   return {
     chatHistories,
     currentChat,
@@ -159,5 +169,7 @@ export function useChatbotManager() {
     clearCurrentChat,
     renameChatTitle,
     deleteChatHistory,
+    addChatHistory,
+    setCurrentChat: setCurrentChatDirect,
   };
 }

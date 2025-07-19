@@ -81,8 +81,9 @@ public class ChatbotUsecase implements IChatbotUsecase {
         @Override
         public ChatHistoryResponse generateWithAuthenticatedUser(UserPromptRequest userPromptRequest) {
                 if (userPromptRequest.getModelAlias().equals(AIModelAlias.GEMINI_2_FLASH.alias) ||
-                        userPromptRequest.getModelAlias().equals(AIModelAlias.GEMINI_2_5_FLASH.alias
-                )) {
+                    userPromptRequest.getModelAlias().equals(AIModelAlias.GEMINI_2_5_FLASH.alias) ||
+                    userPromptRequest.getModelAlias().equals(AIModelAlias.GEMINI_2_5_PRO.alias)
+                ) {
                         return this.generateFromGemini(userPromptRequest);
                 }
                 else if (userPromptRequest.getModelAlias().equals(AIModelAlias.N8N_AGENT.alias)) {

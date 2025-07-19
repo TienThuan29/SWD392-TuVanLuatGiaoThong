@@ -4,52 +4,30 @@ import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/modern-ui/input';
 import { Select } from '@/components/modern-ui/select';
 import { FaStar, FaUserSecret, FaUser, FaPaperPlane, FaSpinner } from 'react-icons/fa';
+import { ImSpinner2 } from 'react-icons/im';
 import { toast } from 'sonner';
 import HeaderTop_C from '@/components/combination/HeaderTop_C';
 import Footer_C from '@/components/combination/Footer_C';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import type { Comment } from '@/models/Comment';
+import useRatingManager from '@/hooks/useRatingManager';
+import { Color } from '@/configs/CssConstant';
+
+const anonymousAvatarUrl = "https://ui-avatars.com/api/?name=Anonymous&background=6b7280&color=fff";
 
 export default function ReviewPage() {
-  const { user, isLoggedIn } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
-
-  // Sample data for demonstration
-  const [reviews, setReviews] = useState([
-    {
-      id: "1",
-      username: "legalexpert",
-      fullname: "Nguyễn Văn A",
-      avatarUrl: "https://randomuser.me/api/portraits/men/32.jpg",
-      isAnonymous: false,
-      content: "Trang web rất hữu ích cho việc tìm kiếm thông tin pháp luật giao thông. Giao diện thân thiện và dễ sử dụng.",
-      rating: 5,
-      createdDate: "2023-05-15T14:30:00Z",
-      updatedDate: "2023-05-15T14:30:00Z"
-    },
-    {
-      id: "2",
-      username: "userlaw",
-      fullname: "Trần Thị B",
-      avatarUrl: "https://randomuser.me/api/portraits/women/44.jpg",
-      isAnonymous: false,
-      content: "Trang web tốt nhưng giao diện trên điện thoại cần cải thiện. Một số tính năng khó sử dụng trên mobile.",
-      rating: 4,
-      createdDate: "2023-05-10T09:15:00Z",
-      updatedDate: "2023-05-12T11:20:00Z"
-    },
-    {
-      id: "3",
-      username: "anonymous_user",
-      fullname: "Người dùng ẩn danh",
-      avatarUrl: "https://ui-avatars.com/api/?name=Anonymous&background=6b7280&color=fff",
-      isAnonymous: true,
-      content: "Trang web có nhiều thông tin hữu ích. Tuy nhiên, tốc độ tải trang đôi khi chậm. Nhìn chung vẫn đáng sử dụng.",
-      rating: 4,
-      createdDate: "2023-05-08T16:45:00Z",
-      updatedDate: "2023-05-08T16:45:00Z"
-    }
-  ]);
+  const {
+    comments,
+    setComments,
+    createComment,
+    getAllComments,
+    // updateComment, // not used in this page
+    // deleteComment, // not used in this page
+    deleteComment,
+  } = useRatingManager();
 
   const [formData, setFormData] = useState({
     isAnonymous: false,
@@ -61,6 +39,17 @@ export default function ReviewPage() {
   const [filterBy, setFilterBy] = useState('all');
   const [loading, setLoading] = useState(false);
   const [showLoadMore, setShowLoadMore] = useState(true);
+  const [showCount, setShowCount] = useState(5);
+  const [deleteModal, setDeleteModal] = useState<{ open: boolean; reviewId?: string }>({ open: false });
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Fetch comments on mount
+  useEffect(() => {
+    setLoading(true);
+    getAllComments()
+      .catch(() => toast.error('Không thể tải đánh giá'))
+      .finally(() => setLoading(false));
+  }, []); // Only run on mount
 
   // Star Rating Component
   interface StarRatingProps {
@@ -70,7 +59,7 @@ export default function ReviewPage() {
   }
 
   const StarRating: React.FC<StarRatingProps> = ({ rating, interactive = false, onRatingChange }) => {
-    const [hoveredRating, setHoveredRating] = useState(0);
+    const [hoveredRating, setHoveredRating] = useState<number>(0);
 
     return (
       <div className="flex space-x-1">
@@ -97,8 +86,10 @@ export default function ReviewPage() {
   };
 
   // Review Item Component
-  const ReviewItem = ({ review }) => {
-    const formatDate = (dateString) => {
+  const ReviewItem: React.FC<{ review: Comment }> = ({ review }) => {
+    // console.log(review)
+    const formatDate = (dateString: string | undefined) => {
+      if (!dateString) return '';
       return new Date(dateString).toLocaleDateString('vi-VN', {
         year: 'numeric',
         month: 'short',
@@ -106,6 +97,11 @@ export default function ReviewPage() {
         hour: '2-digit',
         minute: '2-digit'
       });
+    };
+
+    // Add delete handler
+    const openDeleteModal = () => {
+      setDeleteModal({ open: true, reviewId: review.id });
     };
 
     return (
@@ -119,12 +115,12 @@ export default function ReviewPage() {
               </div>
             ) : review.avatarUrl ? (
               <img 
-                src={review.avatarUrl} 
-                alt={review.fullname} 
+                src={review.isAnonymous? anonymousAvatarUrl : review.avatarUrl} 
+                alt={review.isAnonymous? 'Ẩn danh' : review.fullname} 
                 className="w-12 h-12 rounded-full object-cover"
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+              <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center" style={{ color: Color.MainColor }}>
                 <FaUser className="text-xl" />
               </div>
             )}
@@ -149,16 +145,26 @@ export default function ReviewPage() {
                   </div>
                 )}
                 <div className="flex items-center mt-1">
-                  <StarRating rating={review.rating} />
+                  <StarRating rating={review.rating ?? 0} />
                   <span className="text-gray-500 dark:text-gray-400 text-sm ml-2">
-                    {review.rating}/5
+                    {review.rating ?? 0}/5
                   </span>
                 </div>
               </div>
-              <div className="text-right">
+              <div className="text-right flex flex-col items-end gap-2">
                 <span className="text-gray-400 dark:text-gray-500 text-sm">
                   {formatDate(review.createdDate)}
                 </span>
+                {/* Delete button for current user's comment */}
+                {user?.username && review.username === user.username && (
+                  <button
+                    onClick={openDeleteModal}
+                    className="text-red-600 dark:text-red-400 text-xs px-2 py-1 border border-red-200 dark:border-red-600 rounded hover:bg-red-50 dark:hover:bg-red-900 transition"
+                    disabled={loading}
+                  >
+                    Xóa đánh giá
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -180,44 +186,44 @@ export default function ReviewPage() {
   };
 
   // Filter reviews based on rating
-  const filterReviews = (reviewsToFilter, option) => {
+  const filterReviews = (reviewsToFilter: Comment[], option: string): Comment[] => {
     switch(option) {
       case 'all':
         return reviewsToFilter;
       case 'excellent':
-        return reviewsToFilter.filter(review => review.rating === 5);
+        return reviewsToFilter.filter((review: Comment) => review.rating === 5);
       case 'good':
-        return reviewsToFilter.filter(review => review.rating === 4);
+        return reviewsToFilter.filter((review: Comment) => review.rating === 4);
       case 'average':
-        return reviewsToFilter.filter(review => review.rating === 3);
+        return reviewsToFilter.filter((review: Comment) => review.rating === 3);
       case 'poor':
-        return reviewsToFilter.filter(review => review.rating <= 2);
+        return reviewsToFilter.filter((review: Comment) => (review.rating ?? 0) <= 2);
       case 'anonymous':
-        return reviewsToFilter.filter(review => review.isAnonymous);
+        return reviewsToFilter.filter((review: Comment) => review.isAnonymous);
       case 'public':
-        return reviewsToFilter.filter(review => !review.isAnonymous);
+        return reviewsToFilter.filter((review: Comment) => !review.isAnonymous);
       default:
         return reviewsToFilter;
     }
   };
 
   // Sort reviews based on selected option
-  const sortReviews = (reviewsToSort, option) => {
+  const sortReviews = (reviewsToSort: Comment[], option: string): Comment[] => {
     switch(option) {
       case 'newest':
-        return [...reviewsToSort].sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
+        return [...reviewsToSort].sort((a: Comment, b: Comment) => new Date(b.createdDate ?? '').getTime() - new Date(a.createdDate ?? '').getTime());
       case 'oldest':
-        return [...reviewsToSort].sort((a, b) => new Date(a.createdDate) - new Date(b.createdDate));
+        return [...reviewsToSort].sort((a: Comment, b: Comment) => new Date(a.createdDate ?? '').getTime() - new Date(b.createdDate ?? '').getTime());
       case 'highest':
-        return [...reviewsToSort].sort((a, b) => b.rating - a.rating);
+        return [...reviewsToSort].sort((a: Comment, b: Comment) => (b.rating ?? 0) - (a.rating ?? 0));
       case 'lowest':
-        return [...reviewsToSort].sort((a, b) => a.rating - b.rating);
+        return [...reviewsToSort].sort((a: Comment, b: Comment) => (a.rating ?? 0) - (b.rating ?? 0));
       case 'most_recent_update':
-        return [...reviewsToSort].sort((a, b) => new Date(b.updatedDate) - new Date(a.updatedDate));
+        return [...reviewsToSort].sort((a: Comment, b: Comment) => new Date(b.updatedDate ?? '').getTime() - new Date(a.updatedDate ?? '').getTime());
       case 'alphabetical':
-        return [...reviewsToSort].sort((a, b) => {
-          const nameA = a.isAnonymous ? 'Ẩn danh' : a.fullname;
-          const nameB = b.isAnonymous ? 'Ẩn danh' : b.fullname;
+        return [...reviewsToSort].sort((a: Comment, b: Comment) => {
+          const nameA = a.isAnonymous ? 'Ẩn danh' : (a.fullname ?? '');
+          const nameB = b.isAnonymous ? 'Ẩn danh' : (b.fullname ?? '');
           return nameA.localeCompare(nameB);
         });
       default:
@@ -226,115 +232,119 @@ export default function ReviewPage() {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
     if (!formData.rating) {
       toast.error('Vui lòng chọn số sao đánh giá');
       return;
     }
-
     if (!formData.content.trim()) {
       toast.error('Vui lòng viết nội dung đánh giá');
       return;
     }
-
-    // Generate anonymous avatar URL if needed
-    const anonymousAvatarUrl = "https://ui-avatars.com/api/?name=Anonymous&background=6b7280&color=fff";
-
-    const newReview = {
-      // id sẽ được backend tự động tạo
-      id: Date.now().toString(), // Temporary ID for demo
-      // username, fullname, avatarUrl sẽ được backend tự động lấy từ user session
-      username: formData.isAnonymous ? "anonymous_user" : "current_user",
-      fullname: formData.isAnonymous ? "Người dùng ẩn danh" : "Người dùng hiện tại",
-      avatarUrl: formData.isAnonymous ? anonymousAvatarUrl : "https://randomuser.me/api/portraits/lego/1.jpg",
+    setLoading(true);
+    const body = {
+      username: user?.username,
+      fullname: user?.fullname,
+      avatarUrl: user?.avatarUrl,
       isAnonymous: formData.isAnonymous,
       content: formData.content,
-      rating: formData.rating,
-      createdDate: new Date().toISOString(),
-      updatedDate: new Date().toISOString()
+      rating: formData.rating
     };
-
-    setReviews(prevReviews => [newReview, ...prevReviews]);
-    setFormData({ isAnonymous: false, rating: 0, content: '' });
-    toast.success('Đánh giá đã được gửi thành công!');
-    
-    // Scroll to reviews section
-    setTimeout(() => {
-      document.getElementById('reviewsContainer')?.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start' 
-      });
-    }, 100);
+    try {
+      console.log(body)
+      const newComment = await createComment(body);
+      if (newComment) {
+        setComments(prev => [newComment, ...prev]);
+        setFormData({ isAnonymous: false, rating: 0, content: '' });
+        setShowCount(count => count + 1); 
+        toast.success('Đánh giá đã được gửi thành công!');
+      }
+    } catch {
+      toast.error('Không thể gửi đánh giá');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Handle input changes
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' && 'checked' in e.target ? (e.target as HTMLInputElement).checked : value
     }));
   };
 
   // Handle rating change
-  const handleRatingChange = (rating) => {
+  const handleRatingChange = (rating: number) => {
     setFormData(prev => ({ ...prev, rating }));
   };
 
-  // Load more reviews
-  const loadMoreReviews = () => {
-    setLoading(true);
-    
-    setTimeout(() => {
-      const moreReviews = [
-        {
-          id: Date.now().toString(),
-          username: "law_student",
-          fullname: "Lê Văn C",
-          avatarUrl: "https://randomuser.me/api/portraits/men/63.jpg",
-          isAnonymous: false,
-          content: "Là sinh viên luật, tôi thấy trang web này rất hữu ích cho việc học tập và nghiên cứu. Thông tin được cập nhật thường xuyên.",
-          rating: 5,
-          createdDate: "2023-04-28T10:20:00Z",
-          updatedDate: "2023-04-28T10:20:00Z"
-        },
-        {
-          id: (Date.now() + 1).toString(),
-          username: "anonymous_user_2",
-          fullname: "Người dùng ẩn danh",
-          avatarUrl: "https://ui-avatars.com/api/?name=Anonymous&background=6b7280&color=fff",
-          isAnonymous: true,
-          content: "Trang web ổn, nhưng cần thêm tính năng tìm kiếm nâng cao. Một số thông tin còn khó tìm.",
-          rating: 3,
-          createdDate: "2023-04-25T15:45:00Z",
-          updatedDate: "2023-04-25T15:45:00Z"
-        }
-      ];
-      
-      setReviews(prevReviews => [...prevReviews, ...moreReviews]);
-      setLoading(false);
-      
-      if (reviews.length >= 8) {
-        setShowLoadMore(false);
-      }
-    }, 1500);
+  // Confirm Delete Modal
+  const handleConfirmDelete = async () => {
+    if (!deleteModal.reviewId) return;
+    setDeleteLoading(true);
+    try {
+      await deleteComment(deleteModal.reviewId);
+      setComments(prev => prev.filter(c => c.id !== deleteModal.reviewId));
+    } catch {
+      // toast handled in hook
+    } finally {
+      setDeleteLoading(false);
+      setDeleteModal({ open: false });
+    }
   };
 
-  // Get filtered and sorted reviews
-  const filteredReviews = filterReviews(reviews, filterBy);
-  const sortedReviews = sortReviews(filteredReviews, sortBy);
+  // Use comments from hook instead of reviews
+  const filteredReviews = filterReviews(comments, filterBy);
+  let sortedReviews = sortReviews(filteredReviews, sortBy);
+  // Move current user's comments to the top
+  if (user?.username) {
+    sortedReviews = [
+      ...sortedReviews.filter((c) => c.username === user.username),
+      ...sortedReviews.filter((c) => c.username !== user.username)
+    ];
+  }
+  const visibleReviews = sortedReviews.slice(0, showCount);
 
   // Calculate statistics
-  const totalReviews = reviews.length;
-  const averageRating = totalReviews > 0 ? (reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1) : 0;
+  const totalReviews = comments.length;
+  const averageRating = totalReviews > 0 ? (comments.reduce((sum, review) => sum + (review.rating ?? 0), 0) / totalReviews).toFixed(1) : '0';
   const ratingDistribution = [5, 4, 3, 2, 1].map(star => 
-    reviews.filter(review => review.rating === star).length
+    comments.filter((review: Comment) => review.rating === star).length
   );
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+      {/* Confirm Delete Modal */}
+      {deleteModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-sm mx-auto">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Xác nhận xóa đánh giá</h3>
+            <p className="mb-6 text-gray-700 dark:text-gray-300">Bạn có chắc chắn muốn xóa đánh giá này không? Hành động này không thể hoàn tác.</p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setDeleteModal({ open: false })}
+                className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                disabled={loading}
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 transition disabled:opacity-60 flex items-center justify-center gap-2"
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? (
+                  <ImSpinner2 className="animate-spin h-4 w-4" />
+                ) : null}
+                Xóa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Header Top Section */}
       <div className="sticky top-0 z-40 bg-white dark:bg-gray-800 border-b border-gray-200/50 dark:border-gray-700/50 shadow-sm transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4">
@@ -346,7 +356,7 @@ export default function ReviewPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-indigo-700 dark:text-indigo-400 mb-2">
+          <h1 className="text-4xl font-bold mb-2" style={{ color: Color.MainColor }}>
             Đánh giá trang web
           </h1>
           <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
@@ -357,7 +367,7 @@ export default function ReviewPage() {
           {/* Statistics */}
           <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
             <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
-              <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{totalReviews}</div>
+              <div className="text-2xl font-bold" style={{ color: Color.MainColor }}>{totalReviews}</div>
               <div className="text-sm text-gray-600 dark:text-gray-300">Tổng đánh giá</div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
@@ -392,7 +402,8 @@ export default function ReviewPage() {
                     name="isAnonymous"
                     checked={formData.isAnonymous}
                     onChange={handleInputChange}
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 dark:border-gray-600 rounded"
+                    className="h-4 w-4 border-gray-300 dark:border-gray-600 rounded"
+                    style={{ color: Color.MainColor }}
                   />
                   <label htmlFor="isAnonymous" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                     Đánh giá ẩn danh
@@ -429,13 +440,14 @@ export default function ReviewPage() {
                     value={formData.content}
                     onChange={handleInputChange}
                     placeholder="Chia sẻ trải nghiệm của bạn về trang web..."
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                   />
                 </div>
                 
                 <button
                   type="submit"
-                  className="w-full bg-indigo-600 dark:bg-indigo-700 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-800 transition duration-200 flex items-center justify-center"
+                  className="w-full text-white py-2 px-4 rounded-lg transition duration-200 flex items-center justify-center"
+                  style={{ backgroundColor: Color.MainColor }}
                 >
                   <FaPaperPlane className="mr-2" />
                   Gửi đánh giá
@@ -462,7 +474,7 @@ export default function ReviewPage() {
                     <select
                       value={filterBy}
                       onChange={(e) => setFilterBy(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                       <option value="all">Tất cả</option>
                       <option value="excellent">Xuất sắc (5⭐)</option>
@@ -480,7 +492,7 @@ export default function ReviewPage() {
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                       <option value="newest">Mới nhất</option>
                       <option value="oldest">Cũ nhất</option>
@@ -497,7 +509,7 @@ export default function ReviewPage() {
               {filterBy !== 'all' && (
                 <div className="mt-3 flex items-center gap-2">
                   <span className="text-sm text-gray-600 dark:text-gray-400">Bộ lọc đang áp dụng:</span>
-                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 text-xs rounded-full">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full" style={{ backgroundColor: Color.MainColor + '20', color: Color.MainColor }}>
                     {filterBy === 'excellent' && 'Xuất sắc (5⭐)'}
                     {filterBy === 'good' && 'Tốt (4⭐)'}
                     {filterBy === 'average' && 'Trung bình (3⭐)'}
@@ -506,7 +518,8 @@ export default function ReviewPage() {
                     {filterBy === 'public' && 'Công khai'}
                     <button
                       onClick={() => setFilterBy('all')}
-                      className="ml-1 hover:text-indigo-600 dark:hover:text-indigo-300"
+                      className="ml-1 hover:opacity-70"
+                      style={{ color: Color.MainColor }}
                     >
                       ×
                     </button>
@@ -515,10 +528,18 @@ export default function ReviewPage() {
               )}
             </div>
             
+            {/* Loading Spinner */}
+            {loading && (
+              <div className="text-center py-8">
+                <FaSpinner className="animate-spin text-4xl mx-auto mb-4" style={{ color: Color.MainColor }} />
+                <p className="text-gray-600 dark:text-gray-300">Đang tải đánh giá...</p>
+              </div>
+            )}
+
             {/* Reviews Container */}
             <div id="reviewsContainer" className="space-y-6">
-              {sortedReviews.length > 0 ? (
-                sortedReviews.map(review => (
+              {!loading && (visibleReviews.length > 0 ? (
+                visibleReviews.map((review: Comment) => (
                   <ReviewItem key={review.id} review={review} />
                 ))
               ) : (
@@ -529,20 +550,14 @@ export default function ReviewPage() {
                     <p className="text-sm">Thử thay đổi bộ lọc hoặc thêm đánh giá mới</p>
                   </div>
                 </div>
-              )}
+              ))}
             </div>
-            
-            {loading && (
-              <div className="text-center py-8">
-                <FaSpinner className="animate-spin text-4xl text-indigo-500 mx-auto mb-4" />
-                <p className="text-gray-600 dark:text-gray-300">Đang tải thêm đánh giá...</p>
-              </div>
-            )}
-            
-            {showLoadMore && !loading && sortedReviews.length > 0 && (
+            {/* Load More Button */}
+            {!loading && showCount < sortedReviews.length && (
               <button
-                onClick={loadMoreReviews}
-                className="w-full mt-6 bg-white dark:bg-gray-800 border border-indigo-600 dark:border-indigo-500 text-indigo-600 dark:text-indigo-400 py-3 px-4 rounded-lg hover:bg-indigo-50 dark:hover:bg-gray-700 transition duration-200 font-medium"
+                onClick={() => setShowCount(count => count + 5)}
+                className="w-full mt-6 bg-white dark:bg-gray-800 py-3 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200 font-medium"
+                style={{ borderColor: Color.MainColor, color: Color.MainColor }}
               >
                 Tải thêm đánh giá
               </button>

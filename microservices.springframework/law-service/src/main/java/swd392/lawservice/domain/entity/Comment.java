@@ -1,38 +1,53 @@
 package swd392.lawservice.domain.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Data
 @Table(name = "comments")
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Comment {
     @Id
     @Column(name = "id")
-    private UUID id = UUID.randomUUID();
+    private UUID id;
 
-    @Column(name="UserName")
-    private String userName;
+    @Column(name="username")
+    private String username;
+
+    @Column(name = "fullname")
+    private String fullname;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 
     @Column(name = "content",columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @Column(name = "is_anonymous")
+    private boolean isAnonymous;
+
     @Column(name = "rating", nullable = false)
     private int rating;
 
-    @CreationTimestamp
     @Column(name = "created_date", updatable = false)
-    private LocalDateTime createdDate;
+    private Instant createdDate;
 
-    @UpdateTimestamp
     @Column(name = "updated_date")
-    private LocalDateTime updatedDate;
+    private Instant updatedDate;
+
+    @PrePersist
+    public void prePersist() {
+        var zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
+        this.createdDate = ZonedDateTime.now(zoneId).toInstant();
+    }
+
 }

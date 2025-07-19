@@ -6,12 +6,19 @@ import swd392.lawservice.domain.entity.Comment;
 import swd392.lawservice.web.dto.CommentCreateRequest;
 import swd392.lawservice.web.dto.CommentUpdateRequest;
 
+import java.util.UUID;
+
 @Component("commentMapper_LawService")
 public class CommentMapper {
-    public Comment toCreateEntity(CommentCreateRequest commentCreateRequest) {
+
+    public Comment toEntity(CommentCreateRequest commentCreateRequest) {
         if (commentCreateRequest == null) return null;
         Comment comment = new Comment();
-        comment.setUserName(commentCreateRequest.getUserName());
+        comment.setId(UUID.randomUUID());
+        comment.setUsername(commentCreateRequest.getUsername());
+        comment.setFullname(commentCreateRequest.getFullname());
+        comment.setAvatarUrl(commentCreateRequest.getAvatarUrl());
+        comment.setAnonymous(commentCreateRequest.getIsAnonymous());
         comment.setContent(commentCreateRequest.getContent());
         comment.setRating(commentCreateRequest.getRating());
         return comment;
@@ -31,8 +38,9 @@ public class CommentMapper {
         if (comment == null) return null;
         CommentResponse response = new CommentResponse();
         response.setId(comment.getId());
-        response.setUserName(comment.getUserName());
+        response.setUsername(comment.getUsername());
         response.setContent(comment.getContent());
+        response.setAvatarUrl(comment.getAvatarUrl());
         response.setRating(comment.getRating());
         response.setCreatedDate(comment.getCreatedDate());
         response.setUpdatedDate(comment.getUpdatedDate());

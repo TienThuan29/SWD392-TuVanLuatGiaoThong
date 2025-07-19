@@ -1,7 +1,7 @@
 # Hướng dẫn sử dụng trước khi dùng
 
 ## Docker build
-`docker-compose -f docker-compose-final.yml -p aas-microservices up --build -d`
+`docker-compose -f docker-compose-final.yml -p <ten container> up --build -d`
 
 ## Comment để theo dõi quá trình làm
 ### - Sau khi code xong 1 hàm hoặc thay đổi file, bắt buộc phải ghi log

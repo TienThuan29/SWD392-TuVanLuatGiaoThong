@@ -27,23 +27,48 @@ public class GeminiApi {
     //private final static String ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=";
     private final static String ENDPOINT_TEMPLATE = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=";
 
+//    public GeminiResponse generateContentAsObject(String prompt, List<String> contexts, String geminiAlias) {
+//        String fullPrompt = this.injectContextToPrompt(contexts, prompt);
+//        try {
+//            RestTemplate restTemplate = new RestTemplate();
+//            String endpoint = String.format(ENDPOINT_TEMPLATE, geminiAlias) + config.getApiKey();
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            Map<String, Object> content = Map.of("parts", List.of(Map.of("text", fullPrompt)));
+//            Map<String, Object> body = Map.of("contents", List.of(content));
+//            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+//            ResponseEntity<GeminiResponse> response = restTemplate.postForEntity(
+//                    endpoint, request, GeminiResponse.class);
+//            return response.getBody();
+//
+//        }
+//        catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
     public GeminiResponse generateContentAsObject(String prompt, List<String> contexts, String geminiAlias) {
         String fullPrompt = this.injectContextToPrompt(contexts, prompt);
         try {
             RestTemplate restTemplate = new RestTemplate();
-//            String endpoint = ENDPOINT + config.getApiKey();
             String endpoint = String.format(ENDPOINT_TEMPLATE, geminiAlias) + config.getApiKey();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+
             Map<String, Object> content = Map.of("parts", List.of(Map.of("text", fullPrompt)));
-            Map<String, Object> body = Map.of("contents", List.of(content));
+            Map<String, Object> tool = Map.of("google_search", Map.of());
+
+            Map<String, Object> body = Map.of(
+                    "contents", List.of(content),
+                    "tools", List.of(tool)
+            );
+
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
             ResponseEntity<GeminiResponse> response = restTemplate.postForEntity(
                     endpoint, request, GeminiResponse.class);
             return response.getBody();
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

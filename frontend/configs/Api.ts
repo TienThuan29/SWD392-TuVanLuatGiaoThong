@@ -60,6 +60,13 @@ export const Api = {
     Payment: {
         BUY_PACKAGE_WITH_MOMO: '/api/v1/user-packages/payment/momo',
         COMPLETE_PAYMENT_COMFIRMATION: '/api/v1/user-packages/payment/ipn'
+    },
+
+    Comment: {
+        CREATE: '/api/v1/law/comment/create',
+        GET_ALL: '/api/v1/law/comment/get-all',
+        UPDATE: '/api/v1/law/comment/update',
+        DELETE: '/api/v1/law/comment/delete/'
     }
     
 }

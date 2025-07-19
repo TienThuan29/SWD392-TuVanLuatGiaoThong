@@ -5,18 +5,17 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
 public class CommentCreateRequest {
-    private UUID id;
-    private String userName;
+    String username;
+    String fullname;
+    String avatarUrl;
+    Boolean isAnonymous;
 
     @NotBlank
-    private String content;
+    String content;
 
     @Min(1)
     @Max(5)
-    private int rating;
-
+    int rating;
 }

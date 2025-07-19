@@ -28,7 +28,7 @@ public class LawController {
 
     private final ILawTypeUsecase lawTypeUsecase;
 
-    private final ICommentUsecase commentUsecase;
+
 
     @GetMapping("/health")
     public String healthCheck() {
@@ -90,25 +90,5 @@ public class LawController {
         return null;
     }
 
-    @GetMapping("/comment/get-all")
-    public ResponseEntity<Page<CommentResponse>> getAllComments(@RequestParam(defaultValue = "0") int page,
-                                                                @RequestParam(defaultValue = "10") int size) {
-        return new ResponseEntity<>(this.commentUsecase.getAllComments(page, size), HttpStatus.OK);
-    }
 
-    @PostMapping("/comment/create")
-    public ResponseEntity<Comment> createComment(@Valid @RequestBody CommentCreateRequest commentCreateRequest) {
-        return new ResponseEntity<>(this.commentUsecase.createComment(commentCreateRequest), HttpStatus.CREATED);
-    }
-
-    @PutMapping("/comment/update")
-    public ResponseEntity<Comment> updateComment(@Valid @RequestBody CommentUpdateRequest commentUpdateRequest) {
-        return new ResponseEntity<>(this.commentUsecase.updateComment(commentUpdateRequest), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/comment/delete/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable UUID id) {
-        this.commentUsecase.deleteComment(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 }

@@ -47,6 +47,8 @@ export default function Page() {
     clearCurrentChat,
     renameChatTitle,
     deleteChatHistory,
+    addChatHistory,
+    setCurrentChat,
   } = useChatbotManager();
 
   const [selectedChatId, setSelectedChatId] = useState<string>()
@@ -200,7 +202,8 @@ export default function Page() {
       if (!selectedChatId && result?.id) {
         setSelectedChatId(result.id)
         setSelectedSessionId(result.sessionId)
-        await getAllChatHistoriesOfUser(user.id)
+        addChatHistory(result)
+        setCurrentChat(result)
       }
     }
     catch (error) {
