@@ -9,7 +9,7 @@ import swd392.userpackageservice.domain.repository.TransactionHistoryRepository;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class TransactionHistoryTransaction implements ITransactionHistory {
+public class HistoryTransactionTransaction implements IHistoryTransactionTransaction {
     private final TransactionHistoryRepository transactionHistoryRepository;
 
     public TransactionHistory save(TransactionHistory dto) {

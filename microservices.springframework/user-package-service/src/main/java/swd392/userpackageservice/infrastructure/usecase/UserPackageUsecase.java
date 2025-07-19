@@ -9,17 +9,17 @@ import swd392.userpackageservice.application.dto.UserPackageResponse;
 import swd392.userpackageservice.application.exception.CustomExceptions;
 import swd392.userpackageservice.application.usecase.IUserPackageService;
 import swd392.userpackageservice.domain.entity.UserPackage;
- import swd392.userpackageservice.infrastructure.transaction.ITransactionUserPackage;
+ import swd392.userpackageservice.infrastructure.transaction.IUserPackageTransaction;
 import swd392.userpackageservice.domain.repository.UserPackageRepository;
 import swd392.userpackageservice.web.dto.UserPackageRequest;
 
 @Service
 @RequiredArgsConstructor
-public class UserPackageServiceImpl implements IUserPackageService {
+public class UserPackageUsecase implements IUserPackageService {
 
-    private UserPackageRepository userPackageRepository;
+    private final UserPackageRepository userPackageRepository;
 
-    private ITransactionUserPackage transactionUserPackage;
+    private final IUserPackageTransaction transactionUserPackage;
 
     @Override
     public UserPackageResponse createUserPackage(UserPackageRequest requestDto) {

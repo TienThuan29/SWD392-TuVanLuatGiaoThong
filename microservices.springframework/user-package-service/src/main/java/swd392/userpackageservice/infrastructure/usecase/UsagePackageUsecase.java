@@ -9,10 +9,10 @@ import swd392.userpackageservice.application.mapper.UsagePackageMapper;
 import swd392.userpackageservice.application.usecase.IUsagePackageUsecase;
 import swd392.userpackageservice.domain.entity.AIModel;
 import swd392.userpackageservice.domain.repository.AIModelRepository;
-import swd392.userpackageservice.infrastructure.transaction.ITransactionUsagePackage;
+import swd392.userpackageservice.infrastructure.transaction.IUsagePackageTransaction;
 import swd392.userpackageservice.domain.repository.UsagePackageRepository;
 import swd392.userpackageservice.domain.repository.UserPackageRepository;
-import swd392.userpackageservice.infrastructure.utils.HashingUtil;
+import swd392.userpackageservice.infrastructure.utils.IHashingUtil;
 import swd392.userpackageservice.web.dto.UsagePackageRequest;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +23,7 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
 
     private final UsagePackageRepository usagePackageRepository;
 
-    private final ITransactionUsagePackage transactionUsagePackage;
+    private final IUsagePackageTransaction transactionUsagePackage;
 
     private final UsagePackageMapper usagePackageMapper;
 
@@ -31,7 +31,7 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
 
     private final AIModelRepository aiModelRepository;
 
-    private final HashingUtil hashingUtil;
+    private final IHashingUtil hashingUtil;
 
     @Override
     public ApiResponse<UsagePackageResponse> createUsagePackage(UsagePackageRequest usagePackageRequest) {

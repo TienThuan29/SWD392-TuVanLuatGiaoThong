@@ -6,7 +6,7 @@ import swd392.identityservice.application.exception.UserNotFoundException
 import swd392.identityservice.application.mapper.UserMapper
 import swd392.identityservice.application.usecase.IUserManagementUsecase
 import swd392.identityservice.domain.entity.User
-import swd392.identityservice.domain.repository.IUserTransaction
+import swd392.identityservice.infrastructure.transaction.IUserTransaction
 import swd392.identityservice.domain.repository.UserRepository
 import java.util.*
 

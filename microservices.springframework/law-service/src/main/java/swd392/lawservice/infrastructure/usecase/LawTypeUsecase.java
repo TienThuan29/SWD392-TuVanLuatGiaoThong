@@ -7,7 +7,7 @@ import swd392.lawservice.application.dto.LawTypeResponse;
 import swd392.lawservice.application.exception.CustomExceptions;
 import swd392.lawservice.application.mapper.LawTypeMapper;
 import swd392.lawservice.application.usecase.ILawTypeUsecase;
-import swd392.lawservice.domain.repository.ITransactionLawType;
+import swd392.lawservice.infrastructure.transaction.ILawTypeTransaction;
 import swd392.lawservice.domain.repository.LawTypeRepository;
 import swd392.lawservice.web.dto.LawTypeRequest;
 import java.util.List;
@@ -19,7 +19,7 @@ public class LawTypeUsecase implements ILawTypeUsecase {
 
     private final LawTypeRepository lawTypeRepository;
 
-    private final ITransactionLawType transactionLawType;
+    private final ILawTypeTransaction transactionLawType;
 
     private final LawTypeMapper lawTypeMapper;
 

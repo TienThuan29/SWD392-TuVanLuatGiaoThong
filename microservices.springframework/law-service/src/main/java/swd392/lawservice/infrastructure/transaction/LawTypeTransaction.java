@@ -1,14 +1,15 @@
-package swd392.lawservice.domain.repository;
+package swd392.lawservice.infrastructure.transaction;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import swd392.lawservice.domain.entity.LawType;
+import swd392.lawservice.domain.repository.LawTypeRepository;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class TransactionLawType implements ITransactionLawType {
+public class LawTypeTransaction implements ILawTypeTransaction {
 
     private final LawTypeRepository lawTypeRepository;
 

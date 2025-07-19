@@ -2,7 +2,6 @@ package swd392.chatbotservice.domain.repository;
 
 import org.springframework.stereotype.Repository;
 import swd392.chatbotservice.domain.entity.ChatHistory;
-
 import java.util.List;
 import java.util.UUID;
 

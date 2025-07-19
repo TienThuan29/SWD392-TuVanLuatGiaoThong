@@ -20,11 +20,10 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
-public class GeminiApi {
+public class GeminiApi implements IGeminiApi {
 
     private final ChatbotConfiguration config;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    //private final static String ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=";
     private final static String ENDPOINT_TEMPLATE = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=";
 
 //    public GeminiResponse generateContentAsObject(String prompt, List<String> contexts, String geminiAlias) {
@@ -47,6 +46,8 @@ public class GeminiApi {
 //            return null;
 //        }
 //    }
+
+    @Override
     public GeminiResponse generateContentAsObject(String prompt, List<String> contexts, String geminiAlias) {
         String fullPrompt = this.injectContextToPrompt(contexts, prompt);
         try {
@@ -75,6 +76,7 @@ public class GeminiApi {
     }
 
     // Response with structured response json
+    @Override
     public GeminiTrafficResponse generateTrafficLawResponse(String prompt, List<String> contexts, String geminiAlias) {
         try {
             GeminiResponse rawResponse = generateContentAsObject(prompt, contexts, geminiAlias);

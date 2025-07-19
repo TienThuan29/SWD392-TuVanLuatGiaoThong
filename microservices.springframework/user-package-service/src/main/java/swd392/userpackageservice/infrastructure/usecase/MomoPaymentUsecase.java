@@ -16,8 +16,8 @@ import swd392.userpackageservice.domain.entity.UserPackage;
 import swd392.userpackageservice.domain.fixed.PayType;
 import swd392.userpackageservice.domain.fixed.Status;
 import swd392.userpackageservice.domain.repository.*;
-import swd392.userpackageservice.infrastructure.transaction.ITransactionUserPackage;
-import swd392.userpackageservice.infrastructure.transaction.TransactionHistoryTransaction;
+import swd392.userpackageservice.infrastructure.transaction.IHistoryTransactionTransaction;
+import swd392.userpackageservice.infrastructure.transaction.IUserPackageTransaction;
 import swd392.userpackageservice.infrastructure.utils.HashingUtil;
 import swd392.userpackageservice.web.dto.TransactionHistoryRequest;
 import javax.crypto.Mac;
@@ -40,13 +40,13 @@ public class MomoPaymentUsecase implements IMomoPaymentUsecase {
     @Value("${momo.redirect-url}") private String redirectUrl;
     @Value("${momo.ipn-url}") private String ipnUrl;
 
-    private final TransactionHistoryTransaction transactionHistoryTransaction;
+    private final IHistoryTransactionTransaction transactionHistoryTransaction;
 
     private final HashingUtil hashingUtil;
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    private final ITransactionUserPackage transactionUserPackage;
+    private final IUserPackageTransaction transactionUserPackage;
 
     private final UserPackageRepository userPackageRepository;
 

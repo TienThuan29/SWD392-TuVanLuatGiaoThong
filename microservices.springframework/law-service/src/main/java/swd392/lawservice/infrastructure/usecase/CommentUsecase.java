@@ -10,7 +10,7 @@ import swd392.lawservice.application.mapper.CommentMapper;
 import swd392.lawservice.application.usecase.ICommentUsecase;
 import swd392.lawservice.domain.entity.Comment;
 import swd392.lawservice.domain.repository.CommentRepository;
-import swd392.lawservice.domain.repository.ITransactionComment;
+import swd392.lawservice.infrastructure.transaction.ICommentTransaction;
 import swd392.lawservice.web.dto.CommentCreateRequest;
 import swd392.lawservice.web.dto.CommentUpdateRequest;
 
@@ -21,7 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CommentUsecase implements ICommentUsecase {
 
-    private final ITransactionComment transactionComment;
+    private final ICommentTransaction transactionComment;
 
     private final CommentRepository commentRepository;
 

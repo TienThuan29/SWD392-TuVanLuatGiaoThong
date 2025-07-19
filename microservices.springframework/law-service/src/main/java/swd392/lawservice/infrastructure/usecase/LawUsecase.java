@@ -8,7 +8,7 @@ import swd392.lawservice.application.usecase.ILawUsecase;
 import swd392.lawservice.web.dto.LawRequest;
 import swd392.lawservice.domain.entity.Law;
 import swd392.lawservice.domain.entity.LawType;
-import swd392.lawservice.domain.repository.ITransactionLaw;
+import swd392.lawservice.infrastructure.transaction.ILawTransaction;
 import swd392.lawservice.domain.repository.LawRepository;
 import swd392.lawservice.domain.repository.LawTypeRepository;
 import swd392.lawservice.application.dto.LawResponse;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class LawUsecase implements ILawUsecase {
 
-    private final ITransactionLaw transactionLaw;
+    private final ILawTransaction transactionLaw;
     private final LawRepository lawRepository;
     private final LawTypeRepository lawTypeRepository;
     private final LawMapper lawMapper;

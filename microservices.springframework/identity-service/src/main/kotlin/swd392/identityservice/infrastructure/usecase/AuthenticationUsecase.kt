@@ -5,7 +5,7 @@ import swd392.identityservice.application.dto.AuthenticationResponse
 import swd392.identityservice.application.mapper.UserMapper
 import swd392.identityservice.application.usecase.IAuthenticationUsecase
 import swd392.identityservice.domain.entity.User
-import swd392.identityservice.domain.repository.TokenTransaction
+import swd392.identityservice.infrastructure.transaction.ITokenTransaction
 import swd392.identityservice.domain.repository.UserRepository
 import swd392.identityservice.web.dto.AuthenticationUserRequest
 import swd392.identityservice.web.dto.RegisterRequest
@@ -32,7 +32,7 @@ class AuthenticationUsecase(
     private val passwordEncoder: PasswordEncoder,
     private val userMapper: UserMapper,
     private val authenticationManager: AuthenticationManager,
-    private val tokenTransaction: TokenTransaction,
+    private val tokenTransaction: ITokenTransaction,
     private val optGeneratorUtil: OtpGeneratorUtil,
     private val emailUsecase: EmailUsecase,
     private val redisUsecase: RedisUsecase

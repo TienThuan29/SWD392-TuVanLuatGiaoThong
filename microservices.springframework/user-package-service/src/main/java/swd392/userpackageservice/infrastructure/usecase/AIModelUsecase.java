@@ -8,7 +8,7 @@ import swd392.userpackageservice.application.exception.CustomExceptions;
 import swd392.userpackageservice.application.mapper.AIModelMapper;
 import swd392.userpackageservice.application.usecase.IAIModelUsecase;
 import swd392.userpackageservice.domain.repository.AIModelRepository;
-import swd392.userpackageservice.infrastructure.transaction.ITransactionAIModel;
+import swd392.userpackageservice.infrastructure.transaction.IAIModelTransaction;
 import swd392.userpackageservice.web.dto.AIModelRequest;
 import java.util.List;
 
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AIModelUsecase implements IAIModelUsecase {
 
-    private final ITransactionAIModel transactionAIModel;
+    private final IAIModelTransaction transactionAIModel;
 
     private final AIModelMapper aiModelMapper;
 

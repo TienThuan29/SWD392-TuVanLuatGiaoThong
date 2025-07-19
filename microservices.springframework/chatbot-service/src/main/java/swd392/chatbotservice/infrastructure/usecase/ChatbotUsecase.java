@@ -18,10 +18,10 @@ import swd392.chatbotservice.domain.entity.ChatHistory;
 import swd392.chatbotservice.domain.entity.ChatItem;
 import swd392.chatbotservice.domain.repository.IChatbotRepository;
 import swd392.chatbotservice.infrastructure.thirdparty.AIModelAlias;
-import swd392.chatbotservice.infrastructure.thirdparty.GeminiApi;
-import swd392.chatbotservice.infrastructure.thirdparty.NenApi;
+import swd392.chatbotservice.infrastructure.thirdparty.IGeminiApi;
+import swd392.chatbotservice.infrastructure.thirdparty.INenApi;
 import swd392.chatbotservice.infrastructure.thirdparty.dto.GeminiTrafficResponse;
-import swd392.chatbotservice.infrastructure.utils.HashingUtil;
+import swd392.chatbotservice.infrastructure.utils.IHashingUtil;
 import swd392.chatbotservice.web.dto.UserPromptRequest;
 
 
@@ -31,13 +31,13 @@ public class ChatbotUsecase implements IChatbotUsecase {
 
         private final IChatbotRepository chatbotRepository;
 
-        private final GeminiApi geminiApi;
+        private final IGeminiApi geminiApi;
 
-        private final NenApi nenApi;
+        private final INenApi nenApi;
 
         private final ChatHistoryMapper chatHistoryMapper;
 
-        private final HashingUtil hashingUtil;
+        private final IHashingUtil hashingUtil;
 
         @Override
         public ApiResponse<Map<String, String>> deleteChatHistory(UUID chatId) {

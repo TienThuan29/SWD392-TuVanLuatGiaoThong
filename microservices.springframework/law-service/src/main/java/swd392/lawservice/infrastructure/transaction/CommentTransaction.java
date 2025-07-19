@@ -1,15 +1,15 @@
-package swd392.lawservice.domain.repository;
+package swd392.lawservice.infrastructure.transaction;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import swd392.lawservice.domain.entity.Comment;
-
+import swd392.lawservice.domain.repository.CommentRepository;
 import java.util.UUID;
 
 @Service
 @Transactional
-public class CommentTransaction implements ITransactionComment {
+public class CommentTransaction implements ICommentTransaction {
     private final CommentRepository commentRepository;
     public CommentTransaction(CommentRepository commentRepository) {
         this.commentRepository = commentRepository;

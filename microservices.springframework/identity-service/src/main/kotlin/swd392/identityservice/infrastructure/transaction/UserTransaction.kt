@@ -1,8 +1,9 @@
-package swd392.identityservice.domain.repository
+package swd392.identityservice.infrastructure.transaction
 
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import swd392.identityservice.domain.entity.User
+import swd392.identityservice.domain.repository.UserRepository
 
 @Service
 @Transactional

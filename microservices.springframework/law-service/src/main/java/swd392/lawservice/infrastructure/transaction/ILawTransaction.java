@@ -1,9 +1,9 @@
-package swd392.lawservice.domain.repository;
+package swd392.lawservice.infrastructure.transaction;
 
 import swd392.lawservice.domain.entity.Law;
 import java.util.UUID;
 
-public interface ITransactionLaw {
+public interface ILawTransaction {
     void commitTransaction();
     void rollbackTransaction();
     Law save(Law law);

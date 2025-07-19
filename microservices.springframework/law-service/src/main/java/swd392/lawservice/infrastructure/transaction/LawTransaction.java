@@ -1,15 +1,15 @@
-package swd392.lawservice.domain.repository;
+package swd392.lawservice.infrastructure.transaction;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import swd392.lawservice.domain.entity.Law;
 import java.util.UUID;
 import org.springframework.transaction.annotation.Transactional;
+import swd392.lawservice.domain.repository.LawRepository;
 
 @Service
 @Transactional
-public class LawTransaction implements ITransactionLaw {
+public class LawTransaction implements ILawTransaction {
 
     @Autowired
     private LawRepository lawRepository;

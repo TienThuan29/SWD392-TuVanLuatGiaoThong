@@ -9,7 +9,7 @@ import swd392.userpackageservice.domain.repository.AIModelRepository;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class TransactionAIModel implements ITransactionAIModel {
+public class AIModelTransactionTransaction implements IAIModelTransaction {
 
     private final AIModelRepository aiModelRepository;
 

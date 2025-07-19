@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component("hashingUtil_UserPackageService")
 @PropertySource("classpath:security.properties")
-public class HashingUtil {
+public class HashingUtil implements  IHashingUtil {
 
     @Value("${hashing.secret-key}")
     private final String hashingKey;

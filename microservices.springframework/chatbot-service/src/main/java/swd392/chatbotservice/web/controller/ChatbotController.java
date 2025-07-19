@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import swd392.chatbotservice.application.dto.ApiResponse;
 import swd392.chatbotservice.application.usecase.IChatbotUsecase;
-import swd392.chatbotservice.infrastructure.usecase.TrackingLimitationUsecase;
+import swd392.chatbotservice.application.usecase.ITrackingLimitationUsecase;
 import swd392.chatbotservice.web.dto.UserPromptRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ public class ChatbotController {
 
     private final IChatbotUsecase chatbotUsecase;
 
-    private final TrackingLimitationUsecase trackingLimitationUsecase;
+    private final ITrackingLimitationUsecase trackingLimitationUsecase;
 
     private final RedisTemplate<String, String> redisTemplate;
 

@@ -1,16 +1,9 @@
 package swd392.lawservice.web.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import swd392.lawservice.application.dto.CommentResponse;
-import swd392.lawservice.application.usecase.ICommentUsecase;
 import swd392.lawservice.application.usecase.ILawTypeUsecase;
 import swd392.lawservice.application.usecase.ILawUsecase;
-import swd392.lawservice.domain.entity.Comment;
-import swd392.lawservice.web.dto.CommentCreateRequest;
-import swd392.lawservice.web.dto.CommentUpdateRequest;
 import swd392.lawservice.web.dto.LawRequest;
 import swd392.lawservice.application.dto.ApiResponse;
 import java.util.UUID;
@@ -27,8 +20,6 @@ public class LawController {
     private final ILawUsecase lawUsecase;
 
     private final ILawTypeUsecase lawTypeUsecase;
-
-
 
     @GetMapping("/health")
     public String healthCheck() {

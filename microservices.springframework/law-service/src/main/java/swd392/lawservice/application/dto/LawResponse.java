@@ -1,7 +1,6 @@
 package swd392.lawservice.application.dto;
 
 import lombok.Data;
-
 import java.time.Instant;
 import java.util.UUID;
 

@@ -12,7 +12,7 @@ import swd392.userpackageservice.domain.repository.UserPackageRepository;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class TransactionUserPackage implements ITransactionUserPackage {
+public class UserPackageTransaction implements IUserPackageTransaction {
 
     private final UserPackageRepository userPackageRepository;
 
