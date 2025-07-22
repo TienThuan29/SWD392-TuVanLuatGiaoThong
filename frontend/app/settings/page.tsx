@@ -11,6 +11,7 @@ import Helper from './Helper'
 import PasswordChanging from './PasswordChanging'
 import { useAuth } from '@/context/AuthContext';
 import { useRoleValidator } from '@/hooks/useRoleValidator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/modern-ui/avatar';
 
 const Tabs = {
   profile: {
@@ -183,7 +184,14 @@ export default function Page() {
             <div className="mt-auto border-t border-gray-200/50 p-4 bg-gray-50/50">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm border border-gray-200/50">
-                  <FaUser className="h-5 w-5" style={{ color: Color.MainColor }} />
+                  {/* Avatar instead of FaUser */}
+                  {/* Import Avatar components at the top if not already imported */}
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={user?.avatarUrl || undefined} alt="User avatar" />
+                    <AvatarFallback className="bg-gray-200 text-gray-700">
+                      {user?.fullname?.charAt(0) || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
                 </div>
                 <div className="flex flex-col">
                   <span className="font-medium text-gray-900">{user?.fullname}</span>

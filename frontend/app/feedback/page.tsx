@@ -24,8 +24,6 @@ export default function ReviewPage() {
     setComments,
     createComment,
     getAllComments,
-    // updateComment, // not used in this page
-    // deleteComment, // not used in this page
     deleteComment,
   } = useRatingManager();
 
@@ -139,7 +137,7 @@ export default function ReviewPage() {
                     </span>
                     {review.username && (
                       <span className="text-gray-500 dark:text-gray-400 text-sm ml-2">
-                        @{review.username}
+                        @{review.username} {review.isAnonymous ? '(Trạng thái ẩn danh)':''}
                       </span>
                     )}
                   </div>

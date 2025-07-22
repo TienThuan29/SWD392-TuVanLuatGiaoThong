@@ -28,10 +28,10 @@ public class Law {
     @Column(name = "id")
     private UUID id = UUID.randomUUID();
 
-    @Column(name = "reference_number", length = 255)
+    @Column(name = "reference_number", length = 100)
     private String referenceNumber;
 
-    @Column(name = "dateline", length = 255)
+    @Column(name = "dateline", length = 100)
     private String dateline;
 
     @Column(name = "title", length = 255)

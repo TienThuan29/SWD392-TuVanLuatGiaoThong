@@ -85,8 +85,8 @@ export default function PasswordChanging({ logedUser }: Props) {
     // Validate new password is not null/empty
     if (!formData.newPassword.trim()) {
       newErrors.newPassword = "Mật khẩu mới không được để trống";
-    } else if (formData.newPassword.length < 6) {
-      newErrors.newPassword = "Mật khẩu mới phải có ít nhất 6 ký tự";
+    } else if (formData.newPassword.length < 5) {
+      newErrors.newPassword = "Mật khẩu mới phải có ít nhất 5 ký tự";
     }
 
     // Validate confirm password matches
@@ -148,6 +148,7 @@ export default function PasswordChanging({ logedUser }: Props) {
         );
 
         if (response.status === HttpStatus.OK) {
+          // console.log(response.data)
           if (response.data.status === 'success') {
             toast.success(response.data.message || "Đổi mật khẩu thành công!");
           } else {

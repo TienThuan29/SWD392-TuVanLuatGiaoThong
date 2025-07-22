@@ -129,7 +129,7 @@ function Pricing() {
               
               {/* Usage Limits */}
               <div className="text-sm text-gray-700 mb-4">
-                <p>Giới hạn hàng ngày: {daily_limit} lượt truy vấn</p>
+                <p>Giới hạn hàng ngày: {daily_limit >= 999999 ? 'Không giới hạn' : daily_limit} lượt truy vấn</p>
                 <p>Có hiệu lực: {days_limit} ngày</p>
               </div>
 

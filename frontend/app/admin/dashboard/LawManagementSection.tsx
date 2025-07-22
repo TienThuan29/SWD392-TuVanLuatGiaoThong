@@ -22,6 +22,7 @@ import {
 } from "@/ownUtils/all/dateFormatUtil";
 import { toast } from "sonner";
 import Spinner_C from "@/components/combination/Spinner_C";
+import { Color } from "@/configs/CssConstant";
 
 export default function LawManagementSection() {
   const { uploadedFile, uploadFile, clearUploadedFile } = useFileManager();
@@ -271,7 +272,8 @@ export default function LawManagementSection() {
         </h2>
         <button
           onClick={handleOpenCreateModal}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-white rounded-lg hover:opacity-90 transition-colors"
+          style={{ backgroundColor: Color.MainColor }}
         >
           <FaPlus /> Thêm luật mới
         </button>
@@ -345,7 +347,8 @@ export default function LawManagementSection() {
                             )}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                            className="hover:opacity-90"
+                            style={{ color: Color.MainColor }}
                             title="Xem PDF"
                           >
                             <FaFilePdf className="h-5 w-5" />
@@ -356,7 +359,8 @@ export default function LawManagementSection() {
                             href={law.sourceUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                            className="hover:opacity-90"
+                            style={{ color: Color.MainColor }}
                           >
                             <FaLink className="h-5 w-5" />
                           </a>
@@ -373,9 +377,10 @@ export default function LawManagementSection() {
                       </button>
                       <button
                         onClick={() => handleEdit(law)}
-                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 mr-4"
+                        className="mr-4 hover:opacity-90"
                         disabled={deleteLoading === law.id}
                         title="Chỉnh sửa"
+                        style={{ color: Color.MainColor }}
                       >
                         <FaEdit />
                       </button>
@@ -527,7 +532,8 @@ export default function LawManagementSection() {
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md inline-flex items-center gap-2"
+                    className="hover:opacity-90 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md inline-flex items-center gap-2"
+                    style={{ color: Color.MainColor }}
                   >
                     <FaFilePdf className="h-4 w-4" />
                     Xem tài liệu PDF
@@ -548,7 +554,8 @@ export default function LawManagementSection() {
                   setIsViewModalOpen(false);
                   handleEdit(viewingLaw);
                 }}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 rounded-md flex items-center gap-2"
+                className="px-4 py-2 text-sm font-medium text-white rounded-md flex items-center gap-2 hover:opacity-90"
+                style={{ backgroundColor: Color.MainColor }}
               >
                 <FaEdit />
                 Chỉnh sửa
@@ -711,7 +718,8 @@ export default function LawManagementSection() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="px-4 py-2 text-sm font-medium text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 hover:opacity-90"
+                  style={{ backgroundColor: Color.MainColor }}
                 >
                   {isSubmitting && <Spinner_C size="sm" color="white" />}
                   {isSubmitting

@@ -7,8 +7,13 @@ import lombok.Data;
 
 @Data
 public class CommentCreateRequest {
+
+    @NotBlank(message = "Username is required")
     String username;
+
+    @NotBlank(message = "Full name is required")
     String fullname;
+
     String avatarUrl;
     Boolean isAnonymous;
 

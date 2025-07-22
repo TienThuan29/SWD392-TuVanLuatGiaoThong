@@ -8,6 +8,7 @@ import { useUsagePackageCrud } from "@/hooks/useUsagePackageCrud";
 import Spinner_C from "@/components/combination/Spinner_C";
 import { AIModel } from "@/models/AIModel";
 import MultiSelectAIModel from "@/components/custom/MultiSelectAIModel";
+import { Color } from "@/configs/CssConstant";
 
 export default function UsagePackageSection() {
   const {
@@ -168,7 +169,8 @@ export default function UsagePackageSection() {
             });
             setIsModalOpen(true);
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-white rounded-lg hover:opacity-90 transition-colors"
+          style={{ backgroundColor: Color.MainColor }}
         >
           <FaPlus /> Thêm gói mới
         </button>
@@ -199,6 +201,7 @@ export default function UsagePackageSection() {
                     <div
                       className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400"
                       onMouseDown={(e) => handleMouseDown(e, 'name')}
+                      style={{ backgroundColor: resizingColumn === 'name' ? Color.MainColor : undefined }}
                     />
                   </th>
                   <th
@@ -209,6 +212,7 @@ export default function UsagePackageSection() {
                     <div
                       className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400"
                       onMouseDown={(e) => handleMouseDown(e, 'description')}
+                      style={{ backgroundColor: resizingColumn === 'description' ? Color.MainColor : undefined }}
                     />
                   </th>
                   <th
@@ -219,6 +223,7 @@ export default function UsagePackageSection() {
                     <div
                       className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400"
                       onMouseDown={(e) => handleMouseDown(e, 'price')}
+                      style={{ backgroundColor: resizingColumn === 'price' ? Color.MainColor : undefined }}
                     />
                   </th>
                   <th
@@ -229,6 +234,7 @@ export default function UsagePackageSection() {
                     <div
                       className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400"
                       onMouseDown={(e) => handleMouseDown(e, 'dailyLimit')}
+                      style={{ backgroundColor: resizingColumn === 'dailyLimit' ? Color.MainColor : undefined }}
                     />
                   </th>
                   <th
@@ -239,6 +245,7 @@ export default function UsagePackageSection() {
                     <div
                       className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400"
                       onMouseDown={(e) => handleMouseDown(e, 'daysLimit')}
+                      style={{ backgroundColor: resizingColumn === 'daysLimit' ? Color.MainColor : undefined }}
                     />
                   </th>
                   <th
@@ -249,6 +256,7 @@ export default function UsagePackageSection() {
                     <div
                       className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400"
                       onMouseDown={(e) => handleMouseDown(e, 'status')}
+                      style={{ backgroundColor: resizingColumn === 'status' ? Color.MainColor : undefined }}
                     />
                   </th>
                   <th
@@ -259,6 +267,7 @@ export default function UsagePackageSection() {
                     <div
                       className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400"
                       onMouseDown={(e) => handleMouseDown(e, 'actions')}
+                      style={{ backgroundColor: resizingColumn === 'actions' ? Color.MainColor : undefined }}
                     />
                   </th>
                 </tr>
@@ -316,7 +325,8 @@ export default function UsagePackageSection() {
                         </button>
                         <button
                           onClick={() => handleEdit(pkg)}
-                          className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 mr-4"
+                          className="mr-4 hover:opacity-90"
+                          style={{ color: Color.MainColor }}
                           title="Chỉnh sửa"
                         >
                           <FaEdit />
@@ -363,8 +373,8 @@ export default function UsagePackageSection() {
                   value={formData.description}
                   onChange={handleInputChange}
                   rows={3}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                  placeholder="Nhập mô tả gói sử dụng..."
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                  style={{ boxShadow: undefined, borderColor: undefined }}
                 />
               </div>
               <div>
@@ -418,7 +428,8 @@ export default function UsagePackageSection() {
                   name="isDeleted"
                   checked={formData.isDeleted}
                   onChange={handleInputChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 focus:ring-2 border-gray-300 rounded"
+                  style={{ accentColor: Color.MainColor }}
                 />
                 <label className="ml-2 block text-sm text-gray-900">Đánh dấu đã xóa</label>
               </div>
@@ -432,7 +443,8 @@ export default function UsagePackageSection() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 rounded-md"
+                  className="px-4 py-2 text-sm font-medium text-white rounded-md hover:opacity-90"
+                  style={{ backgroundColor: Color.MainColor }}
                 >
                   {editingPackage ? "Cập nhật" : "Thêm mới"}
                 </button>

@@ -14,6 +14,7 @@ public class AIModelMapper {
                 .id(UUID.randomUUID())
                 .modelName(aiModelRequest.getModelName())
                 .provider(aiModelRequest.getProvider())
+                .alias(aiModelRequest.getAlias())
                 .description(aiModelRequest.getDescription())
                 .isDeleted(Boolean.FALSE)
                 .build();

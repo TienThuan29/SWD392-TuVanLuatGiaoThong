@@ -23,13 +23,13 @@ public class AIModel {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    @Column(name = "model_name", nullable = false)
+    @Column(name = "model_name", length = 80, nullable = false)
     private String modelName;
 
-    @Column(name = "provider")
+    @Column(name = "provider", length = 80)
     private String provider;
 
-    @Column(name = "alias")
+    @Column(name = "alias", length = 80)
     private String alias;
 
     @Column(name = "description", columnDefinition = "TEXT")

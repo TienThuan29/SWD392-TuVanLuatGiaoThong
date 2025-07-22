@@ -7,6 +7,7 @@ import { Input } from '@/components/modern-ui/input';
 import { useUserCrud } from '@/hooks/useUserCrud';
 import Spinner_C from '@/components/combination/Spinner_C';
 import { toast } from 'sonner';
+import { Color } from '@/configs/CssConstant';
 
 export default function UserManagementSection() {
 
@@ -127,7 +128,8 @@ export default function UserManagementSection() {
             });
             setIsModalOpen(true);
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-white rounded-lg hover:opacity-90 transition-colors"
+          style={{ backgroundColor: Color.MainColor }}
         >
           <FaPlus /> Thêm người dùng
         </button>
@@ -170,7 +172,8 @@ export default function UserManagementSection() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <button
                         onClick={() => handleEdit(user)}
-                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 mr-4"
+                        className="mr-4 hover:opacity-90"
+                        style={{ color: Color.MainColor }}
                         disabled={deleteLoading === user.username}
                       >
                         <FaEdit />
@@ -287,7 +290,8 @@ export default function UserManagementSection() {
                   name="isEnable"
                   checked={formData.isEnable}
                   onChange={handleInputChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded"
+                  className="h-4 w-4 focus:ring-2 border-gray-300 dark:border-gray-600 rounded"
+                  style={{ accentColor: Color.MainColor }}
                 />
                 <label className="ml-2 block text-sm text-gray-900 dark:text-white">Kích hoạt tài khoản</label>
               </div>
@@ -302,7 +306,8 @@ export default function UserManagementSection() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="px-4 py-2 text-sm font-medium text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 hover:opacity-90"
+                  style={{ backgroundColor: Color.MainColor }}
                   disabled={formLoading}
                 >
                   {formLoading && <Spinner_C size="sm" color="white" />}

@@ -108,7 +108,7 @@ class UserUsecase(
                 if (!this.passwordEncoder.matches(changePasswordRequest.oldPassword, user.passwordAuth)) {
                     return ApiResponse(
                         dataResponse = null,
-                        message = "Đổi mật khẩu không thành công!",
+                        message = "Đổi mật khẩu không thành công! Mật khẩu cũ không đúng!",
                         status = "fail"
                     )
                 }

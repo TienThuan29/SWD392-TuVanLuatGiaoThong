@@ -3,10 +3,12 @@ package swd392.userpackageservice.application.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import swd392.userpackageservice.application.dto.UsagePackageResponse;
+import swd392.userpackageservice.domain.entity.AIModel;
 import swd392.userpackageservice.domain.entity.UsagePackage;
 import swd392.userpackageservice.web.dto.UsagePackageRequest;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Component("usagePackageMapper_UsagePackageService")
@@ -15,10 +17,10 @@ public class UsagePackageMapper {
 
     private final AIModelMapper aiModelMapper;
 
-    public UsagePackage toEntity(UsagePackageRequest usagePackageRequest) {
+    public UsagePackage toEntity(UsagePackageRequest usagePackageRequest, List<AIModel> aiModels) {
         if (usagePackageRequest == null)
             return null;
-        return UsagePackage.builder()
+        UsagePackage usagePackage = UsagePackage.builder()
                 .id(UUID.randomUUID())
                 .name(usagePackageRequest.getName())
                 .description(usagePackageRequest.getDescription())
@@ -27,6 +29,12 @@ public class UsagePackageMapper {
                 .daysLimit(usagePackageRequest.getDaysLimit())
                 .isDeleted(false)
                 .build();
+        usagePackage.getAiModels().clear();
+        for (AIModel aiModel : aiModels) {
+            usagePackage.getAiModels().add(aiModel);
+        }
+
+        return usagePackage;
     }
 
     public UsagePackageResponse toResponse(UsagePackage usagePackage) {

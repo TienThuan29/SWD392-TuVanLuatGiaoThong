@@ -20,16 +20,16 @@ public class Comment {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name="username")
+    @Column(name="username", length = 60)
     private String username;
 
-    @Column(name = "fullname")
+    @Column(name = "fullname", length = 100)
     private String fullname;
 
-    @Column(name = "avatar_url")
+    @Column(name = "avatar_url", length = 1024)
     private String avatarUrl;
 
-    @Column(name = "content",columnDefinition = "TEXT", nullable = false)
+    @Column(name = "content", length = 512, nullable = false)
     private String content;
 
     @Column(name = "is_anonymous")

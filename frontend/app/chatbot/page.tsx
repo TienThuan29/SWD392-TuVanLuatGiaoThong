@@ -470,7 +470,13 @@ export default function Page() {
                   </div>
                   {message.isUser && (
                     <div className="flex-shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-gray-500 dark:bg-gray-600">
-                      <FaUser className="h-5 w-5 text-white" />
+                      {/* Replace FaUser with Avatar */}
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={user?.avatarUrl || undefined} alt="User avatar" />
+                        <AvatarFallback className="bg-gray-500 text-white">
+                          {user?.fullname?.charAt(0) || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
                     </div>
                   )}
                 </div>

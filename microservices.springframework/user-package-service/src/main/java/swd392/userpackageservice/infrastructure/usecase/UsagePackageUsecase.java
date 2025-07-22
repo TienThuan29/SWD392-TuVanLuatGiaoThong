@@ -36,8 +36,14 @@ public class UsagePackageUsecase implements IUsagePackageUsecase {
     @Override
     public ApiResponse<UsagePackageResponse> createUsagePackage(UsagePackageRequest usagePackageRequest) {
         try {
+            List<AIModel> aiModels = usagePackageRequest.getAiModels()
+                    .stream().map(aiModelRequest -> this.aiModelRepository.findById(aiModelRequest.getId())
+                            .orElseThrow(() -> new CustomExceptions.ResourceNotFoundException(
+                                    "Cannot found AI model with id: " + aiModelRequest.getId())))
+                    .toList();
+
             var savedUsagePackage = this.transactionUsagePackage.save(
-                    this.usagePackageMapper.toEntity(usagePackageRequest)
+                    this.usagePackageMapper.toEntity(usagePackageRequest, aiModels)
             );
             return ApiResponse.<UsagePackageResponse>builder()
                     .status("success")
