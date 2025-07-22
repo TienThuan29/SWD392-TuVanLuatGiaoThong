@@ -56,11 +56,8 @@ public class MomoPaymentUsecase implements IMomoPaymentUsecase {
 
 
     public String createPaymentUrl(BigDecimal amount, String userId, UUID packageId) {
-        // Decode userId from String to UUID
         UUID decodedUserId = UUID.fromString(this.hashingUtil.decode(userId));
-        // Create a unique order ID using UUID and current timestamp
         String orderId = UUID.randomUUID() + "-" + Instant.now().toString();
-        // Create user package order info without enable
         UserPackage userPackage = UserPackage.builder()
                 .id(UUID.randomUUID())
                 .orderId(orderId)
@@ -115,7 +112,6 @@ public class MomoPaymentUsecase implements IMomoPaymentUsecase {
         return resBody.get("payUrl").toString();
     }
 
-    //tao chu ky bao mat
     private String hmacSHA256(String data, String key) {
        try {
            Mac hmac = Mac.getInstance("HmacSHA256");
@@ -179,9 +175,6 @@ public class MomoPaymentUsecase implements IMomoPaymentUsecase {
         }
     }
 
-    //chuyen doi byte sang hex
-    //can vi dung trong ham hmacSHA256
-    //momo ko nhan duoc ma nhi phan
     private String bytesToHex(byte[] bytes) {
         StringBuilder hexString = new StringBuilder();
         for (byte b : bytes) {
